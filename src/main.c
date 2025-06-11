@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	main(void)
+int	main(int ac, char **av, char **envp)
 {
 	char *prompt;
 
