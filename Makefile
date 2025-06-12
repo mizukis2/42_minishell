@@ -9,7 +9,7 @@ OBJ_DIR =						obj
 LIBFT_DIR =						libft
 LIBFT =							$(LIBFT_DIR)/libft.a
 
-SRCS =							src/main.c
+SRCS =							src/main.c src/cleaning.c
 OBJS =							$(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 LIBS =							-L$(LIBFT_DIR) -lft -lreadline
 
