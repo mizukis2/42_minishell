@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-/* 
-#include <stdio.h>
+
+/* #include <stdio.h>
 #include <stdlib.h>
 
 size_t	ft_strlen(const char *str)
@@ -48,7 +48,7 @@ char	*ft_strdup(const char *str1)
 	str2[i] = '\0';
 	return (str2);
 }
-
+ */
 void	free_array (char **array)
 {
 	int	i;
@@ -61,7 +61,7 @@ void	free_array (char **array)
 	}
 	free (array);
 }
- */
+
 char **env_dup(char **envp)
 {
 	char	**copy;
