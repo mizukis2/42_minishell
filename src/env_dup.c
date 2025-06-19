@@ -49,7 +49,7 @@ char	*ft_strdup(const char *str1)
 	return (str2);
 }
  */
-void	free_array (char **array)
+static void	free_array (char **array)
 {
 	int	i;
 
@@ -62,6 +62,7 @@ void	free_array (char **array)
 	free (array);
 }
 
+/* copy environment variable from char **envp in main*/
 char **env_dup(char **envp)
 {
 	char	**copy;

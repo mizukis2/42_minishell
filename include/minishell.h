@@ -17,6 +17,7 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <stdbool.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>
@@ -34,7 +35,17 @@
 
 //struct
 
-//function
+//function - initial setting
+char	**env_dup(char **envp);
+
+//function - utils (minishell libft)
+void	ft_putstr(const char *str);
+int		ft_strcmp(const char *s1, const char *s2);
+
+//function - build-in, this should be impliment right parameters later
+int	buid_in(char **args); 
+void	ft_echo(char **args);
+
 
 
 #endif
