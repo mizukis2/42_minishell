@@ -40,3 +40,5 @@ void	ft_echo(char **args)
 	if (!no_line)
 		write (1, "\n", 1);
 }
+
+

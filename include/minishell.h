@@ -34,6 +34,13 @@
 # define ERROR_ARG "Usage: ./minishell\n"
 
 //struct
+typedef struct s_data {
+    char **copied_envp;          
+    int    last_exit;     // For $?
+    // maybe: char *prompt;
+    // maybe: int interactive_mode;
+} t_data;
+
 
 //function - initial setting
 char	**env_dup(char **envp);
