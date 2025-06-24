@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:48:11 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/06/23 03:27:26 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/06/24 05:51:53 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,39 +26,76 @@ static void	print_banner(void)
 	printf("\033[0m\n");
 }
 
+static int	is_whitespace_or_empty(char *str)
+{
+	int i;
+
+	i = 0;
+	if (str[0] == '\0')
+		return (1);
+	while (str[i])
+	{
+		if (!(str[i] == ' ' || (str[i] >= 9 && str[i] <= 13)))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static bool	check_quotes(char *line)
+{
+	bool	in_quotes;
+	char	quote;
+	int		i;
+	
+	in_quotes = false;
+	quote = 0;
+	i = 0;
+	while(line[i])
+	{
+		if (!in_quotes && (line[i] == '\'' || line[i] == '\"'))
+		{
+			quote = line[i];
+			in_quotes = true;
+		}
+		else if (in_quotes && line[i] == quote)
+			in_quotes = false;
+		i++;
+	}
+	return (!in_quotes);
+}
+
 int	main(int ac, char **av, char **envp)
 {
 	char *line;
 
-	(void)ac;
 	(void)av;
-	if (ac != 1 || !envp || !*envp|| !**envp)//sanity check for environment variables
-		return (1);
-	//TODO: Copy environment variables into a modifiable structure
+	if (ac != 1 || !envp || !*envp|| !**envp)
+		return (EXIT_FAILURE);
 	print_banner();
 	while (1)
 	{
 		line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
-		if (!line) //for Ctrl+D on an empty line
-		{
-			printf("\033[0;31mexited MZ$HELL\033[0m\n");
+
+		if (!line) // check for EOF Ctrl+D (temporary)
 			break;
-		}
-		if (ft_strncmp(line, "exit", 4) == 0)//exit command
-		{
-			free(line);
-			printf("\033[0;31mexited MZ$HELL\033[0m\n");
-			break;
-		}
-		if (!*line) //ignore empty lines
+		if (is_whitespace_or_empty(line))
 		{
 			free(line);
 			continue;
 		}
 		add_history (line);
-		//TODO: Add parsing, execution and signal handling here
-		free (line);
+		if (!check_quotes(line))
+		{
+			printf("Syntax error: Unclosed Quotes\n");
+			free(line);
+			continue;
+		}
+		free(line);
 	}
 	rl_clear_history();
 	return (EXIT_SUCCESS);
 }
+	//TODO: Copy environment variables into a modifiable structure
+	//TODO: Add parsing, execution
+	//TODO: Add signal handling at the end of the project

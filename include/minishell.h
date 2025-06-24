@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/06/23 03:32:39 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/06/24 02:14:22 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <termios.h>
 # include <string.h>
 # include <termcap.h>
+# include <stdbool.h>
 # include "libft.h"
 
 	
