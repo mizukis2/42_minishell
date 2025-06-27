@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                         ::::::::           */
-/*   builtin_utils.c                                     :+:    :+:           */
-/*                                                      +:+                   */
-/*   By: mmatsui <marvin@42.fr>                        +#+                    */
-/*                                                    +#+                     */
-/*   Created: 2025/06/25 10:37:54 by mmatsui        #+#    #+#                */
-/*   Updated: 2025/06/25 10:37:55 by mmatsui        ########   odam.nl        */
+/*                                                        ::::::::            */
+/*   builtin_utils.c                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mmatsui <marvin@42.fr>                       +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2025/06/25 10:37:54 by mmatsui       #+#    #+#                 */
+/*   Updated: 2025/06/27 16:09:28 by matsuimiki    ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,3 +23,7 @@ int	count_args(char **args)
 	return (count);
 }
 
+void	print_error(const char *msg)
+{
+	write(STDERR_FILENO, msg, ft_strlen(msg));
+}

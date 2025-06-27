@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                         ::::::::           */
-/*   builtin_echo.c                                      :+:    :+:           */
-/*                                                      +:+                   */
-/*   By: mmatsui <marvin@42.fr>                        +#+                    */
-/*                                                    +#+                     */
-/*   Created: 2025/06/12 14:48:36 by mmatsui        #+#    #+#                */
-/*   Updated: 2025/06/12 14:48:49 by mmatsui        ########   odam.nl        */
+/*                                                        ::::::::            */
+/*   builtin_echo.c                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mmatsui <marvin@42.fr>                       +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2025/06/12 14:48:36 by mmatsui       #+#    #+#                 */
+/*   Updated: 2025/06/27 16:01:38 by matsuimiki    ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_echo(char **args)
+int	ft_echo(char **args)
 {
 	bool	no_line;
 	int		i;
@@ -39,6 +39,7 @@ void	ft_echo(char **args)
 	}
 	if (!no_line)
 		write (1, "\n", 1);
+	return (0);
 }
 
 
