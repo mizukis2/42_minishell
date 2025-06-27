@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                         ::::::::           */
-/*   build_in.c                                          :+:    :+:           */
+/*   built_in.c                                          :+:    :+:           */
 /*                                                      +:+                   */
 /*   By: mmatsui <marvin@42.fr>                        +#+                    */
 /*                                                    +#+                     */
@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	execute_buildin(char **args, char **envp)
+void	execute_builtin(char **args, char **envp)
 {
 	if(!args || !*args)
 		return ;
@@ -33,7 +33,7 @@ void	execute_buildin(char **args, char **envp)
 }
 
 /* test for buildin */
-int	main (int ac, char **av, char **envp)
+/* int	main (int ac, char **av, char **envp)
 {
 	char **copied_envp;
 	char *cmd;
@@ -43,4 +43,4 @@ int	main (int ac, char **av, char **envp)
 	if (av[1])
 		execute_buildin(av, copied_envp);
 	return (0);
-}
+} */
