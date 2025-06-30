@@ -6,7 +6,7 @@
 /*   By: mmatsui <marvin@42.fr>                       +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/06/12 14:48:36 by mmatsui       #+#    #+#                 */
-/*   Updated: 2025/06/27 16:01:38 by matsuimiki    ########   odam.nl         */
+/*   Updated: 2025/06/30 12:19:49 by matsuimiki    ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ int	ft_echo(char **args)
 	{
 		ft_putstr(args[i]);
 		if (args[i + 1])
-			write (1, " ", 1);
+			write (STDOUT_FILENO, " ", 1);
 		i++;
 	}
 	if (!no_line)
-		write (1, "\n", 1);
+		write (STDOUT_FILENO, "\n", 1);
 	return (0);
 }
 
