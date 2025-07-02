@@ -14,6 +14,7 @@ SRCS = 							\
 								src/main/shell_loop.c \
 								src/lexer/lexer.c \
 								src/lexer/lexer_utils.c \
+								src/lexer/lexer_states.c \
 
 OBJS = 							$(patsubst %.c, $(OBJ_DIR)/%.o, $(subst $(SRC_DIR)/,,$(SRCS)))
 LIBS =							-L$(LIBFT_DIR) -lft -lreadline

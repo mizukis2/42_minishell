@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 06:02:52 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/02 10:06:55 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/02 14:37:13 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ t_token_type	get_metachar_type(const char *str, int *advance)
 
 t_token	*create_token(const char *start, int len, t_token_type type)
 {
-	t_token *token = malloc(sizeof(t_token));
+	t_token	*token;
+
+	token = malloc(sizeof(t_token));
 	if (!token)
 		return (NULL);
 	token->value = ft_strndup(start, len);
@@ -44,7 +46,9 @@ t_token	*create_token(const char *start, int len, t_token_type type)
 
 void	add_token(t_token **head, t_token *new_token)
 {
-	t_token	*curr = *head;
+	t_token	*curr;
+
+	curr = *head;
 	if (!curr)
 	{
 		*head = new_token;
@@ -57,7 +61,8 @@ void	add_token(t_token **head, t_token *new_token)
 
 void	free_tokens(t_token *head)
 {
-	t_token *tmp;
+	t_token	*tmp;
+
 	while (head)
 	{
 		tmp = head->next;
