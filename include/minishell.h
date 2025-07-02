@@ -41,6 +41,12 @@ typedef struct s_data {
     // maybe: int interactive_mode;
 } t_data;
 
+typedef struct s_env {
+    char    *key;
+    char    *value;
+    bool    exported;
+    struct s_env *next;
+} t_env;
 
 //function - initial setting
 char	**env_dup(char **envp);

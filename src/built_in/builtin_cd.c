@@ -3,7 +3,7 @@
 /*                                                        ::::::::            */
 /*   builtin_cd.c                                       :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: mmatsui <marvin@42.fr>                       +#+                     */
+/*   By: mmatsui <mmatsui@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/06/19 18:13:12 by mmatsui       #+#    #+#                 */
 /*   Updated: 2025/06/30 15:31:47 by matsuimiki    ########   odam.nl         */

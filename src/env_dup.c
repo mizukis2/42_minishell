@@ -1,9 +1,9 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                         ::::::::           */
-/*   env_dup.c                                          :+:    :+:           */
+/*   env_dup.c                                           :+:    :+:           */
 /*                                                      +:+                   */
-/*   By: mmatsui <marvin@42.fr>                        +#+                    */
+/*   By: mmatsui <@student.codam.nl>                   +#+                    */
 /*                                                    +#+                     */
 /*   Created: 2025/06/12 14:50:19 by mmatsui        #+#    #+#                */
 /*   Updated: 2025/06/12 14:50:21 by mmatsui        ########   odam.nl        */
@@ -12,44 +12,7 @@
 
 #include "minishell.h"
 
-/* #include <stdio.h>
-#include <stdlib.h>
-
-size_t	ft_strlen(const char *str)
-{
-	size_t	l;
-
-	l = 0;
-	while (str[l])
-	{
-		l++;
-	}
-	return (l);
-}
-
-char	*ft_strdup(const char *str1)
-{
-	char	*str2;
-	size_t	len;
-	size_t	i;
-
-	len = ft_strlen(str1);
-	i = 0;
-	str2 = malloc((len + 1) * sizeof(char));
-	if (str2 == NULL)
-	{
-		return (NULL);
-	}
-	while (str1[i])
-	{
-		str2[i] = str1[i];
-		i++;
-	}
-	str2[i] = '\0';
-	return (str2);
-}
- */
-static void	free_array (char **array)
+/* static void	free_array (char **array)
 {
 	int	i;
 
@@ -61,9 +24,9 @@ static void	free_array (char **array)
 	}
 	free (array);
 }
-
+ */
 /* copy environment variable from char **envp in main*/
-char **env_dup(char **envp)
+/* char **env_dup(char **envp)
 {
 	char	**copy;
 	int		count;
@@ -89,23 +52,109 @@ char **env_dup(char **envp)
 	copy[i] = NULL;
 	return (copy);
 }
-/* 
-int	main (int ac, char **av, char **envp)
+ */
+
+void	free_node(t_env *node)
 {
-	char **copy;
-	int	i = 0;
-	if (ac != 1)
-		return (1);
-	if (!av || !*av || !**av || !envp || !*envp|| !**envp)
-		return (1);
-	
-	copy = env_dup(envp);
-	while (copy[i])
+	if (!node)
+		return;
+	if(node->key)
+		free(node->key);
+	if(node->value)
+		free(node->value);
+	free(node);
+}
+
+void	free_node_list(t_env *head)
+{
+	t_env *temp;
+	while(head)
 	{
-		printf("%s\n", copy[i]);
-		i++;
+		temp = head->next;
+		free_node(head);
+		head = temp;
 	}
-	free_array(copy);
+}
+
+int	set_key_value(t_env *node, char *str, int len)
+{
+	node->key = ft_substr(str, 0, len);
+	if (!(node->key))
+	{
+		free_node(node);
+		return (1);
+	}
+	node->value = ft_strdup(str + len + 1);
+	if (!(node->value))
+	{
+		free_node(node);
+		return (1);
+	}
 	return (0);
 }
- */
+
+int	set_key(t_env *node, char *str)
+{
+	node->key = ft_strdup(str);
+	if (!(node->key))
+	{
+		free_node(node);
+		return (1);
+	}
+	return (0);
+}
+
+t_env *create_node(char *str)
+{
+	char	*eq;
+	int		key_len;
+	t_env	*new;
+
+	new = malloc(sizeof(t_env));
+	if (!new)
+		return (NULL);
+	eq = ft_strchr(str, '=');
+	if (eq)
+	{
+		key_len = eq - str;
+		if (set_key_value(new, str, key_len))
+			return (NULL);
+	}
+	else
+	{
+		if (set_key(new, str))
+			return (NULL);
+		new->value = NULL;
+	}
+	new->exported = true;
+	new->next = NULL;
+	return (new);
+}
+
+t_env	*copy_initial_env(char **envp)
+{
+	t_env	*head;
+	t_env	*tail;
+	t_env	*new_node;
+	int		i;
+
+	head = NULL;
+	tail = NULL;
+	i = 0;
+	while (envp[i])
+	{
+		new_node = create_node(envp[i]);
+		if (!new_node)
+		{
+			free_node_list(head);
+			return (NULL);
+		}
+		if (!head)
+			head = new_node;
+		else
+			tail->next = new_node;
+		tail = new_node;
+		i++;
+	}
+	return (head);
+}

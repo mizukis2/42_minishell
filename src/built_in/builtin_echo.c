@@ -3,7 +3,7 @@
 /*                                                        ::::::::            */
 /*   builtin_echo.c                                     :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: mmatsui <marvin@42.fr>                       +#+                     */
+/*   By: mmatsui <mmatsui@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/06/12 14:48:36 by mmatsui       #+#    #+#                 */
 /*   Updated: 2025/06/30 12:19:49 by matsuimiki    ########   odam.nl         */
