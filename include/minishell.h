@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/02 06:04:48 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/02 11:08:13 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ bool			is_metachar(char c);
 t_token_type	get_metachar_type(const char *str, int *advance);
 t_token			*create_token(const char *start, int len, t_token_type type);
 void			add_token(t_token **head, t_token *new_token);
+void			free_tokens(t_token *head);
 
 
 //function - initial setting

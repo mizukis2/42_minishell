@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 05:44:32 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/02 06:37:51 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/02 11:36:49 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ t_token	*lexer(const char *line)
 		if (state == STATE_START)
 		{
 			if (ft_isspace(c))
-			i++;
+				i++;
 			else if (c == '\'')
 			{
 				state = STATE_IN_SINGLE_QUOTE;
@@ -72,6 +72,7 @@ t_token	*lexer(const char *line)
 			{
 				add_token(&tokens, create_token(start, &line[i] - start, TOKEN_WORD));
 				state = STATE_START;
+				i++;
 			}
 			else
 				i++;
@@ -82,6 +83,7 @@ t_token	*lexer(const char *line)
 			{
 				add_token(&tokens, create_token(start, &line[i] - start, TOKEN_WORD));
 				state = STATE_START;
+				i++;
 			}
 			else
 				i++;

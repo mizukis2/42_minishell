@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/02 06:47:58 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/02 11:19:00 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	enter_shell_loop(void)
 			free(line);
 			continue ;
 		}
-		tokens = lexer(line);
+		tokens = lexer(line); //alocated memory
 		print_tokens(tokens);
 		if (!tokens)
 		{
@@ -50,6 +50,7 @@ void	enter_shell_loop(void)
 			free(line);
 			continue ;
 		}
+		free_tokens(tokens);
 		free(line);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 06:02:52 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/02 06:58:56 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/02 10:06:55 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,16 @@ void	add_token(t_token **head, t_token *new_token)
 	while (curr->next)
 		curr = curr->next;
 	curr->next = new_token;
+}
+
+void	free_tokens(t_token *head)
+{
+	t_token *tmp;
+	while (head)
+	{
+		tmp = head->next;
+		free(head->value);
+		free(head);
+		head = tmp;
+	}
 }
