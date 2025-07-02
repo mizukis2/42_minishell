@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 17:49:49 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/03/18 21:15:28 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/02 05:56:55 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ int		ft_isdigit(int c);
 int		ft_isalnum(int c);
 int		ft_isascii(int c);
 int		ft_isprint(int c);
+int		ft_isspace(int c);
+char	*ft_strndup(const char *str1, size_t n);
 size_t	ft_strlen(const char *str);
 void	*ft_memset(void *str, int value, size_t n);
 void	ft_bzero(void *str, size_t n);
