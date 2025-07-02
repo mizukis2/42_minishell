@@ -73,6 +73,14 @@ typedef struct s_lex
 	t_token_type	type;
 }	t_lex;
 
+*/ Envp */
+typedef struct s_data {
+    char **copied_envp;          
+    int    last_exit;     // For $?
+    // maybe: char *prompt;
+    // maybe: int interactive_mode;
+} t_data;
+
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
 void			enter_shell_loop(void);
@@ -93,6 +101,7 @@ void			process_start(t_lex *lex, const char *line);
 void			process_in_inword(t_lex *lex, const char *line);
 void			process_single_quotes(t_lex *lex, const char *line);
 void			process_double_quotes(t_lex *lex, const char *line);
+
 
 //function - initial setting
 char			**env_dup(char **envp);
