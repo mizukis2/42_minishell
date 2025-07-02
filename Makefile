@@ -12,7 +12,8 @@ SRCS = 							\
 								src/main/main.c \
 								src/main/shell_utils.c \
 								src/main/shell_loop.c \
-								src/lexer/tokenizer.c \
+								src/lexer/lexer.c \
+								src/lexer/lexer_utils.c
 
 OBJS = 							$(patsubst %.c, $(OBJ_DIR)/%.o, $(subst $(SRC_DIR)/,,$(SRCS)))
 LIBS =							-L$(LIBFT_DIR) -lft -lreadline

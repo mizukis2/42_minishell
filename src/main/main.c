@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:48:11 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/06/30 04:23:24 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/06/30 05:04:54 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	main(int ac, char **av, char **envp)
 	if (!args_check(ac, envp))
 		return (EXIT_FAILURE);
 	print_banner();
-	shell_loop();
+	enter_shell_loop();
 	cleanup_shell();
 	return (EXIT_SUCCESS);
 }

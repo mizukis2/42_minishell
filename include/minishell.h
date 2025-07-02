@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/06/30 04:19:39 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/02 06:04:48 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,52 @@
 	
 //Error messages
 
-//struct
+//---------------------ENUMS-------------------------------
+//Token type
+typedef enum	e_token_type
+{
+	TOKEN_WORD,
+	TOKEN_PIPE,
+	TOKEN_REDIRECT_IN,
+	TOKEN_REDIRECT_OUT,
+	TOKEN_HEREDOC,
+	TOKEN_APPEND
+}				t_token_type;
 
-//funtions - main / shell loop
-void	shell_loop(void);
-int		is_whitespace_or_empty(char *str);
-bool	check_quotes(char *line);
-void	cleanup_shell(void);
+//Lexer_state
+typedef enum	e_lexer_state
+{
+	STATE_START,
+	STATE_IN_WORD,
+	STATE_IN_SINGLE_QUOTE,
+	STATE_IN_DOUBLE_QUOTE,
+	STATE_IN_METACHAR
+}				t_lexer_state;
+
+//--------------------Structs------------------------------
+//Tokens
+typedef struct	s_token
+{
+	char			*value;
+	t_token_type	type;
+	struct s_token	*next;
+}				t_token;
+
+
+//--------------------Funtions-----------------------------
+//main & shell loop
+void			enter_shell_loop(void);
+int				is_whitespace_or_empty(char *str);
+bool			check_quotes(char *line);
+void			cleanup_shell(void);
+
+// Lexer
+t_token			*lexer(const char *line);
+bool			is_metachar(char c);
+t_token_type	get_metachar_type(const char *str, int *advance);
+t_token			*create_token(const char *start, int len, t_token_type type);
+void			add_token(t_token **head, t_token *new_token);
+
 
 //function - initial setting
 char	**env_dup(char **envp);
