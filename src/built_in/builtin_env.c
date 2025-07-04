@@ -12,18 +12,24 @@
 
 #include "minishell.h"
 
-int ft_env(char **args, char **envp)
+int ft_env(char **args, t_env *envp)
 {
     int i;
+	char **envp_array;
 
     if (count_args(args) > 2)
         return (print_error("env: too many arguments\n"), 1);
     i = 0;
-    while (envp && envp[i])
+
+	envp_array = list_to_array(envp);
+
+    while (envp)
     {
-        if (ft_strchr(envp[i], '='))
+		if (envp->value)
+
+        if (ft_strchr(envp_array[i], '='))
         {
-            ft_putstr(envp[i]);
+            ft_putstr(envp_array[i]);
             write (STDOUT_FILENO, "\n", 1);
         }
         i++;

@@ -70,6 +70,10 @@ void	ft_lstdelone(t_list *lst, void (*del)(void*));
 void	ft_lstclear(t_list **lst, void (*del)(void*));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
+void	ft_putstr(const char *str);
+int		ft_strcmp(const char *s1, const char *s2);
+char	*ft_strstr(const char *haystack, const char *needle);
+
 //ft_printf functions
 int		print_char(char c, int ccount);
 int		print_string(char *s, int ccount);
@@ -83,4 +87,5 @@ int		ft_printf(const char *format, ...);
 char	*gnl_strjoin(char *s1, char *s2);
 int		newline_exists(char *buffer);
 char	*get_next_line(int fd);
+
 #endif

@@ -1,30 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                         ::::::::           */
-/*   cleaning.c                                          :+:    :+:           */
+/*   ft_putstr.c                                         :+:    :+:           */
 /*                                                      +:+                   */
-/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
+/*   By: mmatsui <marvin@42.fr>                        +#+                    */
 /*                                                    +#+                     */
-/*   Created: 2025/06/12 13:14:32 by mmatsui        #+#    #+#                */
-/*   Updated: 2025/06/12 13:14:34 by mmatsui        ########   odam.nl        */
+/*   Created: 2025/07/04 08:21:52 by mmatsui        #+#    #+#                */
+/*   Updated: 2025/07/04 08:21:54 by mmatsui        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
-//this is just an idea, we will update later
-
-void	ft_free_split(char **split_list)
+void	ft_putstr(const char *str)
 {
-	int	i;
-
-	if (!split_list)
-		return ;
-	i = 0;
-	while (split_list[i])
+	while (*str)
 	{
-		free (split_list[i]);
-		i++;
+		write(1, str, 1);
+		str++;
 	}
-	free(split_list);
 }

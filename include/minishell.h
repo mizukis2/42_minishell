@@ -110,12 +110,14 @@ void			process_in_inword(t_lex *lex, const char *line);
 void			process_single_quotes(t_lex *lex, const char *line);
 void			process_double_quotes(t_lex *lex, const char *line);
 
-//function - initial setting
-char			**env_dup(char **envp);
+//function - environment variable
+t_env	*copy_initial_env(char **envp);
+void	free_node(t_env *node);
+void	free_node_list(t_env *head);
+char	*complete_env_line(t_env *envp);
+int		count_nodes(t_env *head);
+void	free_array (char **array);
 
-//function - utils (minishell libft)
-void			ft_putstr(const char *str);
-int				ft_strcmp(const char *s1, const char *s2);
 
 //function - build-in, this should be impliment right parameters later
 int				buid_in(char **args);

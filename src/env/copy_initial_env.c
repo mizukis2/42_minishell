@@ -1,9 +1,9 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                         ::::::::           */
-/*   env_dup.c                                           :+:    :+:           */
+/*   copy_initial_env.c                                  :+:    :+:           */
 /*                                                      +:+                   */
-/*   By: mmatsui <@student.codam.nl>                   +#+                    */
+/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
 /*                                                    +#+                     */
 /*   Created: 2025/06/12 14:50:19 by mmatsui        #+#    #+#                */
 /*   Updated: 2025/06/12 14:50:21 by mmatsui        ########   odam.nl        */
@@ -11,70 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/* static void	free_array (char **array)
-{
-	int	i;
-
-	i = 0;
-	while(array[i])
-	{
-		free(array[i]);
-		i++;
-	}
-	free (array);
-}
- */
-/* copy environment variable from char **envp in main*/
-/* char **env_dup(char **envp)
-{
-	char	**copy;
-	int		count;
-	int		i;
-
-	count = 0;
-	while (envp[count])
-		count++;
-	copy = malloc(sizeof(char *) * (count + 1));
-	if (!copy)
-		return (NULL);
-	i = 0;
-	while (i < count)
-	{
-		copy[i] = ft_strdup(envp[i]);
-		if (!copy[i])
-		{
-			free_array(copy);
-			return(NULL);
-		}
-		i++;
-	}
-	copy[i] = NULL;
-	return (copy);
-}
- */
-
-void	free_node(t_env *node)
-{
-	if (!node)
-		return;
-	if(node->key)
-		free(node->key);
-	if(node->value)
-		free(node->value);
-	free(node);
-}
-
-void	free_node_list(t_env *head)
-{
-	t_env *temp;
-	while(head)
-	{
-		temp = head->next;
-		free_node(head);
-		head = temp;
-	}
-}
 
 int	set_key_value(t_env *node, char *str, int len)
 {
@@ -131,6 +67,8 @@ t_env *create_node(char *str)
 	return (new);
 }
 
+/* copy the environmental variable from main (char **envp) 
+as linked list */
 t_env	*copy_initial_env(char **envp)
 {
 	t_env	*head;
@@ -158,3 +96,25 @@ t_env	*copy_initial_env(char **envp)
 	}
 	return (head);
 }
+/* int main(int ac, char **av, char **envp)
+{
+	(void)av;
+	(void)ac;
+
+	t_env	*env_list;
+	t_env	*curr;
+
+	env_list = copy_initial_env(envp);
+	curr = env_list;
+	while (curr)
+	{
+		if (curr->exported && curr->value)
+		{
+			printf ("%s=%s\n", curr->key, curr->value);
+			curr = curr->next;
+		}
+	}
+
+	free_node_list(env_list);
+	return (EXIT_SUCCESS);
+} */
