@@ -14,42 +14,37 @@
 
 int ft_env(char **args, t_env *envp)
 {
-    int i;
-	char **envp_array;
+	char *env_str;
+	t_env *curr;
 
-    if (count_args(args) > 2)
+	curr = envp;
+    if (count_args(args) > 1)
         return (print_error("env: too many arguments\n"), 1);
-    i = 0;
-
-	envp_array = list_to_array(envp);
-
-    while (envp)
+    while (curr)
     {
-		if (envp->value)
-
-        if (ft_strchr(envp_array[i], '='))
-        {
-            ft_putstr(envp_array[i]);
-            write (STDOUT_FILENO, "\n", 1);
-        }
-        i++;
+		if ((curr->exported && curr->value))
+		{
+			env_str = complete_env_line(curr);
+			if (!env_str)
+				return (print_error("env: memory allocation failed\n"), 1);
+			ft_putstr(env_str);
+			write (STDOUT_FILENO, "\n", 1);
+			free(env_str);
+		}
+		curr = curr->next;
     }
     return (0);
 }
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-void run_test(char **args, char **envp)
+/* void run_test(char **args, char **envp)
 {
-	char **copy_envp = env_dup(envp);
-	if (!copy_envp)
-		return (perror("env_dup failed"), (void)0);
+	t_env *env_list = copy_initial_env(envp);
+	if (!env_list)
+		return (perror("copy_initial_env failed"), (void)0);
+
 	
-	int result = ft_env(args, &copy_envp);
+	int result = ft_env(args, env_list);
 	printf("\nReturn: %d\nUpdated environment:\n", result);
-	free_array(copy_envp);
+	free_node_list(env_list);
 	printf("--------------\n");
 }
 
@@ -59,15 +54,17 @@ int main(void)
 		"HOME=/home/mmatsui",
 		"PWD=/home/mmatsui/A_subject/minishell",
 		"OLDPWD=/tmp",
+		"HELLO=",
+		"BYE",
 		NULL
 	};
 
 	char *args1[] = {"env", NULL};
-	char *args2[] = {"env", "~", NULL};
+	char *args2[] = {"env", "extra_arg", NULL};
+	
 
 	run_test(args1, envp_mock);
 	run_test(args2, envp_mock);
-    run_test(args1, NULL);
 
     return (0);
-}
+} */

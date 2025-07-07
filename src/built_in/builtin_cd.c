@@ -55,7 +55,7 @@ char *resolve_path(char *arg, t_env *envp)
 		if (!result_path)
 			return (print_error("cd: OLDPWD not set\n"), NULL);
 		ft_putstr(result_path);
-		write (1, "\n", 1);
+		write (STDOUT_FILENO, "\n", 1);
 		return (result_path);
 	}
 	else

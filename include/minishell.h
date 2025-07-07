@@ -126,5 +126,6 @@ void	free_array (char **array);
 void	execute_builtin(char **args, char **envp);
 void	ft_echo(char **args);
 int		ft_pwd(char **args);
+int		ft_env(char **args, t_env *envp);
 
 #endif
