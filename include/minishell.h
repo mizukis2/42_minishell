@@ -110,6 +110,10 @@ void			process_in_inword(t_lex *lex, const char *line);
 void			process_single_quotes(t_lex *lex, const char *line);
 void			process_double_quotes(t_lex *lex, const char *line);
 
+
+//error
+void	print_error(const char *msg);
+
 //function - environment variable
 t_env	*copy_initial_env(char **envp);
 void	free_node(t_env *node);
@@ -118,9 +122,9 @@ char	*complete_env_line(t_env *envp);
 int		count_nodes(t_env *head);
 void	free_array (char **array);
 
-
 //function - build-in, this should be impliment right parameters later
-int				buid_in(char **args);
-void			ft_echo(char **args);
+void	execute_builtin(char **args, char **envp);
+void	ft_echo(char **args);
+int		ft_pwd(char **args);
 
 #endif

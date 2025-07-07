@@ -111,31 +111,53 @@ char **list_to_array(t_env *envp)
 	array_envp[i] = NULL;
 	return (array_envp);
 }
-/* 
-//copy environment variable from char **envp in main
- char **env_dup(char **envp)
-{
-	char	**copy;
-	int		count;
-	int		i;
 
-	count = 0;
-	while (envp[count])
-		count++;
-	copy = malloc(sizeof(char *) * (count + 1));
-	if (!copy)
+/* static function for update_env functon */
+static void	update_value(t_env *node, const char *new_value)
+{
+	if (!node)
+		return;
+	if (node->value)
+		free(node->value);
+	node->value = ft_strdup(new_value);
+}
+
+/* static function for update_env functon */
+static char	*create_env_str(const char *key, const char *path)
+{
+	char	*env_str;
+	char	*temp;
+	temp = ft_strjoin(key, "=");
+	if (!temp)
 		return (NULL);
-	i = 0;
-	while (i < count)
+	env_str = ft_strjoin(temp, path);
+	free (temp);
+	return (env_str);
+}
+
+/* update the environmental variable (linked list) by 
+updating the path or adding the new node */
+void	update_env(const char *key, const char *path, t_env *envp)
+{
+	t_env *curr;
+	char *env_line;
+	t_env *new;
+
+	curr = envp;
+	while (curr)
 	{
-		copy[i] = ft_strdup(envp[i]);
-		if (!copy[i])
-		{
-			free_array(copy);
-			return(NULL);
-		}
-		i++;
+		if (ft_strcmp(curr->key, key) == 0)
+			return (update_value(curr, path));
+		if (!curr->next)
+			break ;
+		curr = curr->next;
 	}
-	copy[i] = NULL;
-	return (copy);
-} */
+	env_line = create_env_str(key, path);
+	if (!env_line)
+		return ;
+	new = create_node(env_line);
+	free (env_line);
+	if (!new)
+		return ;
+	curr->next = new;
+}

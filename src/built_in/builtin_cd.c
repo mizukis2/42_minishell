@@ -12,100 +12,26 @@
 
 #include "minishell.h"
 
-void	set_new_env(const char *new_env_value, char ***envp)
+static bool	is_cd_arg(char **args)
 {
-	char **new_envp;
-	int	i;
-
-	i = 0;
-	while ((*envp)[i])
-		i++;
-	new_envp = malloc (sizeof(char *) * (i + 2));
-	if (!new_envp)
-		return ;
-	i = -1;
-	while ((*envp)[++i])
-	{
-		new_envp[i] = ft_strdup((*envp)[i]);
-		if (!new_envp[i])
-			return (free_array(new_envp));
-	}
-	new_envp[i] = ft_strdup(new_env_value);
-	if (!new_envp[i])
-    	return(free_array(new_envp));
-	new_envp[i + 1] = NULL;
-	free_array(*envp);
-	*envp = new_envp;
+	if (count_args(args) > 2)
+		return (false);
+	return (true);
 }
-
-void	update_env_var(const char *key, const char *path, char ***envp)
-{
-	int	index;
-	char *new_env_value;
-	char **new_envp;
-	new_env_value = ft_strjoin(key, path);
-	if (!new_env_value)
-		return ;
-	index = find_path_index(key, (*envp));
-	if (index < 0)
-	{
-		set_new_env(new_env_value, envp);
-		free (new_env_value);
-		return ;
-	}
-	new_envp = env_dup((*envp));
-	if (!new_envp)
-		return (free(new_env_value));
-	free (new_envp[index]);
-	new_envp[index] = ft_strdup(new_env_value);
-	free(new_env_value);
-	if (!new_envp[index])
-		return (free_array(new_envp));
-	free_array(*envp);
-	(*envp) = new_envp;
-}
-
-
-/*--------------------------------------------------------------------- */
-
-static int	check_cd_arg(char **args)
-{
-	if (count_args(args) > 3)
-		return (print_error("cd: too many arguments\n"), 1);
-	return (0);
-}
-
-char *find_home_path(t_env *envp)
-{
-	char *env_line;
-	t_env *curr;
-
-	curr = envp;
-	while (curr)
-	{
-		if(ft_strcmp(envp->key, "HOME"))
-			return (envp->value);
-		curr = curr->next;
-	}
-	return (NULL);
-}
-
 
 char	*home_related_path(char *arg, t_env *envp)
 {
 	char	*home_path;
 	char	*result_path;
 
-	home_path = find_home_path(envp);
+	home_path = get_env_value(envp, "HOME");
 	if (!home_path)
-		return (NULL);
-	if (!arg || (ft_strcmp(arg, "~") == 0))
+		return (print_error("cd: HOME not set\n"), NULL);
+	if (!arg || ft_strcmp(arg, "~") == 0)
 		return (home_path);
-	if ((ft_strncmp(arg, "~/", 2)) == 0)
+	if (ft_strncmp(arg, "~/", 2) == 0)
 	{
 		result_path = ft_strjoin(home_path, arg + 1);
-		if (!result_path)
-			return (free(home_path), NULL);
 		free(home_path);
 		return (result_path);
 	}
@@ -115,16 +41,37 @@ char	*home_related_path(char *arg, t_env *envp)
 
 char *resolve_path(char *arg, t_env *envp)
 {
-	char *result_path;
-	if (!arg || arg == '~' || (ft_strncmp(arg, "~/", 2)) == 0)
-		return (home_related_path);
-	else if (arg == '-')
+	char	*result_path;
+	if (!arg || ft_strcmp(arg, "~") == 0 || ft_strncmp(arg, "~/", 2) == 0)
 	{
-		//go back the previous 
+		result_path = home_related_path(arg, envp);
+		if (!result_path)
+			return (NULL);
+		return (result_path);
 	}
-
+	else if (ft_strcmp(arg, "-") == 0)
+	{
+		result_path = get_env_value(envp, "OLDPWD");
+		if (!result_path)
+			return (print_error("cd: OLDPWD not set\n"), NULL);
+		ft_putstr(result_path);
+		write (1, "\n", 1);
+		return (result_path);
+	}
+	else
+		return (ft_strdup(arg));
 }
 
+void	set_error_return(char *cd_arg, char *oldpwd, char *path)
+{
+	print_error("cd: ");
+	if (cd_arg)
+		print_error(cd_arg);
+	print_error(": ");
+	perror("");
+	free (oldpwd);
+	free(path);
+}
 
 int	ft_cd(char **args, t_env *envp)
 {
@@ -132,67 +79,95 @@ int	ft_cd(char **args, t_env *envp)
 	char	*oldpwd;
 	char	*cwd;
 
-	if (check_cd_arg(args))
-		return (1);
+	if (is_cd_arg(args) == false)
+		return (print_error("cd: too many arguments\n"), 1);
 	oldpwd = getcwd(NULL, 0);
 	if (!oldpwd)
-		return (perror("cd: no current working dir"), 1);
-	path = resolve_path(args[1], envp);
-	if (!path && args[1])
-		path = ft_strdup(args[1]);	
-	if (!path || chdir(path) != 0)
-		return (perror ("cd"),free(oldpwd), free(path), 1);
+		return (print_error("cd"), 1);
+	path = resolve_path(args[1], envp);	
+	if (!path)
+		return (free(oldpwd), 1);
+	if (path && path[0] == '\0')
+		return (free(oldpwd), free(path), 0);
+	if (chdir(path) != 0)
+		return (set_error_return(args[1], oldpwd, path), 1);
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
-		return (perror("cd: cannot get cwd"), free(oldpwd), free(path), 1);
-	update_env_var("OLDPWD=", oldpwd, envp);
-	update_env_var("PWD=", cwd, envp);
+		return (print_error("cd"), free(oldpwd), free(path), 1);
+	update_env("OLDPWD", oldpwd, envp);
+	update_env("PWD", cwd, envp);
 	return (free(oldpwd), free(cwd),free (path), 0);
 }
-#include <stdio.h>
+
+/*--------------------------------------------------------------------- */
+
+/* #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
 void run_test(char **args, char **envp)
 {
-	char **copy_envp = env_dup(envp);
-	if (!copy_envp)
-		return (perror("env_dup failed"), (void)0);
-	
-	int result = ft_cd(args, &copy_envp);
+	t_env *env_list = copy_initial_env(envp);
+	if (!env_list)
+		return (perror("copy_initial_env failed"), (void)0);
+
+	int result = ft_cd(args, env_list);
 	printf("\nReturn: %d\nUpdated environment:\n", result);
-	for (int i = 0; copy_envp[i]; i++)
-		printf("%s\n", copy_envp[i]);
-	free_array(copy_envp);
+
+	t_env *curr = env_list;
+	while (curr)
+	{
+		if (curr->exported && curr->value)
+			printf("%s=%s\n", curr->key, curr->value);
+		curr = curr->next;
+	}
 	printf("--------------\n");
+
+	free_node_list(env_list);
 }
 
 int main(void)
 {
-	char *envp_mock[] = {
-		"HOME=/home/mmatsui",
-		"PWD=/home/mmatsui/A_subject/minishell",
-		"OLDPWD=/tmp",
-		NULL
-	};
+	char *dummy_envp[] = {
+	"HOME=/home/mmatsui",
+	"PWD=/home/testuser/Documents",
+	"OLDPWD=/home/mmatsui/A_subject",
+	"PATH=/usr/bin:/bin:/usr/local/bin",
+	NULL
+};
+
+char *env_no_home[] = {
+	"PWD=/home/user",
+	"PATH=/usr/bin",
+	NULL
+};
 
 	char *args1[] = {"cd", NULL};
 	char *args2[] = {"cd", "~", NULL};
 	char *args3[] = {"cd", "~/testfolder", NULL};
 	char *args4[] = {"cd", "/tmp", NULL};
 	char *args5[] = {"cd", "one", "two", NULL};
-	char *args6[] = {"cd", "-", NULL};
 	char *args7[] = {"cd", ".", NULL};
-	char *args8[] = {"cd", "..", NULL};
+	char *args8[] = {"cd", "..", NULL}; 
+	char *args6[] = {"cd", "-", NULL};
+	char *args_perm[] = {"cd", "no_perm_dir", NULL};   //mkdir no_perm_dir   chmod 000 no_perm_dir
+	char *args_file[] = {"cd", "file.txt", NULL}; //touch file.txt
+	char *args_empty[] = {"cd", "", NULL};
+	char *args_home[] = {"cd", NULL};
 
-	run_test(args1, envp_mock);
-	run_test(args2, envp_mock);
-	run_test(args3, envp_mock);
-	run_test(args4, envp_mock);
-	run_test(args5, envp_mock);
-	run_test(args6, envp_mock);
-	run_test(args7, envp_mock);
-	run_test(args8, envp_mock);
-}
+	run_test(args1, dummy_envp);
+	run_test(args2, dummy_envp);
+	run_test(args3, dummy_envp);
+	run_test(args4, dummy_envp);
+	run_test(args5, dummy_envp);
+	run_test(args6, dummy_envp);
+	run_test(args7, dummy_envp);
+	run_test(args8, dummy_envp);
+	run_test(args6, dummy_envp);
+	run_test(args_perm, dummy_envp);
+	run_test(args_file, dummy_envp);
+	run_test(args_empty, dummy_envp);
+	run_test(args_home, env_no_home);
 
+	return (EXIT_SUCCESS);
+} */

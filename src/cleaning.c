@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                         ::::::::           */
-/*   cleaning.c                                          :+:    :+:           */
+/*   error.c                                             :+:    :+:           */
 /*                                                      +:+                   */
 /*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
 /*                                                    +#+                     */
@@ -12,19 +12,8 @@
 
 #include "minishell.h"
 
-//this is just an idea, we will update later
-
-void	ft_free_split(char **split_list)
+/* print error messafe as "Stundard error" */
+void	print_error(const char *msg)
 {
-	int	i;
-
-	if (!split_list)
-		return ;
-	i = 0;
-	while (split_list[i])
-	{
-		free (split_list[i]);
-		i++;
-	}
-	free(split_list);
+	write(STDERR_FILENO, msg, ft_strlen(msg));
 }
