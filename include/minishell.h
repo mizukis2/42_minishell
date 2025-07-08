@@ -121,6 +121,7 @@ void	free_node_list(t_env *head);
 char	*complete_env_line(t_env *envp);
 int		count_nodes(t_env *head);
 void	free_array (char **array);
+void	update_env(const char *key, const char *path, t_env *envp);
 
 //function - build-in, this should be impliment right parameters later
 void	execute_builtin(char **args, char **envp);

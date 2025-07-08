@@ -36,3 +36,8 @@ char	*get_env_value(t_env *envp, char *key)
 	}
 	return (NULL);
 }
+
+void	print_error(const char *msg)
+{
+	write(STDERR_FILENO, msg, ft_strlen(msg));
+}

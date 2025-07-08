@@ -17,7 +17,7 @@ void	execute_builtin(char **args, char **envp)
 	if(!args || !*args)
 		return ;
 	if (ft_strcmp(args[0], "echo") == 0)
-		ft_echo(args + 1);
+		ft_echo(args + 1); 
 	if (ft_strcmp(args[0], "cd") == 0)
 		ft_cd(args + 1, envp);
 	if (ft_strcmp(args[0], "pwd") == 0)
