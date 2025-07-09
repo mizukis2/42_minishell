@@ -131,6 +131,7 @@ int		ft_pwd(char **args);
 int		ft_env(char **args, t_env *envp);
 int		ft_export(char **args, t_env *envp);
 int		ft_cd(char **args, t_env *envp);
+int		ft_unset(char **args, t_env **envp);
 
 //built-in utils
 int		count_args(char **args);
