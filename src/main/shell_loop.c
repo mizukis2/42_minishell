@@ -6,13 +6,13 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/02 13:55:36 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/04 01:43:20 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	print_tokens(t_token *tokens)
+void	print_tokens(t_token *tokens)//for debug
 {
 	while (tokens)
 	{
@@ -30,6 +30,7 @@ t_token	*process_input(char *line)
 	{
 		printf("\e[0;31mSyntax error: Unable to make valid tokens\e[0m\n");
 		free(line);
+		return (NULL);
 	}
 	return (tokens);
 }
@@ -46,13 +47,11 @@ void	enter_shell_loop(void)
 			break ;
 		if (!is_valid_input(line))
 			continue ;
-		if (!check_and_handle_quotes(line))
-			continue ;
 		add_history(line);
-		tokens = process_input(line);
+		tokens = process_input(line);//!token
 		if (tokens)
 		{
-			print_tokens(tokens);
+			print_tokens(tokens);//for debug
 			cleanup(tokens, line);
 			tokens = NULL;
 		}

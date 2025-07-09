@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 03:51:29 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/02 13:26:32 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/04 01:40:30 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,6 @@ bool	is_valid_input(char *line)
 		free(line);
 		return (false);
 	}
-	return (true);
-}
-
-bool	check_and_handle_quotes(char *line)
-{
 	if (!check_quotes(line))
 	{
 		printf("\e[0;31mSyntax error: Unclosed Quotes\e[0m\n");
