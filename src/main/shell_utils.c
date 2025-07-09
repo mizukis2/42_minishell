@@ -6,29 +6,18 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 03:51:29 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/04 01:40:30 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/09 14:40:04 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	is_whitespace_or_empty(char *str)
+static bool	is_empty(char *line)
 {
-	int	i;
-
-	i = 0;
-	if (str[0] == '\0')
-		return (1);
-	while (str[i])
-	{
-		if (!(str[i] == ' ' || (str[i] >= 9 && str[i] <= 13)))
-			return (0);
-		i++;
-	}
-	return (1);
+	return (line[0] == '\0');
 }
 
-bool	check_quotes(char *line)
+static bool	check_quotes(char *line)
 {
 	bool	in_quotes;
 	char	quote;
@@ -53,16 +42,11 @@ bool	check_quotes(char *line)
 
 bool	is_valid_input(char *line)
 {
-	if (is_whitespace_or_empty(line))
-	{
-		free(line);
+	if (is_empty(line))
 		return (false);
-	}
 	if (!check_quotes(line))
 	{
 		printf("\e[0;31mSyntax error: Unclosed Quotes\e[0m\n");
-		add_history(line);
-		free(line);
 		return (false);
 	}
 	return (true);

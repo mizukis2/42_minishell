@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:48:11 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/02 13:53:17 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/09 15:36:58 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,13 @@ static void	print_banner(void)
 
 static int	args_check(int ac, char **envp)
 {
-	if (ac != 1 || !envp || !*envp || !**envp)
+	if (!envp || !*envp || !**envp)
 		return (0);
+	if (ac != 1)
+	{
+		printf("\e[0;31mError: No arguments needed\e[0m\n");
+		return (0);
+	}
 	return (1);
 }
 
@@ -43,7 +48,8 @@ int	main(int ac, char **av, char **envp)
 	rl_clear_history();
 	return (EXIT_SUCCESS);
 }
-	//valgrind --suppressions=minishell.supp
-	//TODO: Copy environment variables into a modifiable structure
-	//TODO: Add parsing, execution
-	//TODO: Add signal handling at the end of the project
+
+	// valgrind --suppressions=minishell.supp
+	// TODO: Copy environment variables into a modifiable structure
+	// TODO: Add parsing, execution
+	// TODO: Add signal handling at the end of the project

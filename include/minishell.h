@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/09 08:08:08 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/09 18:57:19 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,74 +67,74 @@ typedef struct s_lex
 	int				i;
 	int				adv;
 	char			c;
-	const char		*start;
+	char			*start;
 	t_token			*tokens;
+	t_token			*new_token;
 	t_lexer_state	state;
 	t_token_type	type;
 }	t_lex;
 
 /* data struct for later*/
-typedef struct s_data {
-    char **copied_envp;          
-    int    last_exit;     // For $?
-    // maybe: char *prompt;
-    // maybe: int interactive_mode;
-}
-	t_data;
+typedef struct s_data
+{
+	char			**copied_envp;
+	int				last_exit;// For $?
+	// maybe: char *prompt;
+	// maybe: int interactive_mode;
+}	t_data;
 
 /* envp */
-typedef struct s_env {
-    char    *key;
-    char    *value;
-    bool    exported;
-    struct s_env *next;
-} t_env;
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	bool			exported;
+	struct s_env	*next;
+}	t_env;
 
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
 void			enter_shell_loop(void);
-int				is_whitespace_or_empty(char *str);
-bool			check_quotes(char *line);
 bool			is_valid_input(char *line);
 void			cleanup(t_token *tokens, char *line);
 
 /* Lexer*/
-t_token			*lexer(const char *line);
+t_token			*lexer(char *line);
 bool			is_metachar(char c);
-t_token_type	get_metachar_type(const char *str, int *advance);
-t_token			*create_token(const char *start, int len, t_token_type type);
+t_token_type	get_metachar_type(char *str, int *advance);
+t_token			*create_token(char *start, int len, t_token_type type);
 void			add_token(t_token **head, t_token *new_token);
+bool			make_token(t_lex *lex, int len, t_token_type type);
 void			free_tokens(t_token *head);
-void			process_start(t_lex *lex, const char *line);
-void			process_in_inword(t_lex *lex, const char *line);
-void			process_single_quotes(t_lex *lex, const char *line);
-void			process_double_quotes(t_lex *lex, const char *line);
-
+void			process_start(t_lex *lex, char *line);
+void			process_inword(t_lex *lex, char *line);
+void			process_single_quotes(t_lex *lex);
+void			process_double_quotes(t_lex *lex);
 
 //error
-void	print_error(const char *msg);
+void			print_error(const char *msg);
 
 //function - environment variable
-t_env	*copy_initial_env(char **envp);
-void	free_node(t_env *node);
-void	free_node_list(t_env *head);
-char	**list_to_array(t_env *envp);
-void	free_array (char **array);
-char	*create_new_key(const char *arg);
-char	*create_new_value(const char *arg);
-void	update_env(const char *key, const char *path, t_env *envp);
+t_env			*copy_initial_env(char **envp);
+void			free_node(t_env *node);
+void			free_node_list(t_env *head);
+char			**list_to_array(t_env *envp);
+void			free_array(char **array);
+char			*create_new_key(const char *arg);
+char			*create_new_value(const char *arg);
+void			update_env(const char *key, const char *path, t_env *envp);
 
 //function - built-in, this should be impliment right parameters later
-int		execute_builtin(char **args, char **envp);
-int		ft_echo(char **args);
-int		ft_pwd(char **args);
-int		ft_env(char **args, t_env *envp);
-int		ft_export(char **args, t_env *envp);
-int		ft_cd(char **args, t_env *envp);
+int				execute_builtin(char **args, char **envp);
+int				ft_echo(char **args);
+int				ft_pwd(char **args);
+int				ft_env(char **args, t_env *envp);
+int				ft_export(char **args, t_env *envp);
+int				ft_cd(char **args, t_env *envp);
 
 //built-in utils
-int		count_args(char **args);
-char	*get_env_value(t_env *envp, char *key);
-void	print_error(const char *msg);
+int				count_args(char **args);
+char			*get_env_value(t_env *envp, char *key);
+void			print_error(const char *msg);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/04 01:43:20 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/09 19:49:03 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	print_tokens(t_token *tokens)//for debug
 	}
 }
 
-t_token	*process_input(char *line)
+static t_token	*tokenize_input(char *line)
 {
 	t_token	*tokens;
 
@@ -46,14 +46,20 @@ void	enter_shell_loop(void)
 		if (!line) // check for EOF Ctrl+D (temporary)
 			break ;
 		if (!is_valid_input(line))
+		{
+			free(line);
 			continue ;
+		}
 		add_history(line);
-		tokens = process_input(line);//!token
+		tokens = tokenize_input(line);
 		if (tokens)
 		{
 			print_tokens(tokens);//for debug
 			cleanup(tokens, line);
 			tokens = NULL;
 		}
+		else
+			continue ;
+		
 	}
 }
