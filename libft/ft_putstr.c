@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                         ::::::::           */
-/*   utils_libft.c                                       :+:    :+:           */
+/*   ft_putstr.c                                         :+:    :+:           */
 /*                                                      +:+                   */
 /*   By: mmatsui <marvin@42.fr>                        +#+                    */
 /*                                                    +#+                     */
-/*   Created: 2025/06/19 17:54:08 by mmatsui        #+#    #+#                */
-/*   Updated: 2025/06/19 17:54:10 by mmatsui        ########   odam.nl        */
+/*   Created: 2025/07/04 08:21:52 by mmatsui        #+#    #+#                */
+/*   Updated: 2025/07/04 08:21:54 by mmatsui        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
 void	ft_putstr(const char *str)
 {
@@ -20,16 +20,3 @@ void	ft_putstr(const char *str)
 		str++;
 	}
 }
-
-int	ft_strcmp(const char *s1, const char *s2)
-{
-	while (*s1 && *s2)
-	{
-		if (*s1 != *s2)
-			return ((unsigned char)*s1 - (unsigned char)*s2);
-		s1++;
-		s2++;
-	}
-	return ((unsigned char)*s1 - (unsigned char)*s2);
-}
-

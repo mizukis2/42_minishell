@@ -1,44 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   builtin_echo.c                                     :+:    :+:            */
+/*   builtin_pwd.c                                      :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: mmatsui <mmatsui@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2025/06/12 14:48:36 by mmatsui       #+#    #+#                 */
-/*   Updated: 2025/06/30 12:19:49 by matsuimiki    ########   odam.nl         */
+/*   Created: 2025/06/27 11:58:09 by mmatsui       #+#    #+#                 */
+/*   Updated: 2025/06/30 12:19:15 by mmatsui       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	ft_echo(char **args)
+int ft_pwd(char **args)
 {
-	bool	no_line;
-	int		i;
-	int		j;
+    char *cwd;
 
-	i = 0;
-	no_line = false;
-	while(args[i] && args[i][0] == '-' && args[i][1] =='n')
-	{
-		j = 2;
-		while (args[i][j] == 'n')
-			j++;
-		if (args[i][j] != '\0')
-			break ;
-		no_line = true;
-		i++;
-	}
-	while(args[i])
-	{
-		ft_putstr(args[i]);
-		if (args[i + 1])
-			write (STDOUT_FILENO, " ", 1);
-		i++;
-	}
-	if (!no_line)
-		write (STDOUT_FILENO, "\n", 1);
-	return (0);
+    if (count_args(args) > 1)
+        return (print_error("cd: too many arguments\n"), 1);
+    cwd = getcwd(NULL, 0);
+    if (!cwd)
+        return (perror("pwd"), 1);
+    ft_putstr(cwd);
+    write (STDOUT_FILENO, "\n", 1);
+    free (cwd);
+    return (0);
 }
-

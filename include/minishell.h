@@ -73,15 +73,22 @@ typedef struct s_lex
 	t_token_type	type;
 }	t_lex;
 
-/* Envp */
-typedef struct s_data
-{
-	char	**copied_envp;
-	int		last_exit;// For $?
+/* data struct for later*/
+typedef struct s_data {
+    char **copied_envp;          
+    int    last_exit;     // For $?
     // maybe: char *prompt;
     // maybe: int interactive_mode;
 }
 	t_data;
+
+/* envp */
+typedef struct s_env {
+    char    *key;
+    char    *value;
+    bool    exported;
+    struct s_env *next;
+} t_env;
 
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
@@ -104,15 +111,30 @@ void			process_single_quotes(t_lex *lex, const char *line);
 void			process_double_quotes(t_lex *lex, const char *line);
 
 
-//function - initial setting
-char			**env_dup(char **envp);
+//error
+void	print_error(const char *msg);
 
-//function - utils (minishell libft)
-void			ft_putstr(const char *str);
-int				ft_strcmp(const char *s1, const char *s2);
+//function - environment variable
+t_env	*copy_initial_env(char **envp);
+void	free_node(t_env *node);
+void	free_node_list(t_env *head);
+char	**list_to_array(t_env *envp);
+void	free_array (char **array);
+char	*create_new_key(const char *arg);
+char	*create_new_value(const char *arg);
+void	update_env(const char *key, const char *path, t_env *envp);
 
-//function - build-in, this should be impliment right parameters later
-int				buid_in(char **args);
-void			ft_echo(char **args);
+//function - built-in, this should be impliment right parameters later
+int		execute_builtin(char **args, char **envp);
+int		ft_echo(char **args);
+int		ft_pwd(char **args);
+int		ft_env(char **args, t_env *envp);
+int		ft_export(char **args, t_env *envp);
+int		ft_cd(char **args, t_env *envp);
+
+//built-in utils
+int		count_args(char **args);
+char	*get_env_value(t_env *envp, char *key);
+void	print_error(const char *msg);
 
 #endif

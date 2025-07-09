@@ -3,7 +3,7 @@
 /*                                                         ::::::::           */
 /*   built_in.c                                          :+:    :+:           */
 /*                                                      +:+                   */
-/*   By: mmatsui <marvin@42.fr>                        +#+                    */
+/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
 /*                                                    +#+                     */
 /*   Created: 2025/06/19 17:07:20 by mmatsui        #+#    #+#                */
 /*   Updated: 2025/06/19 17:07:21 by mmatsui        ########   odam.nl        */
@@ -12,12 +12,12 @@
 
 #include "minishell.h"
 
-void	execute_builtin(char **args, char **envp)
+int	execute_builtin(char **args, char **envp)
 {
 	if(!args || !*args)
 		return ;
 	if (ft_strcmp(args[0], "echo") == 0)
-		ft_echo(args + 1);
+		ft_echo(args + 1); 
 	if (ft_strcmp(args[0], "cd") == 0)
 		ft_cd(args + 1, envp);
 	if (ft_strcmp(args[0], "pwd") == 0)
