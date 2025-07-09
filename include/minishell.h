@@ -118,15 +118,23 @@ void	print_error(const char *msg);
 t_env	*copy_initial_env(char **envp);
 void	free_node(t_env *node);
 void	free_node_list(t_env *head);
-char	*complete_env_line(t_env *envp);
-int		count_nodes(t_env *head);
+char	**list_to_array(t_env *envp);
 void	free_array (char **array);
+char	*create_new_key(const char *arg);
+char	*create_new_value(const char *arg);
 void	update_env(const char *key, const char *path, t_env *envp);
 
-//function - build-in, this should be impliment right parameters later
-void	execute_builtin(char **args, char **envp);
-void	ft_echo(char **args);
+//function - built-in, this should be impliment right parameters later
+int		execute_builtin(char **args, char **envp);
+int		ft_echo(char **args);
 int		ft_pwd(char **args);
 int		ft_env(char **args, t_env *envp);
+int		ft_export(char **args, t_env *envp);
+int		ft_cd(char **args, t_env *envp);
+
+//built-in utils
+int		count_args(char **args);
+char	*get_env_value(t_env *envp, char *key);
+void	print_error(const char *msg);
 
 #endif

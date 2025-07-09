@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	set_key_value(t_env *node, char *str, int len)
+static int	set_key_value(t_env *node, char *str, int len)
 {
 	node->key = ft_substr(str, 0, len);
 	if (!(node->key))
@@ -29,7 +29,7 @@ int	set_key_value(t_env *node, char *str, int len)
 	return (0);
 }
 
-int	set_key(t_env *node, char *str)
+static int	set_key(t_env *node, char *str)
 {
 	node->key = ft_strdup(str);
 	if (!(node->key))
@@ -40,7 +40,7 @@ int	set_key(t_env *node, char *str)
 	return (0);
 }
 
-t_env *create_node(char *str)
+static t_env *create_node(char *str)
 {
 	char	*eq;
 	int		key_len;

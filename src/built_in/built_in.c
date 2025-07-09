@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	execute_builtin(char **args, char **envp)
+int	execute_builtin(char **args, char **envp)
 {
 	if(!args || !*args)
 		return ;

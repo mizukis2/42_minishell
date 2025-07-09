@@ -19,7 +19,7 @@ static bool	is_cd_arg(char **args)
 	return (true);
 }
 
-char	*home_related_path(char *arg, t_env *envp)
+static char	*home_related_path(char *arg, t_env *envp)
 {
 	char	*home_path;
 	char	*result_path;
@@ -39,7 +39,7 @@ char	*home_related_path(char *arg, t_env *envp)
 	return (NULL);
 }
 
-char *resolve_path(char *arg, t_env *envp)
+static char *resolve_path(char *arg, t_env *envp)
 {
 	char	*result_path;
 	if (!arg || ft_strcmp(arg, "~") == 0 || ft_strncmp(arg, "~/", 2) == 0)
@@ -62,7 +62,7 @@ char *resolve_path(char *arg, t_env *envp)
 		return (ft_strdup(arg));
 }
 
-void	set_error_return(char *cd_arg, char *oldpwd, char *path)
+static void	set_error_return(char *cd_arg, char *oldpwd, char *path)
 {
 	print_error("cd: ");
 	if (cd_arg)

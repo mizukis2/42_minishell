@@ -188,6 +188,16 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (newstr);
 }
 
+void	free_node(t_env *node)
+{
+	if (!node)
+		return;
+	if(node->key)
+		free(node->key);
+	if(node->value)
+		free(node->value);
+	free(node);
+}
 
 int	set_key_value(t_env *node, char *str, int len)
 {
@@ -232,16 +242,28 @@ t_env *create_node(char *str)
 		key_len = eq - str;
 		if (set_key_value(new, str, key_len))
 			return (NULL);
+		new->exported = true;
 	}
 	else
 	{
 		if (set_key(new, str))
 			return (NULL);
 		new->value = NULL;
+		new->exported = false;
 	}
-	new->exported = true;
 	new->next = NULL;
 	return (new);
+}
+
+void	free_node_list(t_env *head)
+{
+	t_env *temp;
+	while(head)
+	{
+		temp = head->next;
+		free_node(head);
+		head = temp;
+	}
 }
 
 /* copy the environmental variable from main (char **envp) 
@@ -272,30 +294,6 @@ t_env	*copy_initial_env(char **envp)
 		i++;
 	}
 	return (head);
-}
-
-#include "minishell.h"
-
-void	free_node(t_env *node)
-{
-	if (!node)
-		return;
-	if(node->key)
-		free(node->key);
-	if(node->value)
-		free(node->value);
-	free(node);
-}
-
-void	free_node_list(t_env *head)
-{
-	t_env *temp;
-	while(head)
-	{
-		temp = head->next;
-		free_node(head);
-		head = temp;
-	}
 }
 
 void	free_array (char **array)
@@ -342,48 +340,17 @@ char	*complete_env_line(t_env *envp)
 	return (env_line);
 }
 
-/* this function convert the envp (linked list) to the envp (char **)
-for the usage of execv. This array doesn't contain the unexported one
-(export KEY : without = and value) */
-char **list_to_array(t_env *envp)
-{
-	char	**array_envp;
-	t_env *curr;
-	int	i;
-	int	count;
-
-	count = count_nodes(envp);
-	array_envp = malloc (sizeof(char *) * (count + 1));
-	if (array_envp)
-		return (NULL);
-	curr = envp;
-	i = 0;
-	while (curr)
-	{
-		if (curr->exported)
-		{
-			array_envp[i] = complete_env_line(curr);
-			if (!(array_envp[i]))
-			{
-				free_array(array_envp);
-				return (NULL);
-			}
-			i++;
-		}
-		curr = curr->next;
-	}
-	array_envp[i] = NULL;
-	return (array_envp);
-}
-
 /* static function for update_env functon */
-static void	update_value(t_env *node, const char *new_value)
+static void	update_value(t_env *node, const char *new_value)        //changed
 {
 	if (!node)
 		return;
 	if (node->value)
 		free(node->value);
-	node->value = ft_strdup(new_value);
+	if (new_value)
+		node->value = ft_strdup(new_value);
+	else
+		node->value = NULL;
 }
 
 /* static function for update_env functon */
@@ -394,13 +361,14 @@ static char	*create_env_str(const char *key, const char *path)
 	temp = ft_strjoin(key, "=");
 	if (!temp)
 		return (NULL);
-	env_str = ft_strjoin(temp, path);
+	if (path) //changed
+		env_str = ft_strjoin(temp, path);
+	else
+		env_str = temp;
 	free (temp);
 	return (env_str);
 }
 
-/* update the environmental variable (linked list) by 
-updating the path or adding the new node */
 void	update_env(const char *key, const char *path, t_env *envp)
 {
 	t_env *curr;
@@ -416,7 +384,10 @@ void	update_env(const char *key, const char *path, t_env *envp)
 			break ;
 		curr = curr->next;
 	}
-	env_line = create_env_str(key, path);
+	if (path)
+		env_line = create_env_str(key, path); //changed around here
+	else
+		env_line = ft_strdup(key);
 	if (!env_line)
 		return ;
 	new = create_node(env_line);
@@ -425,3 +396,5 @@ void	update_env(const char *key, const char *path, t_env *envp)
 		return ;
 	curr->next = new;
 }
+
+/* -------------------------------------------------------------- */
