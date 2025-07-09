@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/02 15:56:31 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/09 08:08:08 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,8 @@ typedef struct s_data {
     int    last_exit;     // For $?
     // maybe: char *prompt;
     // maybe: int interactive_mode;
-} t_data;
+}
+	t_data;
 
 /* envp */
 typedef struct s_env {
@@ -95,7 +96,6 @@ void			enter_shell_loop(void);
 int				is_whitespace_or_empty(char *str);
 bool			check_quotes(char *line);
 bool			is_valid_input(char *line);
-bool			check_and_handle_quotes(char *line);
 void			cleanup(t_token *tokens, char *line);
 
 /* Lexer*/
