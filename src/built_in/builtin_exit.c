@@ -21,14 +21,14 @@ static void	print_error_exit(char *arg)
 	print_error (": numeric argument required\n");
 }
 
-static void	cleanup_exit(t_env *envp) //need to update later
+/* static void	cleanup_exit(t_env *envp) //need to update later
 {
-	free_node_list(envp);
+	//free_node_list(envp);
 	//free_node_list(parcing linked list)
 	//free history
 	//free other struct
 	rl_clear_history();
-}
+} */
 
 static bool is_numeric(char *arg)
 {
@@ -54,25 +54,24 @@ static int	convert_exit_code(char *arg)
 	return (code);
 }
 
-int	ft_exit(char **args, t_env **envp) //these parameter need to update later
+int	ft_exit(char **args) //these parameter need to update later
 {
-	(void)envp;//dummy
 	int exit_code;
 
 	ft_putstr ("exit\n");
 	if (args[0] && !(is_numeric(args[0])))
 	{
 		print_error_exit(args[0]);
-		cleanup_exit(*envp);
-		return (255); //exit (255); this should update later
+		//cleanup_exit(*envp);
+		return (2); //this should update later
 	}
-	if (args[1])
+	if (args[0] && args[1])
 		return (print_error("exit: too many arguments\n"), 1);
 	if (args[0] != NULL)
 		exit_code = convert_exit_code(args[0]);
 	else 
 		exit_code = 0;
-	cleanup_exit(*envp); //this parameters need to change after execution part completed
+	//cleanup_exit(*envp); //this parameters need to change after execution part completed
 	//exit (exit_code); 
 	printf ("exit code:%d\n",exit_code);
 	return (-42); //this is just dummy return

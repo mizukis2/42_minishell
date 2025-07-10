@@ -30,7 +30,7 @@ int	execute_builtin(char **args, t_env *envp)
 	if (ft_strcmp(args[0], "unset") == 0)
 		return (ft_unset(args + 1, &envp));
 	if (ft_strcmp(args[0], "exit") == 0)
-		return (ft_exit(args + 1, &envp));
+		return (ft_exit(args + 1));
 	return (0);
 }
 
@@ -61,9 +61,7 @@ void	enter_shell_loop(char **envp)
 		result = execute_builtin(args, env_list);
 		printf ("result from command:%d\n", result);
 		free_array(args);
-		printf ("yes freed1\n");
 		free (line);
-		printf ("yes freed2\n");
 	}
 	free_node_list(env_list);
 }

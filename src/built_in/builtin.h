@@ -71,6 +71,6 @@ int		ft_env(char **args, t_env *envp);
 int		ft_export(char **args, t_env *envp);
 int		ft_cd(char **args, t_env *envp);
 int		ft_unset(char **args, t_env **envp);
-int	ft_exit(char **args, t_env **envp);
+int		ft_exit(char **args);
 
 #endif
