@@ -26,12 +26,12 @@ int	count_args(char **args)
 
 char	*get_env_value(t_env *envp, char *key)
 {
-	t_env *curr;
+	t_env	*curr;
 
 	curr = envp;
 	while (curr)
 	{
-		if(ft_strcmp(curr->key, key) == 0)
+		if (ft_strcmp(curr->key, key) == 0)
 			return (ft_strdup(curr->value));
 		curr = curr->next;
 	}
@@ -40,5 +40,29 @@ char	*get_env_value(t_env *envp, char *key)
 
 void	print_error(const char *msg)
 {
-	write(STDERR_FILENO, msg, ft_strlen(msg));
+	write (STDERR_FILENO, msg, ft_strlen(msg));
+}
+
+/* this used for mainly export function. */
+char	*create_new_key(const char *arg)
+{
+	int		len;
+
+	len = 0;
+	while (arg[len] && arg[len] != '=')
+		len++;
+	return (ft_substr(arg, 0, len));
+}
+
+/* this used for mainly export function. */
+char	*create_new_value(const char *arg)
+{
+	int	len;
+
+	len = 0;
+	while (arg[len] && arg[len] != '=')
+		len++;
+	if (!arg[len])
+		return (NULL);
+	return (ft_strdup(arg + len + 1));
 }
