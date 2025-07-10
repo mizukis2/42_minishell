@@ -55,14 +55,15 @@ static t_env *create_node(char *str)
 		key_len = eq - str;
 		if (set_key_value(new, str, key_len))
 			return (NULL);
+		new->exported = true;
 	}
 	else
 	{
 		if (set_key(new, str))
 			return (NULL);
 		new->value = NULL;
+		new->exported = true;
 	}
-	new->exported = true;
 	new->next = NULL;
 	return (new);
 }

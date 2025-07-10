@@ -76,7 +76,11 @@ void	update_env(const char *key, const char *path, t_env *envp)
 	while (curr)
 	{
 		if (ft_strcmp(curr->key, key) == 0)
+		{
+			if (path != NULL)
+				curr->exported = true;
 			return (update_value(curr, path));
+		}
 		if (!curr->next)
 			break ;
 		curr = curr->next;

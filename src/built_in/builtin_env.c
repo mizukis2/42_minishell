@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+//#include "minishell.h"
+#include "builtin.h"
 
 int ft_env(char **args, t_env *envp)
 {
@@ -42,7 +43,7 @@ int ft_env(char **args, t_env *envp)
 		return (perror("copy_initial_env failed"), (void)0);
 
 	
-	int result = ft_env(args, env_list);
+	int result = ft_env(args + 1, env_list);
 	printf("\nReturn: %d\nUpdated environment:\n", result);
 	free_node_list(env_list);
 	printf("--------------\n");

@@ -1,27 +1,6 @@
 //this is just for test of built in
 
-# include <stdio.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include <stdbool.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <sys/wait.h>
-# include <signal.h>
-# include <sys/stat.h>
-# include <sys/ioctl.h>
-# include <termios.h>
-# include <string.h>
-# include <termcap.h>
-# include <stdbool.h>
-
-/* envp */
-typedef struct s_env {
-    char    *key;
-    char    *value;
-    bool    exported;
-    struct s_env *next;
-} t_env;
+#include "builtin.h"
 
 size_t	ft_strlen(const char *str)
 {
@@ -38,6 +17,15 @@ size_t	ft_strlen(const char *str)
 int	ft_isalpha(int c)
 {
 	if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122))
+	{
+		return (1);
+	}
+	return (0);
+}
+
+int	ft_isdigit(int c)
+{
+	if (c >= '0' && c <= '9')
 	{
 		return (1);
 	}
@@ -63,6 +51,32 @@ void	ft_putstr(const char *str)
 	}
 }
 
+int	ft_atoi(const char *str)
+{
+	int	i;
+	int	sign;
+	int	result;
+
+	i = 0;
+	sign = 1;
+	result = 0;
+	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
+		i++;
+	if (str[i] == '+' && str[i + 1] != '-')
+		i++;
+	if (str[i] == '-')
+	{
+		sign = -1;
+		i++;
+	}
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		result = result * 10;
+		result = result + str[i] - '0';
+		i++;
+	}
+	return (result * sign);
+}
 
 char	*ft_strchr(const char *str, int c)
 {
@@ -186,6 +200,132 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	}
 	newstr[j + i] = '\0';
 	return (newstr);
+}
+
+size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
+{
+	size_t	srclen;
+	size_t	i;
+
+	srclen = ft_strlen(src);
+	if (destsize > 0)
+	{
+		i = 0;
+		while (i < destsize - 1 && src[i] != '\0')
+		{
+			dest[i] = src[i];
+			i++;
+		}
+		dest[i] = '\0';
+	}
+	return (srclen);
+}
+
+static int	wordcount(char const *s, char c)
+{
+	int	words;
+	int	inword;
+
+	words = 0;
+	inword = 0;
+	while (*s)
+	{
+		if (*s != c && !inword)
+		{
+			words++;
+			inword = 1;
+		}
+		else if (*s == c && inword)
+		{
+			inword = 0;
+		}
+		s++;
+	}
+	return (words);
+}
+
+static	char	*copyarr(char const *s, char c)
+{
+	char	*word;
+	int		len;
+
+	len = 0;
+	while (s[len] && s[len] != c)
+	{
+		len++;
+	}
+	word = (char *)malloc(sizeof(char) * (len + 1));
+	if (!word)
+	{
+		return (NULL);
+	}
+	ft_strlcpy(word, s, len + 1);
+	return (word);
+}
+
+static char	**freeall(char **result, int i)
+{
+	while (i > 0)
+	{
+		free (result[i - 1]);
+		i--;
+	}
+	free(result);
+	return (NULL);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char	**result;
+	int		i;
+
+	if (!s)
+		return (NULL);
+	result = (char **)malloc(sizeof(char *) * (wordcount(s, c) + 1));
+	if (!result)
+		return (NULL);
+	i = 0;
+	while (*s)
+	{
+		if (*s != c)
+		{
+			result[i] = copyarr(s, c);
+			if (!result[i])
+				return (freeall(result, i));
+			i++;
+			while (*s && *s != c)
+				s++;
+		}
+		else
+			s++;
+	}
+	result[i] = NULL;
+	return (result);
+}
+
+
+/* this used for mainly export function. */
+char	*create_new_key(const char *arg)
+{
+	int		len;
+
+	len = 0;
+	while (arg[len] && arg[len] != '=')
+		len++;
+	return (ft_substr(arg, 0, len));
+}
+
+/* this used for mainly export function. */
+char	*create_new_value(const char *arg)
+{
+	int	len;
+
+	len = 0;
+	while (arg[len] && arg[len] != '=')
+		len++;
+	if (!arg[len])
+		return (NULL);
+	return (ft_strdup(arg + len + 1));
 }
 
 void	free_node(t_env *node)
@@ -341,7 +481,7 @@ char	*complete_env_line(t_env *envp)
 }
 
 /* static function for update_env functon */
-static void	update_value(t_env *node, const char *new_value)        //changed
+void	update_value(t_env *node, const char *new_value)        //changed
 {
 	if (!node)
 		return;
@@ -379,7 +519,11 @@ void	update_env(const char *key, const char *path, t_env *envp)
 	while (curr)
 	{
 		if (ft_strcmp(curr->key, key) == 0)
+		{
+			if (path != NULL)
+				curr->exported = true;
 			return (update_value(curr, path));
+		}
 		if (!curr->next)
 			break ;
 		curr = curr->next;
