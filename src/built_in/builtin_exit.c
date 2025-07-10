@@ -30,9 +30,9 @@ static void	print_error_exit(char *arg)
 	rl_clear_history();
 } */
 
-static bool is_numeric(char *arg)
+static bool	is_numeric(char *arg)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (arg[i])
@@ -56,7 +56,7 @@ static int	convert_exit_code(char *arg)
 
 int	ft_exit(char **args) //these parameter need to update later
 {
-	int exit_code;
+	int	exit_code;
 
 	ft_putstr ("exit\n");
 	if (args[0] && !(is_numeric(args[0])))
@@ -69,11 +69,10 @@ int	ft_exit(char **args) //these parameter need to update later
 		return (print_error("exit: too many arguments\n"), 1);
 	if (args[0] != NULL)
 		exit_code = convert_exit_code(args[0]);
-	else 
+	else
 		exit_code = 0;
 	//cleanup_exit(*envp); //this parameters need to change after execution part completed
 	//exit (exit_code); 
-	printf ("exit code:%d\n",exit_code);
+	printf ("exit code: %d\n",exit_code); //this is for test
 	return (-42); //this is just dummy return
 }
-

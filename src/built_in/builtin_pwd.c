@@ -1,29 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   builtin_pwd.c                                      :+:    :+:            */
+/*   builtin_pwd.c                                       :+:    :+:           */
 /*                                                     +:+                    */
 /*   By: mmatsui <mmatsui@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2025/06/27 11:58:09 by mmatsui       #+#    #+#                 */
-/*   Updated: 2025/06/30 12:19:15 by mmatsui       ########   odam.nl         */
+/*   Updated: 2025/07/10 16:48:37 by mmatsui        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
 //#include "minishell.h"
+
 #include "builtin.h"
 
-int ft_pwd(char **args)
+int	ft_pwd(char **args)
 {
-    char *cwd;
+	char	*cwd;
 
-    if (count_args(args) > 2)
-        return (print_error("cd: too many arguments\n"), 1);
-    cwd = getcwd(NULL, 0);
-    if (!cwd)
-        return (perror("pwd"), 1);
-    ft_putstr(cwd);
-    write (STDOUT_FILENO, "\n", 1);
-    free (cwd);
-    return (0);
+	if (count_args(args) > 2)
+		return (print_error("cd: too many arguments\n"), 1);
+	cwd = getcwd(NULL, 0);
+	if (!cwd)
+		return (perror("pwd"), 1);
+	ft_putstr(cwd);
+	write (STDOUT_FILENO, "\n", 1);
+	free (cwd);
+	return (0);
 }
