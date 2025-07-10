@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+//#include "minishell.h"
+#include "builtin.h"
 
 /* Count the number of arguments in a null-terminated array */
 int	count_args(char **args)

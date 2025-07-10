@@ -10,11 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+//#include "minishell.h"
+#include "builtin.h"
 
 static bool	is_cd_arg(char **args)
 {
-	if (count_args(args) > 2)
+	if (count_args(args) > 1)
 		return (false);
 	return (true);
 }
@@ -84,13 +85,13 @@ int	ft_cd(char **args, t_env *envp)
 	oldpwd = getcwd(NULL, 0);
 	if (!oldpwd)
 		return (print_error("cd"), 1);
-	path = resolve_path(args[1], envp);	
+	path = resolve_path(args[0], envp);	
 	if (!path)
 		return (free(oldpwd), 1);
 	if (path && path[0] == '\0')
 		return (free(oldpwd), free(path), 0);
 	if (chdir(path) != 0)
-		return (set_error_return(args[1], oldpwd, path), 1);
+		return (set_error_return(args[0], oldpwd, path), 1);
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
 		return (print_error("cd"), free(oldpwd), free(path), 1);

@@ -10,13 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+//#include "minishell.h"
+#include "builtin.h"
 
 int ft_pwd(char **args)
 {
     char *cwd;
 
-    if (count_args(args) > 1)
+    if (count_args(args) > 2)
         return (print_error("cd: too many arguments\n"), 1);
     cwd = getcwd(NULL, 0);
     if (!cwd)
