@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/09 18:57:19 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/15 01:32:21 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,21 @@ typedef enum e_lexer_state
 	STATE_IN_METACHAR
 }	t_lexer_state;
 
+/*Quote Type*/
+typedef enum e_quote_type
+{
+	QUOTE_NONE,
+	QUOTE_SINGLE,
+	QUOTE_DOUBLE
+}	t_quote_type;
+
 /*--------------------Structs------------------------------*/
 /* Tokens */
 typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
+	t_quote_type	quote_type;
 	struct s_token	*next;
 }				t_token;
 
@@ -110,6 +119,9 @@ void			process_start(t_lex *lex, char *line);
 void			process_inword(t_lex *lex, char *line);
 void			process_single_quotes(t_lex *lex);
 void			process_double_quotes(t_lex *lex);
+bool			syntax_check(t_token *tokens);
+bool			set_quotes(t_token *tokens);
+bool			strip_quotes(char **old);
 
 //error
 void			print_error(const char *msg);

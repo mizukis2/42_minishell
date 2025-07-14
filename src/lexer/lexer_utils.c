@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 06:02:52 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/09 14:53:19 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/15 00:11:52 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@ t_token_type	get_metachar_type(char *str, int *advance)
 		return (*advance = 1, TOKEN_REDIRECT_IN);
 	else if (str[0] == '>')
 		return (*advance = 1, TOKEN_REDIRECT_OUT);
-	else
+	else if (str[0] == '|')
 		return (*advance = 1, TOKEN_PIPE);
+	return (*advance = 1, TOKEN_WORD);
 }
 
 t_token	*create_token(char *start, int len, t_token_type type)
@@ -39,7 +40,13 @@ t_token	*create_token(char *start, int len, t_token_type type)
 	if (!token)
 		return (NULL);
 	token->value = ft_strndup(start, len);
+	if (!token->value)
+	{
+		free(token);
+		return (NULL);
+	}
 	token->type = type;
+	token->quote_type = QUOTE_NONE;
 	token->next = NULL;
 	return (token);
 }

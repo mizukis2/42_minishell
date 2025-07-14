@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 14:38:56 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/09 18:57:05 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/15 01:23:38 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void	process_start(t_lex *lex, char *line)
 
 void	process_inword(t_lex *lex, char *line)
 {
+	(void)line;
 	if (lex->c == '\'')
 	{
 		lex->state = STATE_IN_SINGLE_QUOTE;
