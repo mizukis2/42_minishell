@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 05:44:32 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/15 01:35:12 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/15 01:46:08 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,27 @@ bool	syntax_check(t_token *tokens)
 		current = current->next;
 	}
 	return (true);
+}
+
+t_token	*tokenize_input(char *line)
+{
+	t_token	*tokens;
+
+	tokens = lexer(line);
+	if (!tokens)
+	{
+		printf("\e[0;31mSyntax error: Unable to make valid tokens\e[0m\n");
+		free(line);
+		return (NULL);
+	}
+	if (!syntax_check(tokens))
+	{
+		printf("\e[0;31mSyntax error\e[0m\n");
+		cleanup(tokens, line);
+		tokens = NULL;
+		return (NULL);
+	}
+	return (tokens);
 }
 
 t_token	*lexer(char *line)

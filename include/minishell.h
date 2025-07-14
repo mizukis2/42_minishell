@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/15 01:32:21 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/15 01:45:13 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,7 @@ bool			is_valid_input(char *line);
 void			cleanup(t_token *tokens, char *line);
 
 /* Lexer*/
+t_token			*tokenize_input(char *line);
 t_token			*lexer(char *line);
 bool			is_metachar(char c);
 t_token_type	get_metachar_type(char *str, int *advance);
