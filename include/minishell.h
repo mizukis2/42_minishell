@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/16 06:34:53 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/16 12:13:08 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,9 +137,9 @@ bool			strip_quotes(char **old);
 /* Parser */
 t_cmd			*parse_tokens(t_token *tokens);
 t_cmd			*parse_command(t_token **tokens);
-void			free_cmd(t_cmd *cmd);
-t_cmd			*free_and_error(t_cmd *cmd, t_list *args, char *msg);
-char			**argvlst_to_array(t_list *args);
+void			free_cmd_list(t_cmd *cmd);
+t_cmd			*free_and_error(t_cmd *cmd, t_list *args);
+char			**argslst_to_array(t_list *args);
 
 
 //error

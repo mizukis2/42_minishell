@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 06:02:52 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/15 00:11:52 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/16 12:19:39 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,5 @@ void	free_tokens(t_token *head)
 		free(head);
 		head = tmp;
 	}
+	head = NULL;
 }

@@ -6,25 +6,71 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 02:01:57 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/16 06:34:47 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/16 12:14:09 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_cmd	*free_and_error(t_cmd *cmd, t_list *args, char *msg)
+void	free_cmd_list(t_cmd *cmd)
 {
+	t_cmd	*temp;
+	int		i;
+
+	while (cmd)
+	{
+		temp = cmd->next;
+		if (cmd->argv)
+		{
+			i = 0;
+			while (cmd->argv[i])
+			{
+				free(cmd->argv[i]);
+				i++;
+			}
+			free(cmd->argv);
+		}
+		free(cmd->infile);
+		free(cmd->outfile);
+		free(cmd);
+		cmd = temp;
+	}
+}
+
+t_cmd	*free_and_error(t_cmd *cmd, t_list *args)
+{
+	printf("syntax error near unexpected token\n");
+	if (cmd)
+	{
+		free(cmd->infile);
+		free(cmd->outfile);
+		free(cmd);
+	}
+	ft_lstclear(&args, free);
 	return (NULL);
 }
 
-void	free_cmd(t_cmd *cmd)
+char	**argslst_to_array(t_list *args)
 {
-	
-}
+	char	**argv;
+	t_list	*curr;
+	int		size;
+	int		i;
 
-char	**argvlst_to_array(t_list *args)
-{
-	
+	size = ft_lstsize(args);
+	argv = malloc((size + 1) * sizeof(char *));
+	curr = args;
+	i = 0;
+	if (!argv)
+		return (NULL);
+	while (curr)
+	{
+		argv[i] = ft_strdup(curr->content);
+		i++;
+		curr = curr->next;
+	}
+	argv[i] = NULL;
+	return (argv);
 }
 
 t_cmd	*parse_command(t_token **tokens)
@@ -44,7 +90,7 @@ t_cmd	*parse_command(t_token **tokens)
 		{
 			*tokens = (*tokens)->next;
 			if (!*tokens || (*tokens)->type != TOKEN_WORD)
-				return (free_and_error(cmd, args, ">"));
+				return (free_and_error(cmd, args));
 			cmd->infile = ft_strdup((*tokens)->value);
 		}
 		else if (tok->type == TOKEN_REDIRECT_OUT || tok->type == TOKEN_APPEND)
@@ -52,12 +98,12 @@ t_cmd	*parse_command(t_token **tokens)
 			cmd->append = (tok->type == TOKEN_APPEND);
 			*tokens = (*tokens)->next;
 			if (!*tokens || (*tokens)->type != TOKEN_WORD)
-				return (free_and_error(cmd, args, "<"));
+				return (free_and_error(cmd, args));
 			cmd->outfile = ft_strdup((*tokens)->value);
 		}
 		*tokens = (*tokens)->next;
 	}
-	cmd->argv = argvlst_to_array(args);
+	cmd->argv = argslst_to_array(args);
 	ft_lstclear(&args, free);
 	return (cmd);
 }
@@ -76,7 +122,7 @@ t_cmd	*parse_tokens(t_token *tokens)
 		curr = parse_command(&tokens);
 		if (!curr)
 		{
-			free_cmd(head);
+			free_cmd_list(head);
 			return (NULL);
 		}
 		if (!head)
