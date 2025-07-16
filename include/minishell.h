@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/15 01:45:13 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/16 06:34:53 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ typedef struct s_token
 	t_token_type	type;
 	t_quote_type	quote_type;
 	struct s_token	*next;
-}				t_token;
+}	t_token;
 
 /* Lex */
 typedef struct s_lex
@@ -82,6 +82,16 @@ typedef struct s_lex
 	t_lexer_state	state;
 	t_token_type	type;
 }	t_lex;
+
+/* Parser */
+typedef struct s_cmd
+{
+	char			**argv;
+	char			*infile;
+	char			*outfile;
+	bool			append;
+	struct s_cmd	*next;
+}	t_cmd;
 
 /* data struct for later*/
 typedef struct s_data
@@ -123,6 +133,14 @@ void			process_double_quotes(t_lex *lex);
 bool			syntax_check(t_token *tokens);
 bool			set_quotes(t_token *tokens);
 bool			strip_quotes(char **old);
+
+/* Parser */
+t_cmd			*parse_tokens(t_token *tokens);
+t_cmd			*parse_command(t_token **tokens);
+void			free_cmd(t_cmd *cmd);
+t_cmd			*free_and_error(t_cmd *cmd, t_list *args, char *msg);
+char			**argvlst_to_array(t_list *args);
+
 
 //error
 void			print_error(const char *msg);

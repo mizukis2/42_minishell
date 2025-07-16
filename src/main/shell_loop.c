@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/15 01:46:33 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/16 02:38:24 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	enter_shell_loop(void)
 {
 	char	*line;
 	t_token	*tokens;
+	t_cmd	*commands;
 
 	while (1)
 	{
@@ -38,6 +39,7 @@ void	enter_shell_loop(void)
 		}
 		add_history(line);
 		tokens = tokenize_input(line);
+		commands = parse_tokens(tokens);//null check pending
 		if (tokens)
 		{
 			print_tokens(tokens);//for debug
