@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 02:01:57 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/16 12:14:09 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:43:33 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void	free_cmd_list(t_cmd *cmd)
 		}
 		free(cmd->infile);
 		free(cmd->outfile);
+		free(cmd->heredoc_delim);
 		free(cmd);
 		cmd = temp;
 	}
@@ -44,6 +45,7 @@ t_cmd	*free_and_error(t_cmd *cmd, t_list *args)
 	{
 		free(cmd->infile);
 		free(cmd->outfile);
+		free(cmd->heredoc_delim);
 		free(cmd);
 	}
 	ft_lstclear(&args, free);
@@ -78,20 +80,40 @@ t_cmd	*parse_command(t_token **tokens)
 	t_cmd	*cmd;
 	t_list	*args;
 	t_token	*tok;
+	char	*word;
 
 	cmd = ft_calloc(1, sizeof(t_cmd));
+	if (!cmd)
+		return (NULL);
+	cmd->heredoc_fd = -1;
 	args = NULL;
 	while (*tokens && (*tokens)->type != TOKEN_PIPE)
 	{
 		tok = *tokens;
 		if (tok->type == TOKEN_WORD)
+		{
+			if (tok->quote_type == QUOTE_SINGLE)
+				word = ft_strdup(tok->value);
+			else
+				word = expand_variables(tok->value, envp, last_status);//needs to be written
+			if (!word)
+				return (free_and_error(cmd, args));
 			ft_lstadd_back(&args, ft_lstnew(ft_strdup(tok->value)));
-		else if (tok->type == TOKEN_REDIRECT_IN || tok->type == TOKEN_HEREDOC)
+		}
+		else if (tok->type == TOKEN_REDIRECT_IN)
 		{
 			*tokens = (*tokens)->next;
 			if (!*tokens || (*tokens)->type != TOKEN_WORD)
 				return (free_and_error(cmd, args));
-			cmd->infile = ft_strdup((*tokens)->value);
+			if (cmd->infile)
+			{
+				free(cmd->infile);
+				cmd->infile = NULL;
+			}
+			if ((*tokens)->quote_type == QUOTE_SINGLE)
+				cmd->infile = ft_strdup((*tokens)->value);
+			else
+    			cmd->infile = expand_variables((*tokens)->value, envp, last_status);//needs to be written
 		}
 		else if (tok->type == TOKEN_REDIRECT_OUT || tok->type == TOKEN_APPEND)
 		{
@@ -99,7 +121,37 @@ t_cmd	*parse_command(t_token **tokens)
 			*tokens = (*tokens)->next;
 			if (!*tokens || (*tokens)->type != TOKEN_WORD)
 				return (free_and_error(cmd, args));
-			cmd->outfile = ft_strdup((*tokens)->value);
+			if (cmd->outfile)
+			{
+				free(cmd->outfile);
+				cmd->outfile = NULL;
+			}
+			if ((*tokens)->quote_type == QUOTE_SINGLE)
+				cmd->outfile = ft_strdup((*tokens)->value);
+			else
+    			cmd->outfile = expand_variables((*tokens)->value, envp, last_status);//needs to be written
+			if (!cmd->outfile)
+				return (free_and_error(cmd, args));
+		}
+		else if (tok->type == TOKEN_HEREDOC)
+		{
+			*tokens = (*tokens)->next;
+			if (!*tokens || (*tokens)->type != TOKEN_WORD)
+				return (free_and_error(cmd, args));
+			if (cmd->heredoc_delim)
+			{
+				free(cmd->heredoc_delim);
+				cmd->heredoc_delim = NULL;
+			}
+			cmd->heredoc_delim = ft_strdup((*tokens)->value);
+			if (!cmd->heredoc_delim)
+				return (free_and_error(cmd, args));
+			cmd->herdoc_expand = ((*tokens)->quote_type == QUOTE_NONE);
+			if (cmd->infile)
+			{
+				free(cmd->infile);
+				cmd->infile = NULL;
+			}
 		}
 		*tokens = (*tokens)->next;
 	}

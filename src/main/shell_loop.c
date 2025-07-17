@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/16 12:20:28 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/17 08:01:39 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,20 @@ static void	print_tokens(t_token *tokens)//for token debug
 {
 	while (tokens)
 	{
-		printf("\nTOKEN TYPE: %d, VALUE: [%s], Quote: [%d]\n", tokens->type, tokens->value, tokens->quote_type);
+		printf("\nTOKEN TYPE: %d, VALUE: [%s], Quote: [%d]\n",
+			tokens->type, tokens->value, tokens->quote_type);
 		tokens = tokens->next;
 	}
 }
 
-static void print_cmd(t_cmd *cmd)//for command debug
+static void	print_cmd(t_cmd *cmd)//for command debug
 {
-	int i;
+	int	i;
 
-	while(cmd)
+	while (cmd)
 	{
 		i = 0;
-		while(cmd->argv[i])
+		while (cmd->argv[i])
 		{
 			printf("argv[%d]: %s\n", i, cmd->argv[i]);
 			i++;

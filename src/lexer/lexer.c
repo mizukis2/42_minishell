@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 05:44:32 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/15 01:46:08 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:38:54 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ t_token	*tokenize_input(char *line)
 
 t_token	*lexer(char *line)
 {
-	t_lex	lex;
+	t_lex	lex;//echo "$USER"$USER'$USER'
 
 	lex.i = 0;
 	lex.adv = 0;
