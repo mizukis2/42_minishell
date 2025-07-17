@@ -3,7 +3,7 @@
 /*                                                         ::::::::           */
 /*   ft_strstr.c                                         :+:    :+:           */
 /*                                                      +:+                   */
-/*   By: mmatsui <marvin@42.fr>                        +#+                    */
+/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
 /*                                                    +#+                     */
 /*   Created: 2025/07/04 08:25:54 by mmatsui        #+#    #+#                */
 /*   Updated: 2025/07/04 08:25:56 by mmatsui        ########   odam.nl        */

@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell.h"
-#include "builtin.h"
+#include "minishell.h"
+//#include "builtin.h"
 
 int	execute_builtin(char **args, t_env *envp)
 {
@@ -36,7 +36,7 @@ int	execute_builtin(char **args, t_env *envp)
 
 /* test for buildin */
 
-void	enter_shell_loop(char **envp)
+/* void	enter_shell_loop(char **envp)
 {
 	char	*line;
 	char	**args;
@@ -82,4 +82,4 @@ int	main(int ac, char **av, char **envp)
 	enter_shell_loop(envp);
 	rl_clear_history();
 	return (EXIT_SUCCESS);
-}
+} */
