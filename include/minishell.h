@@ -73,15 +73,6 @@ typedef struct s_lex
 	t_token_type	type;
 }	t_lex;
 
-/* data struct for later*/
-typedef struct s_data {
-    char **copied_envp;          
-    int    last_exit;     // For $?
-    // maybe: char *prompt;
-    // maybe: int interactive_mode;
-}
-	t_data;
-
 /* envp */
 typedef struct s_env {
     char    *key;
@@ -89,6 +80,24 @@ typedef struct s_env {
     bool    exported;
     struct s_env *next;
 } t_env;
+
+/* Execution */
+typedef struct s_exec {
+    t_env *envp;          
+    int    last_exit_code;     // For $?
+	
+}
+	t_shell;
+
+/* dummy_parsing */
+typedef struct s_cmd
+{
+char	**argv;     // e.g. {"ls", "-l", NULL}
+char	*infile;    // for '<' or heredoc (<<)
+char	*outfile;   // for '>' or '>>'
+bool	append;     // true if >>
+struct s_cmd *next; // for pipe chain
+}	t_cmd;
 
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
