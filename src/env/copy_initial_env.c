@@ -40,7 +40,7 @@ static int	set_key(t_env *node, char *str)
 	return (0);
 }
 
-static t_env	*create_node(char *str)
+t_env	*create_node(char *str)
 {
 	char	*eq;
 	int		key_len;

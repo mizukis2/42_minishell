@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell.h"
+#include "minishell.h"
 
-#include "builtin.h"
+//#include "builtin.h"
 
 static void	print_error_exit(char *arg)
 {

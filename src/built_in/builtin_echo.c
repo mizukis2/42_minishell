@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell.h"
+#include "minishell.h"
 
-#include "builtin.h"
+//#include "builtin.h"
 
 bool	is_all_n_flags(char *arg)
 {

@@ -35,11 +35,15 @@ t_token	*process_input(char *line)
 	return (tokens);
 }
 
-void	enter_shell_loop(void)
+void	enter_shell_loop(char **envp)
 {
 	char	*line;
 	t_token	*tokens;
+	t_env	*env_list;
 
+	env_list = copy_initial_env(envp);
+	if (!env_list)
+		return (perror("copy_initial_env failed"));
 	while (1)
 	{
 		line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
@@ -56,4 +60,5 @@ void	enter_shell_loop(void)
 			tokens = NULL;
 		}
 	}
+	free_node_list(env_list);
 }

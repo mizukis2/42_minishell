@@ -92,7 +92,7 @@ typedef struct s_env {
 
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
-void			enter_shell_loop(void);
+void			enter_shell_loop(char **envp);
 int				is_whitespace_or_empty(char *str);
 bool			check_quotes(char *line);
 bool			is_valid_input(char *line);
@@ -116,6 +116,7 @@ void	print_error(const char *msg);
 
 //function - environment variable
 t_env	*copy_initial_env(char **envp);
+t_env	*create_node(char *str);
 void	free_node(t_env *node);
 void	free_node_list(t_env *head);
 char	**list_to_array(t_env *envp);
