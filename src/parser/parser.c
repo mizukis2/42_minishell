@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 02:01:57 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/17 11:43:33 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/23 03:07:14 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ t_cmd	*parse_command(t_token **tokens)
 	t_cmd	*cmd;
 	t_list	*args;
 	t_token	*tok;
-	char	*word;
 
 	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
@@ -91,69 +90,13 @@ t_cmd	*parse_command(t_token **tokens)
 	{
 		tok = *tokens;
 		if (tok->type == TOKEN_WORD)
-		{
-			if (tok->quote_type == QUOTE_SINGLE)
-				word = ft_strdup(tok->value);
-			else
-				word = expand_variables(tok->value, envp, last_status);//needs to be written
-			if (!word)
-				return (free_and_error(cmd, args));
-			ft_lstadd_back(&args, ft_lstnew(ft_strdup(tok->value)));
-		}
+			parse_word(tokens, &args, cmd);
 		else if (tok->type == TOKEN_REDIRECT_IN)
-		{
-			*tokens = (*tokens)->next;
-			if (!*tokens || (*tokens)->type != TOKEN_WORD)
-				return (free_and_error(cmd, args));
-			if (cmd->infile)
-			{
-				free(cmd->infile);
-				cmd->infile = NULL;
-			}
-			if ((*tokens)->quote_type == QUOTE_SINGLE)
-				cmd->infile = ft_strdup((*tokens)->value);
-			else
-    			cmd->infile = expand_variables((*tokens)->value, envp, last_status);//needs to be written
-		}
+			parse_redirect_in(tokens, &args, cmd);
 		else if (tok->type == TOKEN_REDIRECT_OUT || tok->type == TOKEN_APPEND)
-		{
-			cmd->append = (tok->type == TOKEN_APPEND);
-			*tokens = (*tokens)->next;
-			if (!*tokens || (*tokens)->type != TOKEN_WORD)
-				return (free_and_error(cmd, args));
-			if (cmd->outfile)
-			{
-				free(cmd->outfile);
-				cmd->outfile = NULL;
-			}
-			if ((*tokens)->quote_type == QUOTE_SINGLE)
-				cmd->outfile = ft_strdup((*tokens)->value);
-			else
-    			cmd->outfile = expand_variables((*tokens)->value, envp, last_status);//needs to be written
-			if (!cmd->outfile)
-				return (free_and_error(cmd, args));
-		}
+			parse_redirect_o(tokens, &args, cmd);
 		else if (tok->type == TOKEN_HEREDOC)
-		{
-			*tokens = (*tokens)->next;
-			if (!*tokens || (*tokens)->type != TOKEN_WORD)
-				return (free_and_error(cmd, args));
-			if (cmd->heredoc_delim)
-			{
-				free(cmd->heredoc_delim);
-				cmd->heredoc_delim = NULL;
-			}
-			cmd->heredoc_delim = ft_strdup((*tokens)->value);
-			if (!cmd->heredoc_delim)
-				return (free_and_error(cmd, args));
-			cmd->herdoc_expand = ((*tokens)->quote_type == QUOTE_NONE);
-			if (cmd->infile)
-			{
-				free(cmd->infile);
-				cmd->infile = NULL;
-			}
-		}
-		*tokens = (*tokens)->next;
+			parse_heredoc(tokens, &args, cmd);
 	}
 	cmd->argv = argslst_to_array(args);
 	ft_lstclear(&args, free);

@@ -15,7 +15,9 @@ SRCS = 							\
 								src/lexer/lexer.c \
 								src/lexer/lexer_utils.c \
 								src/lexer/lexer_states.c \
+								src/lexer/token_utils.c \
 								src/parser/parser.c \
+								src/parser/parse_types.c \
 								
 
 OBJS = 							$(patsubst %.c, $(OBJ_DIR)/%.o, $(subst $(SRC_DIR)/,,$(SRCS)))

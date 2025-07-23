@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/17 08:01:39 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/23 03:56:10 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,26 +22,31 @@ static void	print_tokens(t_token *tokens)//for token debug
 	}
 }
 
-static void	print_cmd(t_cmd *cmd)//for command debug
+static void	print_cmd(t_cmd *cmd)
 {
 	int	i;
+	int	cmd_count;
 
+	cmd_count = 0;
 	while (cmd)
 	{
+		printf("\nCommand #%d:\n", ++cmd_count);
 		i = 0;
-		while (cmd->argv[i])
+		if (cmd->argv)
 		{
-			printf("argv[%d]: %s\n", i, cmd->argv[i]);
-			i++;
-		}
-		printf("infile: %s\n", cmd->infile);
-		printf("outfile: %s\n", cmd->outfile);
-		if (cmd->append)
-			printf("append: True\n\n");
-		else
-			printf("append: false\n\n");
-		cmd = cmd->next;
-	}
+    		while (cmd->argv[i])
+            {
+                printf("argv[%d]: %s\n", i, cmd->argv[i]);
+                i++;
+            }
+        }
+        printf("infile: %s\n", cmd->infile ? cmd->infile : "(null)");
+        printf("outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
+        if (cmd->heredoc_delim)
+            printf("heredoc_delim: %s\n", cmd->heredoc_delim);
+        printf("append: %s\n", cmd->append ? "True" : "False");
+        cmd = cmd->next;
+    }
 }
 
 void	enter_shell_loop(void)
@@ -65,7 +70,7 @@ void	enter_shell_loop(void)
 		commands = parse_tokens(tokens);
 		if (commands)
 		{
-			print_cmd(commands);
+			print_cmd(commands);//for debug
 			free_cmd_list(commands);
 		}
 		if (tokens)

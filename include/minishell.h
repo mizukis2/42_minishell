@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/17 11:26:06 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/23 03:58:08 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ typedef struct s_lex
 	int				i;
 	int				adv;
 	char			c;
+	char			*line;
 	char			*start;
 	t_token			*tokens;
 	t_token			*new_token;
@@ -120,29 +121,43 @@ void			enter_shell_loop(void);
 bool			is_valid_input(char *line);
 void			cleanup(t_token *tokens, char *line);
 
-/* Lexer*/
+/* Lexer */
 t_token			*tokenize_input(char *line);
 t_token			*lexer(char *line);
+void			lexer_init(t_lex *lex, char *line);
+
+/* Lexer Utils */
 bool			is_metachar(char c);
 t_token_type	get_metachar_type(char *str, int *advance);
-t_token			*create_token(char *start, int len, t_token_type type);
-void			add_token(t_token **head, t_token *new_token);
-bool			make_token(t_lex *lex, int len, t_token_type type);
-void			free_tokens(t_token *head);
+bool			strip_quotes(char **old);
+bool			set_quotes(t_token *tokens);
+bool			syntax_check(t_token *tokens);
+
+/* Lexer States */
 void			process_start(t_lex *lex, char *line);
 void			process_inword(t_lex *lex, char *line);
-void			process_single_quotes(t_lex *lex);
-void			process_double_quotes(t_lex *lex);
-bool			syntax_check(t_token *tokens);
-bool			set_quotes(t_token *tokens);
-bool			strip_quotes(char **old);
+void			process_single_quotes(t_lex *lex, char *line);
+void			process_double_quotes(t_lex *lex, char *line);
+
+/* Token Utils */
+t_token			*create_token(char *start, int len, t_token_type type);
+void			add_token(t_token **head, t_token *new_token);
+void			free_tokens(t_token *head);
+bool			should_make_token(t_lex *lex, char *line);
+bool			make_token(t_lex *lex, int len, t_token_type type);
 
 /* Parser */
 t_cmd			*parse_tokens(t_token *tokens);
 t_cmd			*parse_command(t_token **tokens);
+char			**argslst_to_array(t_list *args);
 void			free_cmd_list(t_cmd *cmd);
 t_cmd			*free_and_error(t_cmd *cmd, t_list *args);
-char			**argslst_to_array(t_list *args);
+
+/* Parse types */
+void			parse_word(t_token **tokens, t_list **args, t_cmd *cmd);
+void			parse_redirect_in(t_token **tokens, t_list **args, t_cmd *cmd);
+void			parse_redirect_o(t_token **tokens, t_list **args, t_cmd *cmd);
+void			parse_heredoc(t_token **tokens, t_list **args, t_cmd *cmd);
 
 //error
 void			print_error(const char *msg);

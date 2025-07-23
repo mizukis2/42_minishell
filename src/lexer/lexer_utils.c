@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 06:02:52 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/16 12:19:39 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/23 00:03:06 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,50 +32,71 @@ t_token_type	get_metachar_type(char *str, int *advance)
 	return (*advance = 1, TOKEN_WORD);
 }
 
-t_token	*create_token(char *start, int len, t_token_type type)
+bool	strip_quotes(char **old)
 {
-	t_token	*token;
+	size_t	len;
+	char	*new;
 
-	token = malloc(sizeof(t_token));
-	if (!token)
-		return (NULL);
-	token->value = ft_strndup(start, len);
-	if (!token->value)
+	len = ft_strlen(*old);
+	if (len >= 2)
 	{
-		free(token);
-		return (NULL);
+		new = malloc(len - 1);
+		if (!new)
+			return (false);
+		ft_memcpy(new, *old + 1, len - 2);
+		new[len - 2] = '\0';
+		free(*old);
+		*old = new;
 	}
-	token->type = type;
-	token->quote_type = QUOTE_NONE;
-	token->next = NULL;
-	return (token);
+	return (true);
 }
 
-void	add_token(t_token **head, t_token *new_token)
+bool	set_quotes(t_token *token)
 {
-	t_token	*curr;
+	int	i;
 
-	curr = *head;
-	if (!curr)
+	if (token->type != TOKEN_WORD)
+		return (true);
+	i = ft_strlen(token->value);
+	if (i < 2)
 	{
-		*head = new_token;
-		return ;
+		token->quote_type = QUOTE_NONE;
+		return (true);
 	}
-	while (curr->next)
-		curr = curr->next;
-	curr->next = new_token;
+	if (token->value[0] == '\'' && token->value[i - 1] == '\'')
+		token->quote_type = QUOTE_SINGLE;
+	else if (token->value[0] == '\"' && token->value[i - 1] == '\"')
+		token->quote_type = QUOTE_DOUBLE;
+	else
+		token->quote_type = QUOTE_NONE;
+	if (token->quote_type != QUOTE_NONE)
+		if (!strip_quotes(&token->value))
+			return (false);
+	return (true);
 }
 
-void	free_tokens(t_token *head)
+bool	syntax_check(t_token *tokens)
 {
-	t_token	*tmp;
+	t_token	*current;
 
-	while (head)
+	current = tokens;
+	if (!current || current->type == TOKEN_PIPE)
+		return (false);
+	while (current)
 	{
-		tmp = head->next;
-		free(head->value);
-		free(head);
-		head = tmp;
+		if (current->type == TOKEN_PIPE)
+		{
+			if (!current->next || current->next->type == TOKEN_PIPE)
+				return (false);
+		}
+		else if (current->type != TOKEN_WORD)
+		{
+			if (!current->next || current->next->type != TOKEN_WORD)
+				return (false);
+		}
+		if (!set_quotes(current))
+			return (false);
+		current = current->next;
 	}
-	head = NULL;
+	return (true);
 }
