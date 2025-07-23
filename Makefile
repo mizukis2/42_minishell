@@ -15,10 +15,13 @@ SRCS = 							\
 								src/lexer/lexer.c \
 								src/lexer/lexer_utils.c \
 								src/lexer/lexer_states.c \
+								src/lexer/token_utils.c \
+								src/parser/parser.c \
+								src/parser/parse_types.c \
 								src/env/copy_initial_env.c \
 								src/env/list_to_array.c \
 								src/env/env_utils.c \
-								src/env/update_env.c
+								src/env/update_env.c \
 
 OBJS = 							$(patsubst %.c, $(OBJ_DIR)/%.o, $(subst $(SRC_DIR)/,,$(SRCS)))
 LIBS =							-L$(LIBFT_DIR) -lft -lreadline

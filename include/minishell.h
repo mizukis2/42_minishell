@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/09 08:08:08 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/23 03:58:08 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,23 @@ typedef enum e_lexer_state
 	STATE_IN_METACHAR
 }	t_lexer_state;
 
+/*Quote Type*/
+typedef enum e_quote_type
+{
+	QUOTE_NONE,
+	QUOTE_SINGLE,
+	QUOTE_DOUBLE
+}	t_quote_type;
+
 /*--------------------Structs------------------------------*/
 /* Tokens */
 typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
+	t_quote_type	quote_type;
 	struct s_token	*next;
-}				t_token;
+}	t_token;
 
 /* Lex */
 typedef struct s_lex
@@ -67,37 +76,13 @@ typedef struct s_lex
 	int				i;
 	int				adv;
 	char			c;
-	const char		*start;
+	char			*line;
+	char			*start;
 	t_token			*tokens;
+	t_token			*new_token;
 	t_lexer_state	state;
 	t_token_type	type;
 }	t_lex;
-
-/* envp */
-typedef struct s_env {
-    char    *key;
-    char    *value;
-    bool    exported;
-    struct s_env *next;
-} t_env;
-
-/* Execution */
-typedef struct s_exec {
-    t_env *envp;          
-    int    last_exit_code;     // For $?
-	
-}
-	t_shell;
-
-/* dummy_parsing */
-typedef struct s_cmd
-{
-char	**argv;     // e.g. {"ls", "-l", NULL}
-char	*infile;    // for '<' or heredoc (<<)
-char	*outfile;   // for '>' or '>>'
-bool	append;     // true if >>
-struct s_cmd *next; // for pipe chain
-}	t_cmd;
 
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
@@ -107,21 +92,46 @@ bool			check_quotes(char *line);
 bool			is_valid_input(char *line);
 void			cleanup(t_token *tokens, char *line);
 
-/* Lexer*/
-t_token			*lexer(const char *line);
+/* Lexer */
+t_token			*tokenize_input(char *line);
+t_token			*lexer(char *line);
+void			lexer_init(t_lex *lex, char *line);
+
+/* Lexer Utils */
 bool			is_metachar(char c);
-t_token_type	get_metachar_type(const char *str, int *advance);
-t_token			*create_token(const char *start, int len, t_token_type type);
+t_token_type	get_metachar_type(char *str, int *advance);
+bool			strip_quotes(char **old);
+bool			set_quotes(t_token *tokens);
+bool			syntax_check(t_token *tokens);
+
+/* Lexer States */
+void			process_start(t_lex *lex, char *line);
+void			process_inword(t_lex *lex, char *line);
+void			process_single_quotes(t_lex *lex, char *line);
+void			process_double_quotes(t_lex *lex, char *line);
+
+/* Token Utils */
+t_token			*create_token(char *start, int len, t_token_type type);
 void			add_token(t_token **head, t_token *new_token);
 void			free_tokens(t_token *head);
-void			process_start(t_lex *lex, const char *line);
-void			process_in_inword(t_lex *lex, const char *line);
-void			process_single_quotes(t_lex *lex, const char *line);
-void			process_double_quotes(t_lex *lex, const char *line);
+bool			should_make_token(t_lex *lex, char *line);
+bool			make_token(t_lex *lex, int len, t_token_type type);
 
+/* Parser */
+t_cmd			*parse_tokens(t_token *tokens);
+t_cmd			*parse_command(t_token **tokens);
+char			**argslst_to_array(t_list *args);
+void			free_cmd_list(t_cmd *cmd);
+t_cmd			*free_and_error(t_cmd *cmd, t_list *args);
+
+/* Parse types */
+void			parse_word(t_token **tokens, t_list **args, t_cmd *cmd);
+void			parse_redirect_in(t_token **tokens, t_list **args, t_cmd *cmd);
+void			parse_redirect_o(t_token **tokens, t_list **args, t_cmd *cmd);
+void			parse_heredoc(t_token **tokens, t_list **args, t_cmd *cmd);
 
 //error
-void	print_error(const char *msg);
+void			print_error(const char *msg);
 
 //function - environment variable
 t_env	*copy_initial_env(char **envp);
@@ -144,8 +154,8 @@ int		ft_cd(char **args, t_env *envp);
 int		ft_unset(char **args, t_env **envp);
 
 //built-in utils
-int		count_args(char **args);
-char	*get_env_value(t_env *envp, char *key);
-void	print_error(const char *msg);
+int				count_args(char **args);
+char			*get_env_value(t_env *envp, char *key);
+void			print_error(const char *msg);
 
 #endif
