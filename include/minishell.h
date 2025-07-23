@@ -84,6 +84,37 @@ typedef struct s_lex
 	t_token_type	type;
 }	t_lex;
 
+/* Parser */
+typedef struct s_cmd
+{
+	char			**argv;
+	char			*infile;
+	char			*outfile;
+	bool			append;
+	int				heredoc_fd;
+	char			*heredoc_delim;
+	bool			herdoc_expand;
+	struct s_cmd	*next;
+}	t_cmd;
+
+/* data struct for later*/
+typedef struct s_data
+{
+	char			**copied_envp;
+	int				last_exit;// For $?
+	// maybe: char *prompt;
+	// maybe: int interactive_mode;
+}	t_data;
+
+/* envp */
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	bool			exported;
+	struct s_env	*next;
+}	t_env;
+
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
 void			enter_shell_loop(char **envp);
