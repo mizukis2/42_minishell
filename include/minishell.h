@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/23 03:58:08 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/23 09:21:41 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,6 @@ typedef struct s_env
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
 void			enter_shell_loop(char **envp);
-int				is_whitespace_or_empty(char *str);
-bool			check_quotes(char *line);
 bool			is_valid_input(char *line);
 void			cleanup(t_token *tokens, char *line);
 
