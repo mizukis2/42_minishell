@@ -6,39 +6,54 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/04 01:43:20 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/23 03:56:10 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	print_tokens(t_token *tokens)//for debug
+static void	print_tokens(t_token *tokens)//for token debug
 {
 	while (tokens)
 	{
-		printf("TYPE: %d, VALUE: [%s]\n", tokens->type, tokens->value);
+		printf("\nTOKEN TYPE: %d, VALUE: [%s], Quote: [%d]\n",
+			tokens->type, tokens->value, tokens->quote_type);
 		tokens = tokens->next;
 	}
 }
 
-t_token	*process_input(char *line)
+static void	print_cmd(t_cmd *cmd)
 {
-	t_token	*tokens;
+	int	i;
+	int	cmd_count;
 
-	tokens = lexer(line);
-	if (!tokens)
+	cmd_count = 0;
+	while (cmd)
 	{
-		printf("\e[0;31mSyntax error: Unable to make valid tokens\e[0m\n");
-		free(line);
-		return (NULL);
-	}
-	return (tokens);
+		printf("\nCommand #%d:\n", ++cmd_count);
+		i = 0;
+		if (cmd->argv)
+		{
+    		while (cmd->argv[i])
+            {
+                printf("argv[%d]: %s\n", i, cmd->argv[i]);
+                i++;
+            }
+        }
+        printf("infile: %s\n", cmd->infile ? cmd->infile : "(null)");
+        printf("outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
+        if (cmd->heredoc_delim)
+            printf("heredoc_delim: %s\n", cmd->heredoc_delim);
+        printf("append: %s\n", cmd->append ? "True" : "False");
+        cmd = cmd->next;
+    }
 }
 
 void	enter_shell_loop(char **envp)
 {
 	char	*line;
 	t_token	*tokens;
+	t_cmd	*commands;
 	t_env	*env_list;
 
 	env_list = copy_initial_env(envp);
@@ -50,15 +65,25 @@ void	enter_shell_loop(char **envp)
 		if (!line) // check for EOF Ctrl+D (temporary)
 			break ;
 		if (!is_valid_input(line))
+		{
+			free(line);
 			continue ;
+		}
 		add_history(line);
-		tokens = process_input(line);//!token
+		tokens = tokenize_input(line);
+		commands = parse_tokens(tokens);
+		if (commands)
+		{
+			print_cmd(commands);//for debug
+			free_cmd_list(commands);
+		}
 		if (tokens)
 		{
 			print_tokens(tokens);//for debug
 			cleanup(tokens, line);
-			tokens = NULL;
 		}
+		else
+			continue ;
 	}
 	free_node_list(env_list);
 }
