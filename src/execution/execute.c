@@ -29,33 +29,51 @@ bool	is_builtin(char *cmd)
 	return (false);
 }
 
-int	execute (t_cmd *cmd, t_shell *shell)
+bool is_safe_to_run_in_child(char *cmd)
+{
+	static const char *builtins_in_child[] = {
+		"echo", "pwd","env", NULL
+	};
+	int	i;
+	while (builtins_in_child[i])
+	{
+		if (ft_strcmp(cmd, builtins_in_child[i]) == 0)
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
+int	execute(t_cmd *cmd, t_exec *exec, t_shell *shell)
 {
 	t_cmd *curr;
+	pid_t pid; 
 	
 	curr = cmd;
 	shell->last_exit_code = 0;
+	if (!curr->next && is_builtin(curr->argv) && !(curr->infile) && !(curr->outfile))
+		shell->last_exit_code = execute_builtin(curr->argv, shell->envp);
 	while (curr)
 	{
 		if (curr->next)
-			pipe_prcess();
-		if (curr->infile)
-			infile_process();
-			//if (heredoc is true, run heredoc process)
-		if (curr->outfile)
-			outfile_process();
-			if (curr->append == true)
-				append_process();
-		if (is_builtin(curr->argv[0]))
-			execute_builtin(curr->argv, shell); // t_shell *shell stores the last_exit_code
-		else
-			external_external_cmd();
+			pipe(exec->curr_pipe);
+		pid = fork();
+		if (pid == 0)
+		{
+			if (!set_redirection_pipe(exec))
+				exit (clean_exit());
+			close_unuse_files();
+			execute_command();
+		}
+		else 
+		{
+			close_unuse_files();
+			save_pid();
+			//update prev_pipe = curr_pipe
+		}
 		curr = curr->next;
 	}
-
-	//this part need to be inside of the loop???
-	close file discripters so far (the files opend during the loop above)
-	waitpid (pid1, NULL, 0);
-	waitpid (pid2, &status, 0);
-	return (status);
+	//this waitpid should loop
+	//waitpid (exec->last_pid, exec->status, 0);
+	//update shell->last_exit_code
 }

@@ -30,6 +30,10 @@
 # include <stdbool.h>
 # include "libft.h"
 
+/*---------------------DIFINE-------------------------------*/
+//this used for s_exec struct
+#define MAX_CMDS 100
+
 /*---------------------ENUMS-------------------------------*/
 /*Token type*/
 typedef enum e_token_type
@@ -97,15 +101,6 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
-/* data struct for later*/
-typedef struct s_data
-{
-	char			**copied_envp;
-	int				last_exit;// For $?
-	// maybe: char *prompt;
-	// maybe: int interactive_mode;
-}	t_data;
-
 /* envp */
 typedef struct s_env
 {
@@ -114,6 +109,23 @@ typedef struct s_env
 	bool			exported;
 	struct s_env	*next;
 }	t_env;
+
+/* this struct carring all inportant data for shell work*/
+typedef struct s_shell
+{
+	t_env			*envp;
+	int				last_exit_code;
+}	t_shell;
+
+typedef struct s_exec
+{
+	int	prev_pipe[2];
+	int curr_pipe[2];
+	pid_t pids[MAX_CMDS];
+	int num_pids;
+	pid_t last_pid;
+	int status;
+} t_exec;
 
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
@@ -169,8 +181,6 @@ void	free_node(t_env *node);
 void	free_node_list(t_env *head);
 char	**list_to_array(t_env *envp);
 void	free_array (char **array);
-char	*create_new_key(const char *arg);
-char	*create_new_value(const char *arg);
 void	update_env(const char *key, const char *path, t_env *envp);
 
 //function - built-in, this should be impliment right parameters later
@@ -183,8 +193,10 @@ int		ft_cd(char **args, t_env *envp);
 int		ft_unset(char **args, t_env **envp);
 
 //built-in utils
-int				count_args(char **args);
-char			*get_env_value(t_env *envp, char *key);
-void			print_error(const char *msg);
+int		count_args(char **args);
+char	*get_env_value(t_env *envp, char *key);
+void	print_error(const char *msg);
+char	*create_new_key(const char *arg);
+char	*create_new_value(const char *arg);
 
 #endif
