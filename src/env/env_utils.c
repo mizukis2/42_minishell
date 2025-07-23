@@ -15,18 +15,19 @@
 void	free_node(t_env *node)
 {
 	if (!node)
-		return;
-	if(node->key)
-		free(node->key);
-	if(node->value)
-		free(node->value);
-	free(node);
+		return ;
+	if (node->key)
+		free (node->key);
+	if (node->value)
+		free (node->value);
+	free (node);
 }
 
 void	free_node_list(t_env *head)
 {
-	t_env *temp;
-	while(head)
+	t_env	*temp;
+
+	while (head)
 	{
 		temp = head->next;
 		free_node(head);
@@ -34,12 +35,12 @@ void	free_node_list(t_env *head)
 	}
 }
 
-void	free_array (char **array)
+void	free_array(char **array)
 {
 	int	i;
 
 	i = 0;
-	while(array[i])
+	while (array[i])
 	{
 		free(array[i]);
 		i++;
