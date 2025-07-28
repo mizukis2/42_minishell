@@ -28,6 +28,7 @@
 # include <string.h>
 # include <termcap.h>
 # include <stdbool.h>
+#include <fcntl.h>
 # include "libft.h"
 
 /*---------------------DIFINE-------------------------------*/
@@ -198,5 +199,9 @@ char	*get_env_value(t_env *envp, char *key);
 void	print_error(const char *msg);
 char	*create_new_key(const char *arg);
 char	*create_new_value(const char *arg);
+
+//execution 
+int		execute(t_cmd *cmd, t_shell *shell);
+void	execute_command(char **argv, t_exec *exec, t_shell *shell);
 
 #endif

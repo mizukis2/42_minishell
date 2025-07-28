@@ -1,16 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                         ::::::::           */
-/*   init_exit_cleaning.c                                :+:    :+:           */
+/*   clean_exit.c                                        :+:    :+:           */
 /*                                                      +:+                   */
-/*   By: mmatsui <marvin@42.fr>                        +#+                    */
+/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
 /*                                                    +#+                     */
-/*   Created: 2025/05/21 13:49:59 by mmatsui        #+#    #+#                */
-/*   Updated: 2025/05/22 14:00:55 by mmatsui        ########   odam.nl        */
+/*   Created: 2025/07/28 12:20:00 by mmatsui        #+#    #+#                */
+/*   Updated: 2025/07/28 12:20:02 by mmatsui        ########   odam.nl        */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "minishell.h"
+
+/* int	clean_exit_code(t_cmd *cmd, t_exec *exec, const char *msg)
+{
+	close_unuse_files(cmd, exec);
+	if (msg)
+		perror (msg);
+	return ();
+}
 
 void	ft_free_split(char **split_list)
 {
@@ -48,18 +56,14 @@ void	free_clean_exit(char **split_list,
 	if (split_list)
 		ft_free_split(split_list);
 	clean_exit(fds, msg, code);
-}
+} */
 
-void	init_variable(t_fds *fds, t_cmd *cmd, char **av)
+
+int	cleanup_child(t_exec *exec)
 {
-	fds->infile = -1;
-	fds->outfile = -1;
-	fds->pipe_read = -1;
-	fds->pipe_write = -1;
-	cmd->cmd1 = av[2];
-	cmd->cmd2 = av[3];
-	cmd->run_cmd = NULL;
-	cmd->cmd_name = NULL;
-	cmd->path = NULL;
-	cmd->args = NULL;
+	if (exec->curr_pipe[0])
+		close (exec->curr_pipe[0]);
+	if (exec->curr_pipe[1])
+		close (exec->curr_pipe[1]);
+	return (0);
 }
