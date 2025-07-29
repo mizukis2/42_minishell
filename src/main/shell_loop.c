@@ -54,10 +54,14 @@ void	enter_shell_loop(char **envp)
 	char	*line;
 	t_token	*tokens;
 	t_cmd	*commands;
-	t_env	*env_list;
+	t_shell *shell;
+	int		exit_code;
 
-	env_list = copy_initial_env(envp);
-	if (!env_list)
+	shell = malloc(sizeof(t_shell));
+	if (!shell)
+		return (perror("malloc failed"));
+	shell->envp = copy_initial_env(envp);
+	if (!shell->envp)
 		return (perror("copy_initial_env failed"));
 	while (1)
 	{
@@ -75,6 +79,9 @@ void	enter_shell_loop(char **envp)
 		if (commands)
 		{
 			print_cmd(commands);//for debug
+			exit_code = execute(commands, shell);
+			shell->last_exit_code = exit_code;
+			printf ("exit code : %d\n", shell->last_exit_code);
 			free_cmd_list(commands);
 		}
 		if (tokens)
@@ -82,8 +89,7 @@ void	enter_shell_loop(char **envp)
 			print_tokens(tokens);//for debug
 			cleanup(tokens, line);
 		}
-		else
-			continue ;
 	}
-	free_node_list(env_list);
+	free_node_list(shell->envp);
+	free (shell);
 }
