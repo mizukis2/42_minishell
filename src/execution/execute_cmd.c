@@ -49,11 +49,11 @@ static char	*find_path(char *cmd, t_env *envp)
 	{
 		full = complete_path(all_path[i], cmd);
 		if (access(full, X_OK) == 0)
-			return (ft_free_split(all_path), full);
+			return (free_split(all_path), full);
 		free (full);
 		i++;
 	}
-	ft_free_split(all_path);
+	free_split(all_path);
 	return (NULL);
 }
 
@@ -63,16 +63,16 @@ void	execute_command(char **argv, t_exec *exec, t_shell *shell)
 	char	*path;
 
 	if (!argv || !argv[0])
-		exit (127);
+		clean_exit(exec, "Command not found", NULL, 127);
 	if (is_builtin(argv[0]))
+	{
+		cleanup_child(exec);
 		exit (execute_builtin(argv, shell->envp));
+	}
 	path = find_path(argv[0], shell->envp);
 	if (!path)
-	{
-		print_error("Command not found: ");
-		ft_putendl_fd(argv[0], STDERR_FILENO);
-		exit (127);
-	}
+		clean_exit(exec, "Command not found: ", argv[0], 127);
+	cleanup_child(exec);
 	execve (path, argv, shell->envp);
 	perror ("execve failed");
 	free (path);

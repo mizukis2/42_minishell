@@ -22,6 +22,19 @@ SRCS = 							\
 								src/env/list_to_array.c \
 								src/env/env_utils.c \
 								src/env/update_env.c \
+								src/execution/execute.c \
+								src/execution/execute_cmd.c \
+								src/execution/clean_exit.c \
+								src/built_in/built_in.c \
+								src/built_in/builtin_cd.c \
+								src/built_in/builtin_echo.c \
+								src/built_in/builtin_env.c \
+								src/built_in/builtin_exit.c \
+								src/built_in/builtin_export.c \
+								src/built_in/builtin_pwd.c \
+								src/built_in/builtin_unset.c \
+								src/built_in/builtin_utils.c \
+
 
 OBJS = 							$(patsubst %.c, $(OBJ_DIR)/%.o, $(subst $(SRC_DIR)/,,$(SRCS)))
 LIBS =							-L$(LIBFT_DIR) -lft -lreadline
