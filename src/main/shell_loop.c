@@ -81,6 +81,7 @@ void	enter_shell_loop(char **envp)
 			print_cmd(commands);//for debug
 			exit_code = execute(commands, shell);
 			shell->last_exit_code = exit_code;
+			printf ("exit code : %d\n", shell->last_exit_code);
 			free_cmd_list(commands);
 		}
 		if (tokens)

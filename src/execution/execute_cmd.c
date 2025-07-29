@@ -32,7 +32,7 @@ static char	**prep_all_path(t_env *envp)
 		curr = curr->next;
 	if (!curr)
 		return (NULL);
-	return (ft_split(envp->value, ':'));
+	return (ft_split(curr->value, ':'));
 }
 
 static char	*find_path(char *cmd, t_env *envp)
@@ -61,10 +61,11 @@ static char	*find_path(char *cmd, t_env *envp)
 void	execute_command(char **argv, t_exec *exec, t_shell *shell)
 {
 	char	*path;
+	char	**array_envp;
 
 	if (!argv || !argv[0])
 		clean_exit(exec, "Command not found", NULL, 127);
-	if (is_builtin(argv[0]))
+	if (is_builtin(argv))
 	{
 		cleanup_child(exec);
 		exit (execute_builtin(argv, shell->envp));
@@ -73,7 +74,8 @@ void	execute_command(char **argv, t_exec *exec, t_shell *shell)
 	if (!path)
 		clean_exit(exec, "Command not found: ", argv[0], 127);
 	cleanup_child(exec);
-	execve (path, argv, shell->envp);
+	array_envp = list_to_array(shell->envp);
+	execve (path, argv, array_envp);
 	perror ("execve failed");
 	free (path);
 	exit (126);

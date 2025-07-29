@@ -26,7 +26,7 @@ static int	count_nodes(t_env *head)
 	return (count);
 }
 
-static char	*complete_env_line(t_env *envp)
+char	*complete_env_line(t_env *envp)
 {
 	char	*env_line;
 	char	*temp;

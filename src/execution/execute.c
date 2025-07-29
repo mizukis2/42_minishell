@@ -98,22 +98,18 @@ int	execute(t_cmd *cmd, t_shell *shell)
 	curr = cmd;
 	if (!curr->next && is_builtin(curr->argv) && !(curr->infile) && !(curr->outfile))
 		return (execute_builtin(curr->argv, shell->envp));
-	//until here, there is no fd, malloc to cleanup
 	exec = malloc(sizeof(t_exec));
 	if (!exec)
 		return (perror("execute: malloc"), 1);
-	//this malloc, we clean up in the end of the code (parent)
-	exec->num_pids = 0; //init
-	exec->prev_pipe_read = -1; //init
+	exec->num_pids = 0;
+	exec->prev_pipe_read = -1;
 	while (curr)
 	{
 		if (curr->next && pipe(exec->curr_pipe) == -1)
 			return (perror("pipe failed"), 1);
-		//after this we need to cleanup pipe (curr_pipe[0],curr_pipe[1] )
 		pid = fork();
 		if (pid == 0)
 		{
-			//this is now inside of the child process
 			if (set_redirection_pipe(curr, exec) == 1)
 			{
 				cleanup_child(exec);
@@ -123,7 +119,6 @@ int	execute(t_cmd *cmd, t_shell *shell)
 		}
 		else
 		{
-			//this is parent process
 			exec->pids[exec->num_pids++] = pid;
 			if (exec->prev_pipe_read != -1)
 				close (exec->prev_pipe_read);
@@ -136,10 +131,11 @@ int	execute(t_cmd *cmd, t_shell *shell)
 		curr = curr->next;
 	}
 	waitpid_loop(exec);
-	if WEXITSTATUS(exec->status)
+	if (WIFEXITED(exec->status))
 		exit_code = WEXITSTATUS(exec->status);
 	else
 		exit_code = 1;
 	free (exec);
+	printf ("exit code at execution : %d\n", exit_code);
 	return (exit_code);
 }

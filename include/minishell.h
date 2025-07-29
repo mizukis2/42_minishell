@@ -131,8 +131,6 @@ typedef struct s_shell
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
 void			enter_shell_loop(char **envp);
-int				is_whitespace_or_empty(char *str);
-bool			check_quotes(char *line);
 bool			is_valid_input(char *line);
 void			cleanup(t_token *tokens, char *line);
 
@@ -187,6 +185,7 @@ void	free_array (char **array);
 char	*create_new_key(const char *arg);
 char	*create_new_value(const char *arg);
 void	update_env(const char *key, const char *path, t_env *envp);
+char	*complete_env_line(t_env *envp);
 
 /* function - built-in*/
 int		execute_builtin(char **args, t_env *envp);
