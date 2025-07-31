@@ -26,11 +26,16 @@ int	execute_builtin(char **args, t_env *envp)
 		return (ft_export(args + 1, envp));
 	if (ft_strcmp(args[0], "unset") == 0)
 		return (ft_unset(args + 1, &envp));
-/* 	if (ft_strcmp(args[0], "exit") == 0)
-		return (ft_exit(args + 1)); */
 	else
 		return (1);
 }
+
+int	execute_builtin_exit(t_shell *shell)
+{
+	return (ft_exit(shell));
+}
+
+
 
 //the number should be exit code here
 

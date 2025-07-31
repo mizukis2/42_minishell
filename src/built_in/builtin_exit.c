@@ -21,14 +21,15 @@ static void	print_error_exit(char *arg)
 	print_error (": numeric argument required\n");
 }
 
-/* static void	cleanup_exit(t_env *envp) //need to update later
+void	clean_all(t_shell *shell)
 {
-	//free_node_list(envp);
-	//free_node_list(parcing linked list)
-	//free history
-	//free other struct
+	free(shell->line);
+	free_node_list(shell->envp);
+	free_cmd_list(shell->commands);
+	cleanup(shell->tokens, shell->line);
+	free (shell);
 	rl_clear_history();
-} */
+}
 
 static bool	is_numeric(char *arg)
 {
@@ -54,25 +55,24 @@ static int	convert_exit_code(char *arg)
 	return (code);
 }
 
-int	ft_exit(char **args) //these parameter need to update later
+int	ft_exit(t_shell *shell)
 {
 	int	exit_code;
 
+	exit_code = 0;
 	ft_putstr ("exit\n");
-	if (args[0] && !(is_numeric(args[0])))
+	if (shell->commands->argv[0] && !(is_numeric(shell->commands->argv[0])))
 	{
-		print_error_exit(args[0]);
-		//cleanup_exit(*envp);
+		print_error_exit(shell->commands->argv[0]);
+		clean_all(shell);
 		return (2); //this should update later
 	}
-	if (args[0] && args[1])
+	if (shell->commands->argv[0] && shell->commands->argv[1])
 		return (print_error("exit: too many arguments\n"), 1);
-	if (args[0] != NULL)
-		exit_code = convert_exit_code(args[0]);
-	else
-		exit_code = 0;
-	//cleanup_exit(*envp); //this parameters need to change after execution part completed
-	//exit (exit_code); 
-	printf ("exit code: %d\n",exit_code); //this is for test
-	return (-42); //this is just dummy return
+	//if there is no argument, then return with last_exit_code
+	if (shell->commands->argv[0] && (is_numeric(shell->commands->argv[0])))
+		exit_code = convert_exit_code(shell->commands->argv[0]);
+	clean_all(shell);
+	printf ("exit code(cmd:exit): %d\n",exit_code);
+	exit (exit_code);
 }

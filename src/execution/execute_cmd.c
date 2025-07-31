@@ -58,7 +58,7 @@ static char	*find_path(char *cmd, t_env *envp)
 }
 
 /* child process, exit with exit_code if fails */
-void	execute_command(char **argv, t_exec *exec, t_shell *shell)
+void	execute_command(char **argv, t_exec exec, t_shell *shell)
 {
 	char	*path;
 	char	**array_envp;
@@ -68,6 +68,8 @@ void	execute_command(char **argv, t_exec *exec, t_shell *shell)
 	if (is_builtin(argv))
 	{
 		cleanup_child(exec);
+		if (run_in_parent(argv))
+			exit(0);
 		exit (execute_builtin(argv, shell->envp));
 	}
 	path = find_path(argv[0], shell->envp);

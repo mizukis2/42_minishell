@@ -27,15 +27,15 @@ void	free_split(char **split_list)
 	free(split_list);
 }
 
-void	cleanup_child(t_exec *exec)
+void	cleanup_child(t_exec exec)
 {
-	if (exec->curr_pipe[0] >= 0)
-		close (exec->curr_pipe[0]);
-	if (exec->curr_pipe[1] >= 0)
-		close (exec->curr_pipe[1]);
+	if (exec.curr_pipe[0] >= 0)
+		close (exec.curr_pipe[0]);
+	if (exec.curr_pipe[1] >= 0)
+		close (exec.curr_pipe[1]);
 }
 
-void	clean_exit(t_exec *exec, const char *msg, char *cmd, int code)
+void	clean_exit(t_exec exec, const char *msg, char *cmd, int code)
 {
 	cleanup_child(exec);
 	if (msg)

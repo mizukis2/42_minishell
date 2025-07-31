@@ -51,11 +51,7 @@ static void	print_cmd(t_cmd *cmd)
 
 void	enter_shell_loop(char **envp)
 {
-	char	*line;
-	t_token	*tokens;
-	t_cmd	*commands;
 	t_shell *shell;
-	int		exit_code;
 
 	shell = malloc(sizeof(t_shell));
 	if (!shell)
@@ -65,30 +61,23 @@ void	enter_shell_loop(char **envp)
 		return (perror("copy_initial_env failed"));
 	while (1)
 	{
-		line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
-		if (!line) // check for EOF Ctrl+D (temporary)
+		shell->line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
+		if (!shell->line) // check for EOF Ctrl+D (temporary)
 			break ;
-		if (!is_valid_input(line))
+		if (!is_valid_input(shell->line))
 		{
-			free(line);
+			free(shell->line);
 			continue ;
 		}
-		add_history(line);
-		tokens = tokenize_input(line);
-		commands = parse_tokens(tokens);
-		if (commands)
-		{
-			print_cmd(commands);//for debug
-			exit_code = execute(commands, shell);
-			shell->last_exit_code = exit_code;
-			printf ("exit code : %d\n", shell->last_exit_code);
-			free_cmd_list(commands);
-		}
-		if (tokens)
-		{
-			print_tokens(tokens);//for debug
-			cleanup(tokens, line);
-		}
+		add_history(shell->line);
+		shell->tokens = tokenize_input(shell->line);
+		shell->commands = parse_tokens(shell->tokens);
+		shell->last_exit_code = execute(shell);
+		printf ("exit code : %d\n", shell->last_exit_code); //for debug
+		print_cmd(shell->commands);//for debug
+		print_tokens(shell->tokens);//for debug
+		free_cmd_list(shell->commands);
+		cleanup(shell->tokens, shell->line);
 	}
 	free_node_list(shell->envp);
 	free (shell);
