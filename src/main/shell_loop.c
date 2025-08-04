@@ -49,6 +49,32 @@ static void	print_cmd(t_cmd *cmd)
     }
 }
 
+static int	init_shell(t_shell *shell, char **envp)
+{
+	shell->line = NULL;
+	shell->tokens = NULL;
+	shell->commands = NULL;
+	shell->last_exit_code = 0;
+	shell->envp = copy_initial_env(envp);
+	if (!shell->envp)
+	{
+		print_error("ERROR - Unable to make list of Environment Variables");
+		shell->last_exit_code = 1;
+		return (0);
+	}
+	return (1);
+}
+
+void	clean_shell(t_shell *shell)
+{
+	if (shell->line)
+		free(shell->line);
+	if (shell->commands)
+		free_cmd_list(shell->commands);
+	if (shell->tokens)
+		free_tokens(shell->tokens);
+}
+
 void	enter_shell_loop(char **envp)
 {
 	t_shell *shell;
@@ -56,9 +82,9 @@ void	enter_shell_loop(char **envp)
 	shell = malloc(sizeof(t_shell));
 	if (!shell)
 		return (perror("malloc failed"));
-	shell->envp = copy_initial_env(envp);
-	if (!shell->envp)
-		return (perror("copy_initial_env failed"));
+	if (!init_shell(shell, envp))
+		return ;
+	
 	while (1)
 	{
 		shell->line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
@@ -76,9 +102,10 @@ void	enter_shell_loop(char **envp)
 		printf ("exit code : %d\n", shell->last_exit_code); //for debug
 		print_cmd(shell->commands);//for debug
 		print_tokens(shell->tokens);//for debug
-		free_cmd_list(shell->commands);
-		cleanup(shell->tokens, shell->line);
+		clean_shell(shell);
+		printf ("free all\n");
 	}
 	free_node_list(shell->envp);
 	free (shell);
+	printf ("free envp and shell\n");
 }

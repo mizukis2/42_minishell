@@ -14,7 +14,7 @@
 
 //#include "builtin.h"
 
-static void	print_error_exit(char *arg)
+static void	print_error_numeric(char *arg)
 {
 	print_error ("exit: ");
 	print_error (arg);
@@ -23,10 +23,14 @@ static void	print_error_exit(char *arg)
 
 void	clean_all(t_shell *shell)
 {
-	free(shell->line);
-	free_node_list(shell->envp);
-	free_cmd_list(shell->commands);
-	cleanup(shell->tokens, shell->line);
+	if (shell->line)
+		free(shell->line);
+	if (shell->envp)
+		free_node_list(shell->envp);
+	if (shell->commands)
+		free_cmd_list(shell->commands);
+	if (shell->tokens)
+		free_tokens(shell->tokens);
 	free (shell);
 	rl_clear_history();
 }
@@ -59,19 +63,26 @@ int	ft_exit(t_shell *shell)
 {
 	int	exit_code;
 
-	exit_code = 0;
+	exit_code = shell->last_exit_code;
 	ft_putstr ("exit\n");
-	if (shell->commands->argv[0] && !(is_numeric(shell->commands->argv[0])))
+	if (shell->commands->argv[1] && !(is_numeric(shell->commands->argv[1])))
 	{
-		print_error_exit(shell->commands->argv[0]);
+		print_error_numeric(shell->commands->argv[1]);
 		clean_all(shell);
-		return (2); //this should update later
+		exit (2);
 	}
-	if (shell->commands->argv[0] && shell->commands->argv[1])
+	if (shell->commands->argv[0] && shell->commands->argv[1] && shell->commands->argv[2])
+	{
+		if (!is_numeric(shell->commands->argv[1]))
+		{
+			print_error_numeric(shell->commands->argv[1]);
+			clean_all(shell);
+			exit (2);
+		}
 		return (print_error("exit: too many arguments\n"), 1);
-	//if there is no argument, then return with last_exit_code
-	if (shell->commands->argv[0] && (is_numeric(shell->commands->argv[0])))
-		exit_code = convert_exit_code(shell->commands->argv[0]);
+	}
+	if (shell->commands->argv[1] && (is_numeric(shell->commands->argv[1])) && !shell->commands->argv[2])
+		exit_code = convert_exit_code(shell->commands->argv[1]);
 	clean_all(shell);
 	printf ("exit code(cmd:exit): %d\n",exit_code);
 	exit (exit_code);

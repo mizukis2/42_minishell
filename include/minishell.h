@@ -121,7 +121,7 @@ typedef struct s_exec
 	int status;
 } t_exec;
 
-/* this struct carring all inportant data for shell work*/
+
 typedef struct s_shell
 {
 	t_env	*envp;
@@ -209,11 +209,12 @@ void			print_error(const char *msg);
 
 /* executon */
 void	free_split(char **split_list);
-void	cleanup_child(t_exec exec);
-void	clean_exit(t_exec exec, const char *msg, char *cmd, int code);
-void	execute_command(char **argv, t_exec exec, t_shell *shell);
+void	cleanup_child(t_shell *shell);
+void	clean_exit(t_shell *shell, const char *msg, char *cmd, int code);
+void	execute_command(char **argv, t_shell *shell);
 bool	is_builtin(char **argv);
 bool	run_in_parent(char **argv);
 int		execute(t_shell *shell);
+void	clean_shell(t_shell *shell); //
 
 #endif

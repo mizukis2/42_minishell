@@ -52,9 +52,3 @@ bool	is_valid_input(char *line)
 	return (true);
 }
 
-void	cleanup(t_token *tokens, char *line)
-{
-	if (tokens)
-		free_tokens(tokens);
-	free(line);
-}

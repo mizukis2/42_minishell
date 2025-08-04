@@ -26,7 +26,8 @@ t_token	*tokenize_input(char *line)
 	if (!syntax_check(tokens))
 	{
 		printf("\e[0;31mSyntax error\e[0m\n");
-		cleanup(tokens, line);
+		free_tokens(tokens); //changed from cleanup(tokens, line)
+		free (line);
 		tokens = NULL;
 		return (NULL);
 	}

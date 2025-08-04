@@ -27,21 +27,32 @@ void	free_split(char **split_list)
 	free(split_list);
 }
 
-void	cleanup_child(t_exec exec)
+void	cleanup_child(t_shell *shell)
 {
-	if (exec.curr_pipe[0] >= 0)
-		close (exec.curr_pipe[0]);
-	if (exec.curr_pipe[1] >= 0)
-		close (exec.curr_pipe[1]);
+	if (shell->exec.curr_pipe[0] >= 0)
+		close (shell->exec.curr_pipe[0]);
+	if (shell->exec.curr_pipe[1] >= 0)
+		close (shell->exec.curr_pipe[1]);
 }
 
-void	clean_exit(t_exec exec, const char *msg, char *cmd, int code)
+void	clean_exit(t_shell *shell, const char *msg, char *cmd, int code)
 {
-	cleanup_child(exec);
+	printf ("here clean_exit\n");
 	if (msg)
 		print_error (msg);
 	if (cmd)
 		ft_putendl_fd(cmd, 2);
+	cleanup_child(shell);
+	printf("exit code:%d\n", code);
+	if (shell->line)
+		free(shell->line);
+	if (shell->commands)
+		free_cmd_list(shell->commands);
+	if (shell->tokens)
+		free_tokens(shell->tokens);
+	if (shell->envp)
+		free_node_list(shell->envp);
+	free (shell);
 	exit (code);
 }
 

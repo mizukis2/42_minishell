@@ -14,6 +14,7 @@
 
 int	execute_builtin(char **args, t_env *envp)
 {
+	printf("enter execute_builtin\n");
 	if (ft_strcmp(args[0], "echo") == 0)
 		return (ft_echo(args + 1)); 
 	if (ft_strcmp(args[0], "cd") == 0)
