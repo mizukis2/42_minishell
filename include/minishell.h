@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/23 03:58:08 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/08/04 04:43:28 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,13 @@
 # include <string.h>
 # include <termcap.h>
 # include <stdbool.h>
-#include <fcntl.h>
+# include <fcntl.h>
 # include "libft.h"
+
+/*----------------------Colors-----------------------------*/
+# define RED     "\033[31m"
+# define PURPLE "\e[0;35m"
+# define RESET   "\033[0m"
 
 /*---------------------DIFINE-------------------------------*/
 //this used for s_exec struct
@@ -96,13 +101,11 @@ typedef struct s_cmd
 	char			*infile;
 	char			*outfile;
 	bool			append;
-	int				heredoc_fd;
-	char			*heredoc_delim;
-	bool			herdoc_expand;
+	bool			heredoc;
 	struct s_cmd	*next;
 }	t_cmd;
 
-/* envp */
+/* Environment Variables */
 typedef struct s_env
 {
 	char			*key;
@@ -110,6 +113,16 @@ typedef struct s_env
 	bool			exported;
 	struct s_env	*next;
 }	t_env;
+
+/* Shell */
+typedef struct s_shell
+{
+	char			*line;
+	t_token			*tokens;
+	t_cmd			*commands;
+	t_env			*env_list;
+	int				exit_status;
+}	t_shell;
 
 typedef struct s_exec
 {
@@ -121,21 +134,14 @@ typedef struct s_exec
 	int status;
 } t_exec;
 
-/* this struct carring all inportant data for shell work*/
-typedef struct s_shell
-{
-	t_env			*envp;
-	int				last_exit_code;
-}	t_shell;
-
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
-void			enter_shell_loop(char **envp);
-bool			is_valid_input(char *line);
-void			cleanup(t_token *tokens, char *line);
+void			start_shell(char **envp);
+bool			is_valid_input(t_shell *shell);
+void			cleanup(t_shell *shell);
 
 /* Lexer */
-t_token			*tokenize_input(char *line);
+bool			tokenize_input(t_shell *shell);
 t_token			*lexer(char *line);
 void			lexer_init(t_lex *lex, char *line);
 
@@ -160,19 +166,38 @@ bool			should_make_token(t_lex *lex, char *line);
 bool			make_token(t_lex *lex, int len, t_token_type type);
 
 /* Parser */
-t_cmd			*parse_tokens(t_token *tokens);
-t_cmd			*parse_command(t_token **tokens);
+bool			parse_tokens(t_shell *shell);
 char			**argslst_to_array(t_list *args);
 void			free_cmd_list(t_cmd *cmd);
-t_cmd			*free_and_error(t_cmd *cmd, t_list *args);
+void			free_cmd_and_args(t_cmd *cmd, t_list *args);
 
 /* Parse types */
+t_cmd			*parse_command(t_shell *shell, t_token **tokens);
+void			parse_word(t_token **tokens, t_list **args,
+					t_cmd *cmd, t_shell *shell);
+void			parse_redirect_in(t_token **tokens, t_list **args,
+					t_cmd *cmd, t_shell *shell);
+void			parse_redirect_o(t_token **tokens, t_list **args,
+					t_cmd *cmd, t_shell *shell);
+void			parse_heredoc(t_token **tokens, t_list **args,
+					t_cmd *cmd, t_shell *shell);
+
+/* Heredoc */					
+void			collect_heredoc(int fd, char *delim,
+					t_token *next, t_shell *shell);
+int				create_temp_heredoc(char **out_path);
+
+/* Expansion */
+char			*expand_variables(const char *value, t_shell *shell);
+int				var_len(const char *s);
+void			append_to_result(char **result, char *str);
+void			append_char_to_result(char **result, char c);
+
+/* Error */
 void			parse_word(t_token **tokens, t_list **args, t_cmd *cmd);
 void			parse_redirect_in(t_token **tokens, t_list **args, t_cmd *cmd);
 void			parse_redirect_o(t_token **tokens, t_list **args, t_cmd *cmd);
 void			parse_heredoc(t_token **tokens, t_list **args, t_cmd *cmd);
-
-/* error */
 void			print_error(const char *msg);
 
 /* function - environment variable */

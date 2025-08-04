@@ -6,31 +6,31 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 05:44:32 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/23 00:10:05 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/08/02 01:39:16 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_token	*tokenize_input(char *line)
+bool	tokenize_input(t_shell *shell)
 {
-	t_token	*tokens;
-
-	tokens = lexer(line);
-	if (!tokens)
+	shell->tokens = lexer(shell->line);
+	if (!shell->tokens)
 	{
-		printf("\e[0;31mSyntax error: Unable to make valid tokens\e[0m\n");
-		free(line);
-		return (NULL);
+		print_error("Syntax error - Unable to make valid tokens");
+		shell->exit_status = 2;
+		free(shell->line);
+		return (false);
 	}
-	if (!syntax_check(tokens))
+	if (!syntax_check(shell->tokens))
 	{
-		printf("\e[0;31mSyntax error\e[0m\n");
-		cleanup(tokens, line);
-		tokens = NULL;
-		return (NULL);
+		print_error("Syntax error - Invalid syntax grammar");
+		shell->exit_status = 2;
+		cleanup(shell);
+		shell->tokens = NULL;
+		return (false);
 	}
-	return (tokens);
+	return (true);
 }
 
 void	lexer_init(t_lex *lex, char *line)
