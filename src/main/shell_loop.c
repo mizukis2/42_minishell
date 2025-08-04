@@ -85,6 +85,9 @@ void	start_shell(char **envp)
 			print_cmd(shell.commands);//for debug
 		if (shell.tokens)
 			print_tokens(shell.tokens);//for debug
+    //exit_code = execute(commands, shell);
+		//shell->last_exit_code = exit_code;
+		//printf ("exit code : %d\n", shell->last_exit_code);
 		cleanup(&shell);
 	}
 	free_node_list(shell.env_list);//maybe change the name to free_env?

@@ -36,6 +36,10 @@
 # define PURPLE "\e[0;35m"
 # define RESET   "\033[0m"
 
+/*---------------------DIFINE-------------------------------*/
+//this used for s_exec struct
+#define MAX_CMDS 100
+
 /*---------------------ENUMS-------------------------------*/
 /*Token type*/
 typedef enum e_token_type
@@ -120,6 +124,16 @@ typedef struct s_shell
 	int				exit_status;
 }	t_shell;
 
+typedef struct s_exec
+{
+	int	prev_pipe_read;
+	int curr_pipe[2];
+	pid_t pids[MAX_CMDS];
+	int num_pids;
+	pid_t last_pid;
+	int status;
+} t_exec;
+
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
 void			start_shell(char **envp);
@@ -180,9 +194,13 @@ void			append_to_result(char **result, char *str);
 void			append_char_to_result(char **result, char c);
 
 /* Error */
+void			parse_word(t_token **tokens, t_list **args, t_cmd *cmd);
+void			parse_redirect_in(t_token **tokens, t_list **args, t_cmd *cmd);
+void			parse_redirect_o(t_token **tokens, t_list **args, t_cmd *cmd);
+void			parse_heredoc(t_token **tokens, t_list **args, t_cmd *cmd);
 void			print_error(const char *msg);
 
-//function - environment variable
+/* function - environment variable */
 t_env	*copy_initial_env(char **envp);
 t_env	*create_node(char *str);
 void	free_node(t_env *node);
@@ -192,9 +210,10 @@ void	free_array (char **array);
 char	*create_new_key(const char *arg);
 char	*create_new_value(const char *arg);
 void	update_env(const char *key, const char *path, t_env *envp);
+char	*complete_env_line(t_env *envp);
 
-//function - built-in, this should be impliment right parameters later
-int		execute_builtin(char **args, char **envp);
+/* function - built-in*/
+int		execute_builtin(char **args, t_env *envp);
 int		ft_echo(char **args);
 int		ft_pwd(char **args);
 int		ft_env(char **args, t_env *envp);
@@ -202,9 +221,17 @@ int		ft_export(char **args, t_env *envp);
 int		ft_cd(char **args, t_env *envp);
 int		ft_unset(char **args, t_env **envp);
 
-//built-in utils
+/* built-in utils */
 int				count_args(char **args);
 char			*get_env_value(t_env *envp, char *key);
 void			print_error(const char *msg);
+
+/* executon */
+void	free_split(char **split_list);
+void	cleanup_child(t_exec *exec);
+void	clean_exit(t_exec *exec, const char *msg, char *cmd, int code);
+void	execute_command(char **argv, t_exec *exec, t_shell *shell);
+bool	is_builtin(char **argv);
+int		execute(t_cmd *cmd, t_shell *shell);
 
 #endif
