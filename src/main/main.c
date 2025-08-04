@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:48:11 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/17 07:53:50 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/28 00:36:02 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,11 @@ int	main(int ac, char **av, char **envp)
 	if (!args_check(ac, envp))
 		return (EXIT_FAILURE);
 	print_banner();
-	enter_shell_loop(envp);
+	start_shell(envp);
 	rl_clear_history();
 	return (EXIT_SUCCESS);
 }
 
 	// valgrind --suppressions=minishell.supp
-	// TODO: Copy environment variables into a modifiable structure
-	// TODO: Add parsing, execution
+	// TODO: Add execution
 	// TODO: Add signal handling at the end of the project

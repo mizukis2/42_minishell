@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/23 03:56:10 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/08/03 23:57:19 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	print_tokens(t_token *tokens)//for token debug
 	}
 }
 
-static void	print_cmd(t_cmd *cmd)
+static void	print_cmd(t_cmd *cmd)//for cmd debug
 {
 	int	i;
 	int	cmd_count;
@@ -34,56 +34,58 @@ static void	print_cmd(t_cmd *cmd)
 		i = 0;
 		if (cmd->argv)
 		{
-    		while (cmd->argv[i])
-            {
-                printf("argv[%d]: %s\n", i, cmd->argv[i]);
-                i++;
-            }
-        }
-        printf("infile: %s\n", cmd->infile ? cmd->infile : "(null)");
-        printf("outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
-        if (cmd->heredoc_delim)
-            printf("heredoc_delim: %s\n", cmd->heredoc_delim);
-        printf("append: %s\n", cmd->append ? "True" : "False");
-        cmd = cmd->next;
-    }
+			while (cmd->argv[i])
+			{
+				printf("argv[%d]: %s\n", i, cmd->argv[i]);
+				i++;
+			}
+		}
+		printf("infile: %s\n", cmd->infile ? cmd->infile : "(null)");
+		printf("outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
+		printf("append: %s\n", cmd->append ? "True" : "False");
+		cmd = cmd->next;
+	}
 }
 
-void	enter_shell_loop(char **envp)
+static int	init_shell(t_shell *shell, char **envp)
 {
-	char	*line;
-	t_token	*tokens;
-	t_cmd	*commands;
-	t_env	*env_list;
+	shell->line = NULL;
+	shell->tokens = NULL;
+	shell->commands = NULL;
+	shell->exit_status = 0;
+	shell->env_list = copy_initial_env(envp);
+	if (!shell->env_list)
+	{
+		print_error("ERROR - Unable to make list of Environment Variables");
+		shell->exit_status = 1;
+		return (0);
+	}
+	return (1);
+}
 
-	env_list = copy_initial_env(envp);
-	if (!env_list)
-		return (perror("copy_initial_env failed"));
+void	start_shell(char **envp)
+{
+	t_shell	shell;
+
+	if (!init_shell(&shell, envp))
+		return ;
 	while (1)
 	{
-		line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
-		if (!line) // check for EOF Ctrl+D (temporary)
+		shell.line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
+		if (!shell.line) // check for EOF Ctrl+D (temporary)
 			break ;
-		if (!is_valid_input(line))
-		{
-			free(line);
+		if (!is_valid_input(&shell))
 			continue ;
-		}
-		add_history(line);
-		tokens = tokenize_input(line);
-		commands = parse_tokens(tokens);
-		if (commands)
-		{
-			print_cmd(commands);//for debug
-			free_cmd_list(commands);
-		}
-		if (tokens)
-		{
-			print_tokens(tokens);//for debug
-			cleanup(tokens, line);
-		}
-		else
+		add_history(shell.line);
+		if (!tokenize_input(&shell))
 			continue ;
+		if (!parse_tokens(&shell))
+			continue ;
+		if (shell.commands)
+			print_cmd(shell.commands);//for debug
+		if (shell.tokens)
+			print_tokens(shell.tokens);//for debug
+		cleanup(&shell);
 	}
-	free_node_list(env_list);
+	free_node_list(shell.env_list);//maybe change the name to free_env?
 }
