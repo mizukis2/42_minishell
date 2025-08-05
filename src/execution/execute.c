@@ -31,43 +31,68 @@ bool	is_builtin(char **argv)
 	return (false);
 }
 
+bool	run_in_parent(char **argv)
+{
+	static const char *builtins_parent[] = {
+		"cd", "export", "unset", "exit", NULL
+	};
+	int	i;
+
+	i = 0;
+	if (!argv || !argv[0])
+		return (false);
+	while (builtins_parent[i])
+	{
+		if (ft_strcmp(argv[0], builtins_parent[i]) == 0)
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
 /* child process */
 static int	set_redirection_pipe(t_cmd *cmd, t_exec *exec)
 {
 	int	fd_infile;
 	int fd_outfile;
-
-	if (exec->prev_pipe_read != -1)
+	//printf ("now setting redirection\n");
+	if (exec->prev_pipe_read >= 0)
 	{
+		//printf ("previous pipe->input\n");
 		dup2(exec->prev_pipe_read, STDIN_FILENO);
 		close (exec->prev_pipe_read);
 	}
 	if (cmd->infile)
 	{
+		//printf ("infile\n");
 		fd_infile = open (cmd->infile, O_RDONLY);
 		if (fd_infile == -1)
 		{
-			fd_infile = open("/dev/null", O_RDONLY);
+ 			fd_infile = open("/dev/null", O_RDONLY);
 			if (fd_infile == -1)
 				return (print_error("fallback failed"), 1); //is this not perror?
 			else
-				print_error("Warning: infile not found, using /dev/null\n"); //do I actually need to have this process? 
+				print_error("Warning: infile not found, using /dev/null\n"); //do I actually need to have this process?
 		}
 		dup2(fd_infile, STDIN_FILENO);
+		//printf ("infile complete dup\n");
 		close (fd_infile);
 	}
 	if (cmd->outfile)
 	{
+		printf ("outfile\n");
 		if (cmd->append)
 			fd_outfile = open (cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		else
 			fd_outfile = open (cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		//printf("now open outfile\n");
 		if (fd_outfile == -1)
 			return (perror ("open"), 1);
 		dup2 (fd_outfile, STDOUT_FILENO);
+		//printf("dup2: fd_outfile=%d → STDOUT_FILENO=%d\n", fd_outfile, STDOUT_FILENO);
 		close (fd_outfile);
 	}
-	if (cmd->next)
+	if (!cmd->outfile && cmd->next)
 	{
 		dup2 (exec->curr_pipe[1], STDOUT_FILENO);
 		close (exec->curr_pipe[1]);
@@ -78,64 +103,77 @@ static int	set_redirection_pipe(t_cmd *cmd, t_exec *exec)
 static void	waitpid_loop(t_exec *exec)
 {
 	int	i;
+	int status;
 	
 	i = 0;
 	while (i < exec->num_pids)
 	{
-		waitpid (exec->pids[i], &exec->status, 0);
+		waitpid (exec->pids[i], &status, 0);
+		if (i == exec->num_pids - 1)
+			exec->status = status;
 		i++;
 	}
 }
 
+void init_exec(t_exec *exec)
+{
+	exec->prev_pipe_read = -1;
+	exec->curr_pipe[0] = -1;
+	exec->curr_pipe[1] = -1;
+	exec->num_pids = 0;
+	exec->last_pid = -1;
+	exec->status = 0;
+}
+
 /* this is main function of executing the commands (and with args) */
-int	execute(t_cmd *cmd, t_shell *shell)
+int	execute(t_shell *shell)
 {
 	t_cmd	*curr;
-	t_exec	*exec;
 	pid_t	pid;
 	int		exit_code;
 	
-	curr = cmd;
+	curr = shell->commands;
+	exit_code = 1;
 	if (!curr->next && is_builtin(curr->argv) && !(curr->infile) && !(curr->outfile))
+	{
+		if (ft_strcmp(curr->argv[0], "exit") == 0)
+			return (execute_builtin_exit(shell));
 		return (execute_builtin(curr->argv, shell->envp));
-	exec = malloc(sizeof(t_exec));
-	if (!exec)
-		return (perror("execute: malloc"), 1);
-	exec->num_pids = 0;
-	exec->prev_pipe_read = -1;
+	}
+	init_exec(&shell->exec);
 	while (curr)
 	{
-		if (curr->next && pipe(exec->curr_pipe) == -1)
+		if (curr->next && pipe(shell->exec.curr_pipe) == -1)
 			return (perror("pipe failed"), 1);
 		pid = fork();
 		if (pid == 0)
 		{
-			if (set_redirection_pipe(curr, exec) == 1)
+			if (set_redirection_pipe(curr, &shell->exec) == 1)
 			{
-				cleanup_child(exec);
+				perror("set_redirection_pipe failed");
+				cleanup_child(shell);
 				exit (1);
 			}
-			execute_command(curr->argv, exec, shell);
+			execute_command(curr->argv, shell);
 		}
 		else
 		{
-			exec->pids[exec->num_pids++] = pid;
-			if (exec->prev_pipe_read != -1)
-				close (exec->prev_pipe_read);
+			shell->exec.pids[shell->exec.num_pids++] = pid;
+			if (shell->exec.prev_pipe_read != -1)
+				close (shell->exec.prev_pipe_read);
 			if (curr->next)
 			{
-				exec->prev_pipe_read = exec->curr_pipe[0];
-				close (exec->curr_pipe[1]);
+				shell->exec.prev_pipe_read = shell->exec.curr_pipe[0];
+				close (shell->exec.curr_pipe[1]);
 			}
 		}
 		curr = curr->next;
 	}
-	waitpid_loop(exec);
-	if (WIFEXITED(exec->status))
-		exit_code = WEXITSTATUS(exec->status);
+	waitpid_loop(&shell->exec);
+	if (WIFEXITED(shell->exec.status))
+		exit_code = WEXITSTATUS(shell->exec.status);
 	else
 		exit_code = 1;
-	free (exec);
 	printf ("exit code at execution : %d\n", exit_code);
 	return (exit_code);
 }

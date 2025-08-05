@@ -14,21 +14,26 @@
 
 //#include "builtin.h"
 
-static void	print_error_exit(char *arg)
+static void	print_error_numeric(char *arg)
 {
 	print_error ("exit: ");
 	print_error (arg);
 	print_error (": numeric argument required\n");
 }
 
-/* static void	cleanup_exit(t_env *envp) //need to update later
+void	clean_all(t_shell *shell)
 {
-	//free_node_list(envp);
-	//free_node_list(parcing linked list)
-	//free history
-	//free other struct
+	if (shell->line)
+		free(shell->line);
+	if (shell->envp)
+		free_node_list(shell->envp);
+	if (shell->commands)
+		free_cmd_list(shell->commands);
+	if (shell->tokens)
+		free_tokens(shell->tokens);
+	free (shell);
 	rl_clear_history();
-} */
+}
 
 static bool	is_numeric(char *arg)
 {
@@ -54,25 +59,31 @@ static int	convert_exit_code(char *arg)
 	return (code);
 }
 
-int	ft_exit(char **args) //these parameter need to update later
+int	ft_exit(t_shell *shell)
 {
 	int	exit_code;
 
+	exit_code = shell->last_exit_code;
 	ft_putstr ("exit\n");
-	if (args[0] && !(is_numeric(args[0])))
+	if (shell->commands->argv[1] && !(is_numeric(shell->commands->argv[1])))
 	{
-		print_error_exit(args[0]);
-		//cleanup_exit(*envp);
-		return (2); //this should update later
+		print_error_numeric(shell->commands->argv[1]);
+		clean_all(shell);
+		exit (2);
 	}
-	if (args[0] && args[1])
+	if (shell->commands->argv[0] && shell->commands->argv[1] && shell->commands->argv[2])
+	{
+		if (!is_numeric(shell->commands->argv[1]))
+		{
+			print_error_numeric(shell->commands->argv[1]);
+			clean_all(shell);
+			exit (2);
+		}
 		return (print_error("exit: too many arguments\n"), 1);
-	if (args[0] != NULL)
-		exit_code = convert_exit_code(args[0]);
-	else
-		exit_code = 0;
-	//cleanup_exit(*envp); //this parameters need to change after execution part completed
-	//exit (exit_code); 
-	printf ("exit code: %d\n",exit_code); //this is for test
-	return (-42); //this is just dummy return
+	}
+	if (shell->commands->argv[1] && (is_numeric(shell->commands->argv[1])) && !shell->commands->argv[2])
+		exit_code = convert_exit_code(shell->commands->argv[1]);
+	clean_all(shell);
+	printf ("exit code(cmd:exit): %d\n",exit_code);
+	exit (exit_code);
 }

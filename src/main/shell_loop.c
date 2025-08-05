@@ -53,6 +53,8 @@ static int	init_shell(t_shell *shell, char **envp)
 	shell->tokens = NULL;
 	shell->commands = NULL;
 	shell->exit_status = 0;
+  //shell->last_exit_code = 0; //mizuki
+  //shell->envp = copy_initial_env(envp); //mizuki
 	shell->env_list = copy_initial_env(envp);
 	if (!shell->env_list)
 	{
@@ -62,6 +64,51 @@ static int	init_shell(t_shell *shell, char **envp)
 	}
 	return (1);
 }
+
+void	clean_shell(t_shell *shell)
+{
+	if (shell->line)
+		free(shell->line);
+	if (shell->commands)
+		free_cmd_list(shell->commands);
+	if (shell->tokens)
+		free_tokens(shell->tokens);
+}
+
+/* mizuki's update
+void	enter_shell_loop(char **envp)
+{
+	t_shell *shell;
+
+	shell = malloc(sizeof(t_shell));
+	if (!shell)
+		return (perror("malloc failed"));
+	if (!init_shell(shell, envp))
+		return ;
+	
+	while (1)
+	{
+		shell->line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
+		if (!shell->line) // check for EOF Ctrl+D (temporary)
+			break ;
+		if (!is_valid_input(shell->line))
+		{
+			free(shell->line);
+			continue ;
+		}
+		add_history(shell->line);
+		shell->tokens = tokenize_input(shell->line);
+		shell->commands = parse_tokens(shell->tokens);
+		shell->last_exit_code = execute(shell);
+		printf ("exit code : %d\n", shell->last_exit_code); //for debug
+		print_cmd(shell->commands);//for debug
+		print_tokens(shell->tokens);//for debug
+		clean_shell(shell);
+	}
+	free_node_list(shell->envp);
+	free (shell);
+}
+*/
 
 void	start_shell(char **envp)
 {
