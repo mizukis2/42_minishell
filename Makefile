@@ -12,12 +12,16 @@ SRCS = 							\
 								src/main/main.c \
 								src/main/shell_utils.c \
 								src/main/shell_loop.c \
+								src/error/error.c \
 								src/lexer/lexer.c \
 								src/lexer/lexer_utils.c \
 								src/lexer/lexer_states.c \
 								src/lexer/token_utils.c \
 								src/parser/parser.c \
 								src/parser/parse_types.c \
+								src/parser/heredoc.c \
+								src/parser/expansion.c \
+								src/parser/expansion_utils.c \
 								src/env/copy_initial_env.c \
 								src/env/list_to_array.c \
 								src/env/env_utils.c \

@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 03:51:29 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/23 09:21:08 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/07/31 05:17:54 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,41 @@ static bool	check_quotes(char *line)
 	return (!in_quotes);
 }
 
-bool	is_valid_input(char *line)
+bool	is_valid_input(t_shell *shell)
 {
-	if (is_empty(line))
-		return (false);
-	if (!check_quotes(line))
+	if (is_empty(shell->line))
 	{
-		printf("\e[0;31mSyntax error: Unclosed Quotes\e[0m\n");
+		free(shell->line);
+		shell->line = NULL;
+		shell->exit_status = 0;
+		return (false);
+	}
+	if (!check_quotes(shell->line))
+	{
+		print_error("SYNTAX ERROR - Unclosed Quotes");
+		free(shell->line);
+		shell->line = NULL;
+		shell->exit_status = 258;
 		return (false);
 	}
 	return (true);
 }
 
+void	cleanup(t_shell *shell)
+{
+	if (shell->line)
+	{
+		free(shell->line);
+		shell->line = NULL;
+	}
+	if (shell->tokens)
+	{
+		free_tokens(shell->tokens);
+		shell->tokens = NULL;
+	}
+	if (shell->commands)
+	{
+		free_cmd_list(shell->commands);
+		shell->commands = NULL;
+	}
+}

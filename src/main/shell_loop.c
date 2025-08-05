@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/23 03:56:10 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/08/03 23:57:19 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	print_tokens(t_token *tokens)//for token debug
 	}
 }
 
-static void	print_cmd(t_cmd *cmd)
+static void	print_cmd(t_cmd *cmd)//for cmd debug
 {
 	int	i;
 	int	cmd_count;
@@ -34,19 +34,17 @@ static void	print_cmd(t_cmd *cmd)
 		i = 0;
 		if (cmd->argv)
 		{
-    		while (cmd->argv[i])
-            {
-                printf("argv[%d]: %s\n", i, cmd->argv[i]);
-                i++;
-            }
-        }
-        printf("infile: %s\n", cmd->infile ? cmd->infile : "(null)");
-        printf("outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
-        if (cmd->heredoc_delim)
-            printf("heredoc_delim: %s\n", cmd->heredoc_delim);
-        printf("append: %s\n", cmd->append ? "True" : "False");
-        cmd = cmd->next;
-    }
+			while (cmd->argv[i])
+			{
+				printf("argv[%d]: %s\n", i, cmd->argv[i]);
+				i++;
+			}
+		}
+		printf("infile: %s\n", cmd->infile ? cmd->infile : "(null)");
+		printf("outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
+		printf("append: %s\n", cmd->append ? "True" : "False");
+		cmd = cmd->next;
+	}
 }
 
 static int	init_shell(t_shell *shell, char **envp)
@@ -54,12 +52,14 @@ static int	init_shell(t_shell *shell, char **envp)
 	shell->line = NULL;
 	shell->tokens = NULL;
 	shell->commands = NULL;
-	shell->last_exit_code = 0;
-	shell->envp = copy_initial_env(envp);
-	if (!shell->envp)
+	shell->exit_status = 0;
+  //shell->last_exit_code = 0; //mizuki
+  //shell->envp = copy_initial_env(envp); //mizuki
+	shell->env_list = copy_initial_env(envp);
+	if (!shell->env_list)
 	{
 		print_error("ERROR - Unable to make list of Environment Variables");
-		shell->last_exit_code = 1;
+		shell->exit_status = 1;
 		return (0);
 	}
 	return (1);
@@ -75,6 +75,7 @@ void	clean_shell(t_shell *shell)
 		free_tokens(shell->tokens);
 }
 
+/* mizuki's update
 void	enter_shell_loop(char **envp)
 {
 	t_shell *shell;
@@ -103,9 +104,38 @@ void	enter_shell_loop(char **envp)
 		print_cmd(shell->commands);//for debug
 		print_tokens(shell->tokens);//for debug
 		clean_shell(shell);
-		printf ("free all\n");
 	}
 	free_node_list(shell->envp);
 	free (shell);
-	printf ("free envp and shell\n");
+}
+*/
+
+void	start_shell(char **envp)
+{
+	t_shell	shell;
+
+	if (!init_shell(&shell, envp))
+		return ;
+	while (1)
+	{
+		shell.line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
+		if (!shell.line) // check for EOF Ctrl+D (temporary)
+			break ;
+		if (!is_valid_input(&shell))
+			continue ;
+		add_history(shell.line);
+		if (!tokenize_input(&shell))
+			continue ;
+		if (!parse_tokens(&shell))
+			continue ;
+		if (shell.commands)
+			print_cmd(shell.commands);//for debug
+		if (shell.tokens)
+			print_tokens(shell.tokens);//for debug
+    //exit_code = execute(commands, shell);
+		//shell->last_exit_code = exit_code;
+		//printf ("exit code : %d\n", shell->last_exit_code);
+		cleanup(&shell);
+	}
+	free_node_list(shell.env_list);//maybe change the name to free_env?
 }
