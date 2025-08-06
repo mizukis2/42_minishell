@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 23:45:45 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/08/04 02:20:19 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/08/06 09:12:27 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,10 @@ int	create_temp_heredoc(char **out_path)
 // 	free(cmd->infile);
 // }
 
-void	collect_heredoc(int fd, char *delim, t_token *next, t_shell *shell)
+void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
 {
-	char	*value;
 	char	*line;
+	char	*value;
 
 	while (1)
 	{
@@ -60,7 +60,7 @@ void	collect_heredoc(int fd, char *delim, t_token *next, t_shell *shell)
 			free(line);
 			break ;
 		}
-		if (next->quote_type != QUOTE_NONE)
+		if (is_quoted)
 			value = ft_strdup(line);
 		else
 			value = expand_variables(line, shell);
@@ -69,4 +69,31 @@ void	collect_heredoc(int fd, char *delim, t_token *next, t_shell *shell)
 		free(value);
 		free(line);
 	}
+}
+
+char	*create_heredoc_file(const char *delim, t_shell *shell)
+{
+	t_heredoc	heredoc;
+
+	if ((delim[0] == '\'' && delim[ft_strlen(delim) - 1] == '\'')
+		|| (delim[0] == '"' && delim[ft_strlen(delim) - 1] == '"'))
+	{
+		heredoc.clean_delim = ft_strndup(delim + 1, ft_strlen(delim) - 2);
+		heredoc.is_quoted = true;
+	}
+	else
+	{
+		heredoc.clean_delim = ft_strdup(delim);
+		heredoc.is_quoted = false;
+	}
+	if (!heredoc.clean_delim)
+		return (NULL);
+	heredoc.fd = create_temp_heredoc(&heredoc.temp_path);
+	if (heredoc.fd < 0)
+		return (free(heredoc.clean_delim), NULL);
+	collect_heredoc(heredoc.fd, heredoc.clean_delim,
+		heredoc.is_quoted, shell);
+	free(heredoc.clean_delim);
+	close(heredoc.fd);
+	return (heredoc.temp_path);
 }
