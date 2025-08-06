@@ -232,7 +232,7 @@ char			*get_env_value(t_env *envp, char *key);
 void			print_error_builtin(const char *msg); //this and other "print_error should be one?"
 
 /* executon */
-bool			run_execution(t_shell *shell);
+void			run_execution(t_shell *shell);
 void			free_split(char **split_list);
 void			cleanup_child(t_shell *shell);
 void			clean_exit(t_shell *shell, const char *msg,
@@ -243,5 +243,9 @@ bool			run_in_parent(char **argv);
 int				execute(t_shell *shell);
 void			clean_shell(t_shell *shell);
 void			close_restore_std(int save_in, int save_out);
+bool			set_redirection_pipe(t_cmd *cmd, t_exec *exec);
+void			waitpid_loop(t_exec *exec);
+void			init_exec(t_exec *exec);
+int				run_builtin_parent(t_cmd *commands, t_shell *shell);
 
 #endif

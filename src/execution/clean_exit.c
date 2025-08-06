@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void close_restore_std(int save_in, int save_out)
+void	close_restore_std(int save_in, int save_out)
 {
 	if (save_in >= 0)
 	{
@@ -51,13 +51,14 @@ void	cleanup_child(t_shell *shell)
 
 void	clean_exit(t_shell *shell, const char *msg, char *cmd, int code)
 {
-	printf ("here clean_exit\n");
 	if (msg)
-		print_error (msg);
+		print_error_builtin (msg);
 	if (cmd)
 		ft_putendl_fd(cmd, 2);
-	cleanup_child(shell);
-	printf("exit code:%d\n", code);
+	if (shell->exec.curr_pipe[0] >= 0)
+		close (shell->exec.curr_pipe[0]);
+	if (shell->exec.curr_pipe[1] >= 0)
+		close (shell->exec.curr_pipe[1]);
 	if (shell->line)
 		free(shell->line);
 	if (shell->commands)
@@ -68,4 +69,3 @@ void	clean_exit(t_shell *shell, const char *msg, char *cmd, int code)
 		free_node_list(shell->env_list);
 	exit (code);
 }
-

@@ -97,25 +97,3 @@ t_env	*copy_initial_env(char **envp)
 	}
 	return (head);
 }
-/* int main(int ac, char **av, char **envp)
-{
-	(void)av;
-	(void)ac;
-
-	t_env	*env_list;
-	t_env	*curr;
-
-	env_list = copy_initial_env(envp);
-	curr = env_list;
-	while (curr)
-	{
-		if (curr->exported && curr->value)
-		{
-			printf ("%s=%s\n", curr->key, curr->value);
-			curr = curr->next;
-		}
-	}
-
-	free_node_list(env_list);
-	return (EXIT_SUCCESS);
-} */

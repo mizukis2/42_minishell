@@ -26,7 +26,8 @@ int	ft_env(char **args, t_env *envp)
 		{
 			env_str = complete_env_line(curr);
 			if (!env_str)
-				return (print_error_builtin("env: memory allocation failed\n"), 1);
+				return (print_error_builtin
+					("env: memory allocation failed\n"), 1);
 			ft_putstr(env_str);
 			write (STDOUT_FILENO, "\n", 1);
 			free (env_str);

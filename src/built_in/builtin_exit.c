@@ -43,7 +43,7 @@ static bool	is_numeric(char *arg)
 	{
 		if (!ft_isdigit(arg[i]))
 			return (false);
-		i++;	
+		i++;
 	}
 	return (true);
 }
@@ -80,6 +80,5 @@ int	ft_exit(t_shell *shell, int save_in, int save_out)
 		exit_code = convert_exit_code(shell->commands->argv[1]);
 	close_restore_std(save_in, save_out);
 	clean_all(shell);
-	printf ("exit code(cmd:exit): %d\n",exit_code);
 	exit (exit_code);
 }

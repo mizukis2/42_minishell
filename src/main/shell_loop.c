@@ -100,9 +100,8 @@ void	start_shell(char **envp)
 			print_cmd(shell.commands);//for debug
 		if (shell.tokens)
 			print_tokens(shell.tokens);//for debug
-		if (!run_execution (&shell))
-			continue;
-		//printf ("exit code : %d\n", shell.last_exit_code);
+		run_execution (&shell);
+		printf ("exit code : %d\n", shell.last_exit_code); //for debug
 		cleanup(&shell);
 	}
 	free_env(shell.env_list);
