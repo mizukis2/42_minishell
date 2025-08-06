@@ -12,6 +12,20 @@
 
 #include "minishell.h"
 
+void close_restore_std(int save_in, int save_out)
+{
+	if (save_in >= 0)
+	{
+		dup2(save_in, STDIN_FILENO);
+		close (save_in);
+	}
+	if (save_out >= 0)
+	{
+		dup2(save_out, STDOUT_FILENO);
+		close (save_out);
+	}
+}
+
 void	free_split(char **split_list)
 {
 	int	i;
@@ -52,7 +66,6 @@ void	clean_exit(t_shell *shell, const char *msg, char *cmd, int code)
 		free_tokens(shell->tokens);
 	if (shell->env_list)
 		free_node_list(shell->env_list);
-	free (shell);
 	exit (code);
 }
 

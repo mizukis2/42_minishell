@@ -17,7 +17,7 @@ int	ft_pwd(char **args)
 	char	*cwd;
 
 	if (count_args(args) > 2)
-		return (print_error("cd: too many arguments\n"), 1);
+		return (print_error_builtin("cd: too many arguments\n"), 1);
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
 		return (perror("pwd"), 1);

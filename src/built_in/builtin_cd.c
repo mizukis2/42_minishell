@@ -26,7 +26,7 @@ static char	*home_related_path(char *arg, t_env *envp)
 
 	home_path = get_env_value(envp, "HOME");
 	if (!home_path)
-		return (print_error("cd: HOME not set\n"), NULL);
+		return (print_error_builtin("cd: HOME not set\n"), NULL);
 	if (!arg || ft_strcmp(arg, "~") == 0)
 		return (home_path);
 	if (ft_strncmp(arg, "~/", 2) == 0)
@@ -54,7 +54,7 @@ static char	*resolve_path(char *arg, t_env *envp)
 	{
 		result_path = get_env_value(envp, "OLDPWD");
 		if (!result_path)
-			return (print_error("cd: OLDPWD not set\n"), NULL);
+			return (print_error_builtin("cd: OLDPWD not set\n"), NULL);
 		ft_putstr(result_path);
 		write (STDOUT_FILENO, "\n", 1);
 		return (result_path);
@@ -65,10 +65,10 @@ static char	*resolve_path(char *arg, t_env *envp)
 
 static void	set_error_return(char *cd_arg, char *oldpwd, char *path)
 {
-	print_error("cd: ");
+	print_error_builtin("cd: ");
 	if (cd_arg)
-		print_error(cd_arg);
-	print_error(": ");
+		print_error_builtin(cd_arg);
+	print_error_builtin(": ");
 	perror("");
 	free (oldpwd);
 	free(path);
@@ -81,10 +81,10 @@ int	ft_cd(char **args, t_env *envp)
 	char	*cwd;
 
 	if (is_cd_arg(args) == false)
-		return (print_error("cd: too many arguments\n"), 1);
+		return (print_error_builtin("cd: too many arguments\n"), 1);
 	oldpwd = getcwd(NULL, 0);
 	if (!oldpwd)
-		return (print_error("cd"), 1);
+		return (print_error_builtin("cd"), 1);
 	path = resolve_path(args[0], envp);
 	if (!path)
 		return (free(oldpwd), 1);
@@ -94,7 +94,7 @@ int	ft_cd(char **args, t_env *envp)
 		return (set_error_return(args[0], oldpwd, path), 1);
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
-		return (print_error("cd"), free(oldpwd), free(path), 1);
+		return (print_error_builtin("cd"), free(oldpwd), free(path), 1);
 	update_env("OLDPWD", oldpwd, envp);
 	update_env("PWD", cwd, envp);
 	return (free(oldpwd), free(cwd), free (path), 0);

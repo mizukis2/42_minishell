@@ -14,7 +14,6 @@
 
 int	execute_builtin(char **args, t_env *envp)
 {
-	printf("enter execute_builtin\n");
 	if (ft_strcmp(args[0], "echo") == 0)
 		return (ft_echo(args + 1)); 
 	if (ft_strcmp(args[0], "cd") == 0)
@@ -31,9 +30,9 @@ int	execute_builtin(char **args, t_env *envp)
 		return (1);
 }
 
-int	execute_builtin_exit(t_shell *shell)
+int	execute_builtin_exit(t_shell *shell, int save_in, int save_out)
 {
-	return (ft_exit(shell));
+	return (ft_exit(shell, save_in, save_out));
 }
 
 
