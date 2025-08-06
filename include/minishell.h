@@ -36,10 +36,6 @@
 # define PURPLE "\e[0;35m"
 # define RESET   "\033[0m"
 
-/*---------------------DIFINE-------------------------------*/
-//this used for s_exec struct
-#define MAX_CMDS 100
-
 /*---------------------ENUMS-------------------------------*/
 /*Token type*/
 typedef enum e_token_type
@@ -123,15 +119,14 @@ typedef struct s_shell
 	t_env			*env_list;
   //t_env	*envp; //mizuki's update
   t_exec	exec; //mizuki's update
-	int				exit_status;
-  //int		last_exit_code; //mizuki's update
+  int		last_exit_code;
 }	t_shell;
 
 typedef struct s_exec
 {
 	int	prev_pipe_read;
 	int curr_pipe[2];
-	pid_t pids[MAX_CMDS];
+	pid_t pids[100];
 	int num_pids;
 	pid_t last_pid;
 	int status;
@@ -224,7 +219,7 @@ int		ft_env(char **args, t_env *envp);
 int		ft_export(char **args, t_env *envp);
 int		ft_cd(char **args, t_env *envp);
 int		ft_unset(char **args, t_env **envp);
-int		ft_exit(t_shell *shell);
+int		ft_exit(t_shell *shell, int save_in, int save_out);
 
 /* built-in utils */
 int				count_args(char **args);
@@ -240,5 +235,6 @@ bool	is_builtin(char **argv);
 bool	run_in_parent(char **argv);
 int		execute(t_shell *shell);
 void	clean_shell(t_shell *shell); //
+void close_restore_std(int save_in, int save_out);
 
 #endif

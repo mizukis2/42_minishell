@@ -52,14 +52,12 @@ static int	init_shell(t_shell *shell, char **envp)
 	shell->line = NULL;
 	shell->tokens = NULL;
 	shell->commands = NULL;
-	shell->exit_status = 0;
-  //shell->last_exit_code = 0; //mizuki
-  //shell->envp = copy_initial_env(envp); //mizuki
+	shell->last_exit_code = 0; //mizuki
 	shell->env_list = copy_initial_env(envp);
 	if (!shell->env_list)
 	{
 		print_error("ERROR - Unable to make list of Environment Variables");
-		shell->exit_status = 1;
+		shell->last_exit_code = 1;
 		return (0);
 	}
 	return (1);
@@ -75,7 +73,7 @@ void	clean_shell(t_shell *shell)
 		free_tokens(shell->tokens);
 }
 
-/* mizuki's update
+//mizuki's update
 void	enter_shell_loop(char **envp)
 {
 	t_shell *shell;
@@ -105,10 +103,10 @@ void	enter_shell_loop(char **envp)
 		print_tokens(shell->tokens);//for debug
 		clean_shell(shell);
 	}
-	free_node_list(shell->envp);
+	free_node_list(shell->env_list);
 	free (shell);
 }
-*/
+
 
 void	start_shell(char **envp)
 {
@@ -132,6 +130,7 @@ void	start_shell(char **envp)
 			print_cmd(shell.commands);//for debug
 		if (shell.tokens)
 			print_tokens(shell.tokens);//for debug
+	
     //exit_code = execute(commands, shell);
 		//shell->last_exit_code = exit_code;
 		//printf ("exit code : %d\n", shell->last_exit_code);

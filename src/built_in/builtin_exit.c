@@ -25,8 +25,8 @@ void	clean_all(t_shell *shell)
 {
 	if (shell->line)
 		free(shell->line);
-	if (shell->envp)
-		free_node_list(shell->envp);
+	if (shell->env_list)
+		free_node_list(shell->env_list);
 	if (shell->commands)
 		free_cmd_list(shell->commands);
 	if (shell->tokens)
@@ -59,7 +59,7 @@ static int	convert_exit_code(char *arg)
 	return (code);
 }
 
-int	ft_exit(t_shell *shell)
+int	ft_exit(t_shell *shell, int save_in, int save_out)
 {
 	int	exit_code;
 
@@ -83,6 +83,7 @@ int	ft_exit(t_shell *shell)
 	}
 	if (shell->commands->argv[1] && (is_numeric(shell->commands->argv[1])) && !shell->commands->argv[2])
 		exit_code = convert_exit_code(shell->commands->argv[1]);
+	close_restore_std(save_in, save_out);
 	clean_all(shell);
 	printf ("exit code(cmd:exit): %d\n",exit_code);
 	exit (exit_code);

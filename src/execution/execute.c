@@ -51,7 +51,7 @@ bool	run_in_parent(char **argv)
 }
 
 /* child process */
-static int	set_redirection_pipe(t_cmd *cmd, t_exec *exec)
+static bool	set_redirection_pipe(t_cmd *cmd, t_exec *exec)
 {
 	int	fd_infile;
 	int fd_outfile;
@@ -70,7 +70,7 @@ static int	set_redirection_pipe(t_cmd *cmd, t_exec *exec)
 		{
  			fd_infile = open("/dev/null", O_RDONLY);
 			if (fd_infile == -1)
-				return (print_error("fallback failed"), 1); //is this not perror?
+				return (print_error("fallback failed"), false); //is this not perror?
 			else
 				print_error("Warning: infile not found, using /dev/null\n"); //do I actually need to have this process?
 		}
@@ -87,7 +87,7 @@ static int	set_redirection_pipe(t_cmd *cmd, t_exec *exec)
 			fd_outfile = open (cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		//printf("now open outfile\n");
 		if (fd_outfile == -1)
-			return (perror ("open"), 1);
+			return (perror ("open"), false);
 		dup2 (fd_outfile, STDOUT_FILENO);
 		//printf("dup2: fd_outfile=%d → STDOUT_FILENO=%d\n", fd_outfile, STDOUT_FILENO);
 		close (fd_outfile);
@@ -97,7 +97,7 @@ static int	set_redirection_pipe(t_cmd *cmd, t_exec *exec)
 		dup2 (exec->curr_pipe[1], STDOUT_FILENO);
 		close (exec->curr_pipe[1]);
 	}
-	return (0);
+	return (true);
 }
 
 static void	waitpid_loop(t_exec *exec)
@@ -125,6 +125,48 @@ void init_exec(t_exec *exec)
 	exec->status = 0;
 }
 
+
+int	run_patent()
+{
+
+}
+
+void close_restore_std(int save_in, int save_out)
+{
+	if (save_in >= 0)
+	{
+		dup2(save_in, STDIN_FILENO);
+		close (save_in);
+	}
+	if (save_out >= 0)
+	{
+		dup2(save_out, STDOUT_FILENO);
+		close (save_out);
+	}
+}
+
+int	run_builtin_parent(t_cmd *commands, t_shell *shell)
+{
+	int	save_in;
+	int save_out;
+	int result;
+
+	save_in = dup(STDIN_FILENO);
+	save_out = dup(STDOUT_FILENO);
+	if (!set_redirection_pipe(commands, &shell->exec))
+	{
+		perror("set_redirection_pipe failed");
+		close (save_in);
+		close (save_out);
+		return (1);
+	}
+	if (ft_strcmp(commands->argv[0], "exit") == 0)
+		return (execute_builtin_exit(shell));
+	result = execute_builtin(commands->argv, shell->env_list);
+	close_restore_std(save_in, save_out);
+	return (result);
+}
+
 /* this is main function of executing the commands (and with args) */
 int	execute(t_shell *shell)
 {
@@ -134,12 +176,8 @@ int	execute(t_shell *shell)
 	
 	curr = shell->commands;
 	exit_code = 1;
-	if (!curr->next && is_builtin(curr->argv) && !(curr->infile) && !(curr->outfile))
-	{
-		if (ft_strcmp(curr->argv[0], "exit") == 0)
-			return (execute_builtin_exit(shell));
-		return (execute_builtin(curr->argv, shell->envp));
-	}
+	if (!curr->next && is_builtin(curr->argv))
+		return (run_builtin_parent(curr, shell));
 	init_exec(&shell->exec);
 	while (curr)
 	{
@@ -148,7 +186,7 @@ int	execute(t_shell *shell)
 		pid = fork();
 		if (pid == 0)
 		{
-			if (set_redirection_pipe(curr, &shell->exec) == 1)
+			if (!set_redirection_pipe(curr, &shell->exec))
 			{
 				perror("set_redirection_pipe failed");
 				cleanup_child(shell);
@@ -176,4 +214,11 @@ int	execute(t_shell *shell)
 		exit_code = 1;
 	printf ("exit code at execution : %d\n", exit_code);
 	return (exit_code);
+}
+
+
+bool run_execution (t_shell *shell)
+{
+
+
 }

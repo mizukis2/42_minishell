@@ -50,8 +50,8 @@ void	clean_exit(t_shell *shell, const char *msg, char *cmd, int code)
 		free_cmd_list(shell->commands);
 	if (shell->tokens)
 		free_tokens(shell->tokens);
-	if (shell->envp)
-		free_node_list(shell->envp);
+	if (shell->env_list)
+		free_node_list(shell->env_list);
 	free (shell);
 	exit (code);
 }
