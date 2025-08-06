@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 14:38:56 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/28 03:16:01 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/08/06 08:14:11 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,27 +33,28 @@ void	process_start(t_lex *lex, char *line)
 
 void	process_inword(t_lex *lex, char *line)
 {
+	char	q;
+	int		len;
+
 	if (lex->c == '\'' || lex->c == '\"')
 	{
-		if (lex->start < &line[lex->i])
-			if (!make_token(lex, &line[lex->i] - lex->start, TOKEN_WORD))
-				return ;
-		lex->start = &line[lex->i];
-		if (lex->c == '\'')
-			lex->state = STATE_IN_SINGLE_QUOTE;
-		else
-			lex->state = STATE_IN_DOUBLE_QUOTE;
+		q = lex->c;
 		lex->i++;
+		while (line[lex->i] && line[lex->i] != q)
+			lex->i++;
+		if (line[lex->i] == q)
+			lex->i++;
+		return ;
 	}
-	else if (ft_isspace(lex->c) || is_metachar(lex->c))
+	if (ft_isspace(lex->c) || is_metachar(lex->c))
 	{
-		if (should_make_token(lex, line))
-			if (!make_token(lex, &line[lex->i] - lex->start, TOKEN_WORD))
-				return ;
+		len = &line[lex->i] - lex->start;
+		if (len > 0 && !make_token(lex, len, TOKEN_WORD))
+			return ;
 		lex->state = STATE_START;
+		return ;
 	}
-	else
-		lex->i++;
+	lex->i++;
 }
 
 void	process_single_quotes(t_lex *lex, char *line)

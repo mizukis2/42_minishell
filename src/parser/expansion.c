@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 23:22:44 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/08/04 04:52:10 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/08/06 08:54:06 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,35 +50,44 @@ static void	handle_env_var(const char *value, int *i,
 	}
 }
 
-static void	handle_dollar(const char *value, int *i,
-	char **result, t_shell *shell)
+static void	process_char(t_expander *exp, const char *value, t_shell *shell)
 {
-	(*i)++;
-	if (value[*i] == '?')
-		handle_exit_status(i, result, shell);
+	if (value[exp->i] == '\'' && !exp->in_double_quote)
+	{
+		exp->in_single_quote = !exp->in_single_quote;
+		exp->i++;
+	}
+	else if (value[exp->i] == '\"' && !exp->in_single_quote)
+	{
+		exp->in_double_quote = !exp->in_double_quote;
+		exp->i++;
+	}
+	else if (value[exp->i] == '$' && !exp->in_single_quote)
+	{
+		exp->i++;
+		if (value[exp->i] == '?')
+			handle_exit_status(&exp->i, &exp->result, shell);
+		else
+			handle_env_var(value, &exp->i, &exp->result, shell);
+	}
 	else
-		handle_env_var(value, i, result, shell);
-}
-
-static void	handle_normal_char(const char *value, int *i, char **result)
-{
-	append_char_to_result(result, value[*i]);
-	(*i)++;
+	{
+		append_char_to_result(&exp->result, value[exp->i]);
+		exp->i++;
+	}
 }
 
 char	*expand_variables(const char *value, t_shell *shell)
 {
-	char	*result;
-	int		i;
+	t_expander	exp;
 
-	result = ft_strdup("");
-	i = 0;
-	while (value[i])
+	exp.result = ft_strdup("");
+	exp.i = 0;
+	exp.in_single_quote = false;
+	exp.in_double_quote = false;
+	while (value[exp.i])
 	{
-		if (value[i] == '$')
-			handle_dollar(value, &i, &result, shell);
-		else
-			handle_normal_char(value, &i, &result);
+		process_char(&exp, value, shell);
 	}
-	return (result);
+	return (exp.result);
 }

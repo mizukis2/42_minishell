@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/08/03 23:57:19 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/08/06 08:18:01 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ static void	print_tokens(t_token *tokens)//for token debug
 {
 	while (tokens)
 	{
-		printf("\nTOKEN TYPE: %d, VALUE: [%s], Quote: [%d]\n",
-			tokens->type, tokens->value, tokens->quote_type);
+		printf("TOKEN TYPE: %d, VALUE: [%s]\n",
+			tokens->type, tokens->value);
 		tokens = tokens->next;
 	}
 }
@@ -53,8 +53,8 @@ static int	init_shell(t_shell *shell, char **envp)
 	shell->tokens = NULL;
 	shell->commands = NULL;
 	shell->exit_status = 0;
-  //shell->last_exit_code = 0; //mizuki
-  //shell->envp = copy_initial_env(envp); //mizuki
+	//shell->last_exit_code = 0; //mizuki
+	//shell->envp = copy_initial_env(envp);//mizuki
 	shell->env_list = copy_initial_env(envp);
 	if (!shell->env_list)
 	{

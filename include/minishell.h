@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/08/04 04:43:28 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/08/06 09:13:03 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 
 /*---------------------DIFINE-------------------------------*/
 //this used for s_exec struct
-#define MAX_CMDS 100
+# define MAX_CMDS 100
 
 /*---------------------ENUMS-------------------------------*/
 /*Token type*/
@@ -62,21 +62,12 @@ typedef enum e_lexer_state
 	STATE_IN_METACHAR
 }	t_lexer_state;
 
-/*Quote Type*/
-typedef enum e_quote_type
-{
-	QUOTE_NONE,
-	QUOTE_SINGLE,
-	QUOTE_DOUBLE
-}	t_quote_type;
-
 /*--------------------Structs------------------------------*/
 /* Tokens */
 typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
-	t_quote_type	quote_type;
 	struct s_token	*next;
 }	t_token;
 
@@ -105,6 +96,23 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
+typedef struct s_heredoc
+{
+	char	*clean_delim;
+	char	*temp_path;
+	int		fd;
+	bool	is_quoted;
+}	t_heredoc;
+
+/* Expansion */
+typedef struct s_expander
+{
+	char	*result;
+	int		i;
+	bool	in_single_quote;
+	bool	in_double_quote;
+}	t_expander;
+
 /* Environment Variables */
 typedef struct s_env
 {
@@ -121,21 +129,21 @@ typedef struct s_shell
 	t_token			*tokens;
 	t_cmd			*commands;
 	t_env			*env_list;
-  //t_env	*envp; //mizuki's update
-  t_exec	exec; //mizuki's update
+	//t_env			*envp; //mizuki's update
+	t_exec			exec; //mizuki's update
 	int				exit_status;
-  //int		last_exit_code; //mizuki's update
+	//int			last_exit_code; //mizuki's update
 }	t_shell;
 
 typedef struct s_exec
 {
-	int	prev_pipe_read;
-	int curr_pipe[2];
-	pid_t pids[MAX_CMDS];
-	int num_pids;
-	pid_t last_pid;
-	int status;
-} t_exec;
+	int				prev_pipe_read;
+	int				curr_pipe[2];
+	pid_t			pids[MAX_CMDS];
+	int				num_pids;
+	pid_t			last_pid;
+	int				status;
+}	t_exec;
 
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
@@ -187,8 +195,9 @@ void			parse_heredoc(t_token **tokens, t_list **args,
 
 /* Heredoc */					
 void			collect_heredoc(int fd, char *delim,
-					t_token *next, t_shell *shell);
+					bool is_quoted, t_shell *shell);
 int				create_temp_heredoc(char **out_path);
+char			*create_heredoc_file(const char *delim, t_shell *shell);
 
 /* Expansion */
 char			*expand_variables(const char *value, t_shell *shell);
@@ -197,34 +206,30 @@ void			append_to_result(char **result, char *str);
 void			append_char_to_result(char **result, char c);
 
 /* Error */
-void			parse_word(t_token **tokens, t_list **args, t_cmd *cmd);
-void			parse_redirect_in(t_token **tokens, t_list **args, t_cmd *cmd);
-void			parse_redirect_o(t_token **tokens, t_list **args, t_cmd *cmd);
-void			parse_heredoc(t_token **tokens, t_list **args, t_cmd *cmd);
 void			print_error(const char *msg);
 
 /* function - environment variable */
-t_env	*copy_initial_env(char **envp);
-t_env	*create_node(char *str);
-void	free_node(t_env *node);
-void	free_node_list(t_env *head);
-char	**list_to_array(t_env *envp);
-void	free_array (char **array);
-char	*create_new_key(const char *arg);
-char	*create_new_value(const char *arg);
-void	update_env(const char *key, const char *path, t_env *envp);
-char	*complete_env_line(t_env *envp);
+t_env			*copy_initial_env(char **envp);
+t_env			*create_node(char *str);
+void			free_node(t_env *node);
+void			free_node_list(t_env *head);
+char			**list_to_array(t_env *envp);
+void			free_array(char **array);
+char			*create_new_key(const char *arg);
+char			*create_new_value(const char *arg);
+void			update_env(const char *key, const char *path, t_env *envp);
+char			*complete_env_line(t_env *envp);
 
 /* function - built-in*/
-int		execute_builtin(char **args, t_env *envp);
-int		execute_builtin_exit(t_shell *shell);
-int		ft_echo(char **args);
-int		ft_pwd(char **args);
-int		ft_env(char **args, t_env *envp);
-int		ft_export(char **args, t_env *envp);
-int		ft_cd(char **args, t_env *envp);
-int		ft_unset(char **args, t_env **envp);
-int		ft_exit(t_shell *shell);
+int				execute_builtin(char **args, t_env *envp);
+int				execute_builtin_exit(t_shell *shell);
+int				ft_echo(char **args);
+int				ft_pwd(char **args);
+int				ft_env(char **args, t_env *envp);
+int				ft_export(char **args, t_env *envp);
+int				ft_cd(char **args, t_env *envp);
+int				ft_unset(char **args, t_env **envp);
+int				ft_exit(t_shell *shell);
 
 /* built-in utils */
 int				count_args(char **args);
@@ -232,13 +237,14 @@ char			*get_env_value(t_env *envp, char *key);
 void			print_error(const char *msg);
 
 /* executon */
-void	free_split(char **split_list);
-void	cleanup_child(t_shell *shell);
-void	clean_exit(t_shell *shell, const char *msg, char *cmd, int code);
-void	execute_command(char **argv, t_shell *shell);
-bool	is_builtin(char **argv);
-bool	run_in_parent(char **argv);
-int		execute(t_shell *shell);
-void	clean_shell(t_shell *shell); //
+void			free_split(char **split_list);
+void			cleanup_child(t_shell *shell);
+void			clean_exit(t_shell *shell, const char *msg,
+					char *cmd, int code);
+void			execute_command(char **argv, t_shell *shell);
+bool			is_builtin(char **argv);
+bool			run_in_parent(char **argv);
+int				execute(t_shell *shell);
+void			clean_shell(t_shell *shell);
 
 #endif
