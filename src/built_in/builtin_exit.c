@@ -16,22 +16,21 @@
 
 static void	print_error_numeric(char *arg)
 {
-	print_error ("exit: ");
-	print_error (arg);
-	print_error (": numeric argument required\n");
+	print_error_builtin ("exit: ");
+	print_error_builtin (arg);
+	print_error_builtin (": numeric argument required\n");
 }
 
 void	clean_all(t_shell *shell)
 {
 	if (shell->line)
 		free(shell->line);
-	if (shell->envp)
-		free_node_list(shell->envp);
+	if (shell->env_list)
+		free_node_list(shell->env_list);
 	if (shell->commands)
 		free_cmd_list(shell->commands);
 	if (shell->tokens)
 		free_tokens(shell->tokens);
-	free (shell);
 	rl_clear_history();
 }
 
@@ -44,7 +43,7 @@ static bool	is_numeric(char *arg)
 	{
 		if (!ft_isdigit(arg[i]))
 			return (false);
-		i++;	
+		i++;
 	}
 	return (true);
 }
@@ -59,7 +58,7 @@ static int	convert_exit_code(char *arg)
 	return (code);
 }
 
-int	ft_exit(t_shell *shell)
+int	ft_exit(t_shell *shell, int save_in, int save_out)
 {
 	int	exit_code;
 
@@ -68,22 +67,18 @@ int	ft_exit(t_shell *shell)
 	if (shell->commands->argv[1] && !(is_numeric(shell->commands->argv[1])))
 	{
 		print_error_numeric(shell->commands->argv[1]);
+		close_restore_std(save_in, save_out);
 		clean_all(shell);
 		exit (2);
 	}
-	if (shell->commands->argv[0] && shell->commands->argv[1] && shell->commands->argv[2])
+	if (shell->commands->argv[1] && shell->commands->argv[2])
 	{
-		if (!is_numeric(shell->commands->argv[1]))
-		{
-			print_error_numeric(shell->commands->argv[1]);
-			clean_all(shell);
-			exit (2);
-		}
-		return (print_error("exit: too many arguments\n"), 1);
+		close_restore_std(save_in, save_out);
+		return (print_error_builtin("exit: too many arguments\n"), 1);
 	}
-	if (shell->commands->argv[1] && (is_numeric(shell->commands->argv[1])) && !shell->commands->argv[2])
+	if (shell->commands->argv[1])
 		exit_code = convert_exit_code(shell->commands->argv[1]);
+	close_restore_std(save_in, save_out);
 	clean_all(shell);
-	printf ("exit code(cmd:exit): %d\n",exit_code);
 	exit (exit_code);
 }

@@ -63,25 +63,22 @@ void	execute_command(char **argv, t_shell *shell)
 	char	*path;
 	char	**array_envp;
 
-	printf("now execvp or builtin...\n");
 	if (!argv || !argv[0])
 		clean_exit(shell, "Command not found", NULL, 127);
 	if (is_builtin(argv))
 	{
-		printf("this is builtin\n");
 		cleanup_child(shell);
 		if (run_in_parent(argv))
 			clean_exit(shell, NULL, NULL, 0);
-		exit (execute_builtin(argv, shell->envp));
+		exit (execute_builtin(argv, shell->env_list));
 	}
-	path = find_path(argv[0], shell->envp);
+	path = find_path(argv[0], shell->env_list);
 	if (!path)
 	{
-		printf ("cannot find path\n");
 		clean_exit(shell, "Command not found: ", argv[0], 127);
 	}
 	cleanup_child(shell);
-	array_envp = list_to_array(shell->envp);
+	array_envp = list_to_array(shell->env_list);
 	execve (path, argv, array_envp);
 	perror ("execve failed");
 	free (array_envp);

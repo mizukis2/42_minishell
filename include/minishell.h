@@ -122,17 +122,6 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
-/* Shell */
-typedef struct s_shell
-{
-	char			*line;
-	t_token			*tokens;
-	t_cmd			*commands;
-	t_env			*env_list;
-	t_exec			exec; //mizuki's update
-	int				last_exit_code; //mizuki's update
-}	t_shell;
-
 typedef struct s_exec
 {
 	int				prev_pipe_read;
@@ -143,6 +132,16 @@ typedef struct s_exec
 	int				status;
 }	t_exec;
 
+/* Shell */
+typedef struct s_shell
+{
+	char			*line;
+	t_token			*tokens;
+	t_cmd			*commands;
+	t_env			*env_list;
+	t_exec			exec;
+	int				last_exit_code;
+}	t_shell;
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
 void			start_shell(char **envp);
@@ -218,21 +217,22 @@ char			*complete_env_line(t_env *envp);
 
 /* function - built-in*/
 int				execute_builtin(char **args, t_env *envp);
-int				execute_builtin_exit(t_shell *shell);
+int				execute_builtin_exit(t_shell *shell, int save_in, int save_out);
 int				ft_echo(char **args);
 int				ft_pwd(char **args);
 int				ft_env(char **args, t_env *envp);
 int				ft_export(char **args, t_env *envp);
 int				ft_cd(char **args, t_env *envp);
 int				ft_unset(char **args, t_env **envp);
-int				ft_exit(t_shell *shell);
+int				ft_exit(t_shell *shell, int save_in, int save_out);
 
 /* built-in utils */
 int				count_args(char **args);
 char			*get_env_value(t_env *envp, char *key);
-void			print_error(const char *msg);
+void			print_error_builtin(const char *msg); //this and other "print_error should be one?"
 
 /* executon */
+void			run_execution(t_shell *shell);
 void			free_split(char **split_list);
 void			cleanup_child(t_shell *shell);
 void			clean_exit(t_shell *shell, const char *msg,
@@ -242,5 +242,10 @@ bool			is_builtin(char **argv);
 bool			run_in_parent(char **argv);
 int				execute(t_shell *shell);
 void			clean_shell(t_shell *shell);
+void			close_restore_std(int save_in, int save_out);
+bool			set_redirection_pipe(t_cmd *cmd, t_exec *exec);
+void			waitpid_loop(t_exec *exec);
+void			init_exec(t_exec *exec);
+int				run_builtin_parent(t_cmd *commands, t_shell *shell);
 
 #endif
