@@ -98,19 +98,19 @@ typedef struct s_cmd
 
 typedef struct s_heredoc
 {
-	char	*clean_delim;
-	char	*temp_path;
-	int		fd;
-	bool	is_quoted;
+	char			*clean_delim;
+	char			*temp_path;
+	int				fd;
+	bool			is_quoted;
 }	t_heredoc;
 
 /* Expansion */
 typedef struct s_expander
 {
-	char	*result;
-	int		i;
-	bool	in_single_quote;
-	bool	in_double_quote;
+	char			*result;
+	int				i;
+	bool			in_single_quote;
+	bool			in_double_quote;
 }	t_expander;
 
 /* Environment Variables */
@@ -129,10 +129,8 @@ typedef struct s_shell
 	t_token			*tokens;
 	t_cmd			*commands;
 	t_env			*env_list;
-	//t_env			*envp; //mizuki's update
 	t_exec			exec; //mizuki's update
-	int				exit_status;
-	//int			last_exit_code; //mizuki's update
+	int				last_exit_code; //mizuki's update
 }	t_shell;
 
 typedef struct s_exec
@@ -159,8 +157,6 @@ void			lexer_init(t_lex *lex, char *line);
 /* Lexer Utils */
 bool			is_metachar(char c);
 t_token_type	get_metachar_type(char *str, int *advance);
-bool			strip_quotes(char **old);
-bool			set_quotes(t_token *tokens);
 bool			syntax_check(t_token *tokens);
 
 /* Lexer States */

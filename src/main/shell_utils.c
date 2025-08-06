@@ -46,7 +46,7 @@ bool	is_valid_input(t_shell *shell)
 	{
 		free(shell->line);
 		shell->line = NULL;
-		shell->exit_status = 0;
+		shell->last_exit_code = 0;
 		return (false);
 	}
 	if (!check_quotes(shell->line))
@@ -54,7 +54,7 @@ bool	is_valid_input(t_shell *shell)
 		print_error("SYNTAX ERROR - Unclosed Quotes");
 		free(shell->line);
 		shell->line = NULL;
-		shell->exit_status = 258;
+		shell->last_exit_code = 258;
 		return (false);
 	}
 	return (true);

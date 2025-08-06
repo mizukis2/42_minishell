@@ -18,14 +18,14 @@ bool	tokenize_input(t_shell *shell)
 	if (!shell->tokens)
 	{
 		print_error("Syntax error - Unable to make valid tokens");
-		shell->exit_status = 2;
+		shell->last_exit_code = 2;
 		free(shell->line);
 		return (false);
 	}
 	if (!syntax_check(shell->tokens))
 	{
 		print_error("Syntax error - Invalid syntax grammar");
-		shell->exit_status = 2;
+		shell->last_exit_code = 2;
 		cleanup(shell);
 		shell->tokens = NULL;
 		return (false);

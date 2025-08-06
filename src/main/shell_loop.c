@@ -52,14 +52,12 @@ static int	init_shell(t_shell *shell, char **envp)
 	shell->line = NULL;
 	shell->tokens = NULL;
 	shell->commands = NULL;
-	shell->exit_status = 0;
-	//shell->last_exit_code = 0; //mizuki
-	//shell->envp = copy_initial_env(envp);//mizuki
+	shell->last_exit_code = 0;
 	shell->env_list = copy_initial_env(envp);
 	if (!shell->env_list)
 	{
 		print_error("ERROR - Unable to make list of Environment Variables");
-		shell->exit_status = 1;
+		shell->last_exit_code = 1;
 		return (0);
 	}
 	return (1);

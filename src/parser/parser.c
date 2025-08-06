@@ -118,7 +118,7 @@ bool	parse_tokens(t_shell *shell)
 			print_error("Parsing Error - Unable to parse command");
 			free_cmd_list(head);
 			shell->commands = NULL;
-			shell->exit_status = 2;
+			shell->last_exit_code = 2;
 			return (false);
 		}
 		if (tokens && tokens->type == TOKEN_PIPE)

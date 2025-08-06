@@ -16,7 +16,7 @@ static void	handle_exit_status(int *i, char **result, t_shell *shell)
 {
 	char	*status;
 
-	status = ft_itoa(shell->exit_status);
+	status = ft_itoa(shell->last_exit_code);
 	append_to_result(result, status);
 	free(status);
 	(*i)++;

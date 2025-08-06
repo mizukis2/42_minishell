@@ -32,8 +32,8 @@ int	printspecifier(const char *format, va_list args, int pos, int ccount)
 	else if (format[pos] == 'u')
 		ccount = print_unsigned_dec(va_arg(args, unsigned int), ccount);
 	else if (format[pos] == 'x' || format[pos] == 'X')
-		ccount = convert_hex((unsigned long)va_arg(args, unsigned int), \
-		ccount, format[pos]);
+		ccount = convert_hex((unsigned long)va_arg(args, unsigned int),
+				ccount, format[pos]);
 	else if (format[pos] == '%')
 		ccount = print_char('%', ccount);
 	else
