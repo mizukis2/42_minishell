@@ -80,6 +80,7 @@ int	run_builtin_parent(t_cmd *curr_cmd, t_shell *shell)
 	int	save_out;
 	int	result;
 
+	init_exec(&shell->exec);
 	save_in = dup(STDIN_FILENO);
 	save_out = dup(STDOUT_FILENO);
 	if (!set_redirection_pipe(curr_cmd, &shell->exec))

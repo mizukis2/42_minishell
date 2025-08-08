@@ -64,17 +64,20 @@ bool	set_redirection_pipe(t_cmd *curr_cmd, t_exec *exec)
 		return (false);
 	if (curr_cmd->outfile)
 	{
-		if (!outfile_process(curr_cmd))
-			return (false);
+		 if (!(outfile_process(curr_cmd)))
+		 	return (false);
 	}
 	else if (curr_cmd->next)
 	{
+		if (exec->curr_pipe[1] < 0)
+			return (false);
 		if (dup2 (exec->curr_pipe[1], STDOUT_FILENO) == -1)
 		{
 			close (exec->curr_pipe[1]);
 			return (false);
 		}
 		close (exec->curr_pipe[1]);
+		exec->curr_pipe[1] = -1;
 	}
 	return (true);
 }
