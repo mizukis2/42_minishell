@@ -1,1 +1,0 @@
-/home/mmatsui/A_subject/minishell
