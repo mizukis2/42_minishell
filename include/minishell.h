@@ -216,7 +216,7 @@ void			update_env(const char *key, const char *path, t_env *envp);
 char			*complete_env_line(t_env *envp);
 
 /* function - built-in*/
-int				execute_builtin(char **args, t_env *envp);
+int				execute_builtin(char **args, t_env *env_list);//
 int				execute_builtin_exit(t_shell *shell, int save_in, int save_out);
 int				ft_echo(char **args);
 int				ft_pwd(char **args);
@@ -242,8 +242,8 @@ bool			is_builtin(char **argv);
 bool			run_in_parent(char **argv);
 int				execute(t_shell *shell);
 void			clean_shell(t_shell *shell);
-void			close_restore_std(int save_in, int save_out);
-bool			set_redirection_pipe(t_cmd *cmd, t_exec *exec);
+void			restore_std_close_fd(int save_in, int save_out);
+bool			set_redirection_pipe(t_cmd *curr_cmd, t_exec *exec);
 void			waitpid_loop(t_exec *exec);
 void			init_exec(t_exec *exec);
 int				run_builtin_parent(t_cmd *commands, t_shell *shell);

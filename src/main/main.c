@@ -50,7 +50,12 @@ int	main(int ac, char **av, char **envp)
 }
 
 	// valgrind --suppressions=minishell.supp
-	//valgrind --suppressions=minishell.supp --leak-check=full --show-leak-kinds=all ./minishell
+/* 	valgrind \
+    --suppressions=minishell.supp \
+    --leak-check=full \
+    --show-leak-kinds=all \
+    --child-silent-after-fork=yes \
+    ./minishell */
 	// TODO: Copy environment variables into a modifiable structure
 	// TODO: Add parsing, execution
 	// TODO: Add execution

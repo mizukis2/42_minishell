@@ -12,20 +12,20 @@
 
 #include "minishell.h"
 
-int	execute_builtin(char **args, t_env *envp)
+int	execute_builtin(char **args, t_env *env_list)
 {
 	if (ft_strcmp(args[0], "echo") == 0)
 		return (ft_echo(args + 1));
 	if (ft_strcmp(args[0], "cd") == 0)
-		return (ft_cd(args + 1, envp));
+		return (ft_cd(args + 1, env_list));
 	if (ft_strcmp(args[0], "pwd") == 0)
 		return (ft_pwd(args + 1));
 	if (ft_strcmp(args[0], "env") == 0)
-		return (ft_env(args + 1, envp));
+		return (ft_env(args + 1, env_list));
 	if (ft_strcmp(args[0], "export") == 0)
-		return (ft_export(args + 1, envp));
+		return (ft_export(args + 1, env_list));
 	if (ft_strcmp(args[0], "unset") == 0)
-		return (ft_unset(args + 1, &envp));
+		return (ft_unset(args + 1, &env_list));
 	else
 		return (print_error_builtin("minishell: out of builtin"), 1);
 }
