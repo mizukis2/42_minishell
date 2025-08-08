@@ -73,7 +73,8 @@ void	waitpid_loop(t_exec *exec)
 	}
 }
 
-int	run_builtin_parent(t_cmd *commands, t_shell *shell)
+/* this is a function to run builtin in parent. this returns the exit code*/
+int	run_builtin_parent(t_cmd *curr_cmd, t_shell *shell)
 {
 	int	save_in;
 	int	save_out;
@@ -81,16 +82,16 @@ int	run_builtin_parent(t_cmd *commands, t_shell *shell)
 
 	save_in = dup(STDIN_FILENO);
 	save_out = dup(STDOUT_FILENO);
-	if (!set_redirection_pipe(commands, &shell->exec))
+	if (!set_redirection_pipe(curr_cmd, &shell->exec))
 	{
-		perror("set_redirection_pipe failed");
+		perror("set_redirection_pipe failed(parent:builtin)");
 		close (save_in);
 		close (save_out);
 		return (1);
 	}
-	if (ft_strcmp(commands->argv[0], "exit") == 0)
+	if (ft_strcmp(curr_cmd->argv[0], "exit") == 0)
 		return (execute_builtin_exit(shell, save_in, save_out));
-	result = execute_builtin(commands->argv, shell->env_list);
-	close_restore_std(save_in, save_out);
+	result = execute_builtin(curr_cmd->argv, shell->env_list);
+	restore_std_close_fd(save_in, save_out);
 	return (result);
 }

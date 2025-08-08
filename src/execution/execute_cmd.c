@@ -74,9 +74,7 @@ void	execute_command(char **argv, t_shell *shell)
 	}
 	path = find_path(argv[0], shell->env_list);
 	if (!path)
-	{
 		clean_exit(shell, "Command not found: ", argv[0], 127);
-	}
 	cleanup_child(shell);
 	array_envp = list_to_array(shell->env_list);
 	execve (path, argv, array_envp);

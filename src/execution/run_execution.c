@@ -12,25 +12,44 @@
 
 #include "minishell.h"
 
-static void	run_exec_child(t_cmd *commands, t_shell *shell)
+/* this runs as child process */
+static void	run_exec_child(t_cmd *curr_cmd, t_shell *shell)
 {
-	if (!set_redirection_pipe(commands, &shell->exec))
+	if (!set_redirection_pipe(curr_cmd, &shell->exec))
 	{
 		perror("set_redirection_pipe failed");
-		clean_exit(shell, NULL, NULL, 1);
+		cleanup_child(shell); //
+		exit(1);
 	}
-	execute_command(commands->argv, shell);
+	execute_command(curr_cmd->argv, shell);
 }
 
-static void	run_exec_parent(t_cmd *commands, t_shell *shell, pid_t pid)
+static void	run_exec_parent(t_cmd *curr_cmd, t_shell *shell, pid_t pid)
 {
 	shell->exec.pids[shell->exec.num_pids++] = pid;
 	if (shell->exec.prev_pipe_read != -1)
+	{
 		close (shell->exec.prev_pipe_read);
-	if (commands->next)
+		shell->exec.prev_pipe_read = -1;
+	}
+	if (curr_cmd->next)
 	{
 		shell->exec.prev_pipe_read = shell->exec.curr_pipe[0];
 		close (shell->exec.curr_pipe[1]);
+		shell->exec.curr_pipe[1] = -1;
+	}
+	else  //this need?
+	{
+		if (shell->exec.curr_pipe[0] != -1)
+		{
+			close (shell->exec.curr_pipe[0]);
+			shell->exec.curr_pipe[0] = -1;
+		}
+		if (shell->exec.curr_pipe[1] != -1)
+		{
+			close (shell->exec.curr_pipe[1]);
+			shell->exec.curr_pipe[1] = -1;
+		}
 	}
 }
 
@@ -44,7 +63,8 @@ static int	find_exit_code(t_shell *shell)
 	return (1);
 }
 
-/* this is main function of executing the commands (and with args) */
+/* this is main function of executing the commands (and with args)
+this runs in parent. return with the exit code */
 int	execute(t_shell *shell)
 {
 	t_cmd	*curr;
