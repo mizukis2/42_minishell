@@ -11,7 +11,42 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+/* 
+static void	print_tokens(t_token *tokens)//for token debug
+{
+	while (tokens)
+	{
+		printf("TOKEN TYPE: %d, VALUE: [%s]\n",
+			tokens->type, tokens->value);
+		tokens = tokens->next;
+	}
+}
 
+static void	print_cmd(t_cmd *cmd)//for cmd debug
+{
+	int	i;
+	int	cmd_count;
+
+	cmd_count = 0;
+	while (cmd)
+	{
+		printf("\nCommand #%d:\n", ++cmd_count);
+		i = 0;
+		if (cmd->argv)
+		{
+			while (cmd->argv[i])
+			{
+				printf("argv[%d]: %s\n", i, cmd->argv[i]);
+				i++;
+			}
+		}
+		printf("infile: %s\n", cmd->infile ? cmd->infile : "(null)");
+		printf("outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
+		printf("append: %s\n", cmd->append ? "True" : "False");
+		cmd = cmd->next;
+	}
+}
+ */
 static int	init_shell(t_shell *shell, char **envp)
 {
 	shell->line = NULL;
@@ -64,7 +99,12 @@ void	start_shell(char **envp)
 			continue ;
 		if (!parse_tokens(&shell))
 			continue ;
+/* 		if (shell.commands)
+			print_cmd(shell.commands);//for debug
+		if (shell.tokens)
+			print_tokens(shell.tokens);//for debug */
 		run_execution (&shell);
+		//printf ("exit code : %d\n", shell.last_exit_code); //for debug
 		cleanup(&shell);
 	}
 	free_env(shell.env_list);
