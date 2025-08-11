@@ -12,13 +12,20 @@
 
 #include "minishell.h"
 
+/* static void signal_child(void)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+} */
+
 /* this runs as child process */
 static void	run_exec_child(t_cmd *curr_cmd, t_shell *shell)
 {
+	//signal_child();
 	if (!set_redirection_pipe(curr_cmd, &shell->exec))
 	{
 		perror("set_redirection_pipe failed");
-		cleanup_child(shell); //
+		cleanup_child(shell);
 		exit(1);
 	}
 	execute_command(curr_cmd->argv, shell);
@@ -38,7 +45,7 @@ static void	run_exec_parent(t_cmd *curr_cmd, t_shell *shell, pid_t pid)
 		close (shell->exec.curr_pipe[1]);
 		shell->exec.curr_pipe[1] = -1;
 	}
-	else  //this need?
+	else
 	{
 		if (shell->exec.curr_pipe[0] != -1)
 		{
@@ -57,9 +64,8 @@ static int	find_exit_code(t_shell *shell)
 {
 	if (WIFEXITED(shell->exec.status))
 		return (WEXITSTATUS(shell->exec.status));
-	//add else if signal thisng here
-/* 	else if (WIFSIGNALED(shell->exec.status))
-		return (128 + WTERMSIG(shell->exec.status)); */
+	else if (WIFSIGNALED(shell->exec.status))
+		return (128 + WTERMSIG(shell->exec.status));
 	return (1);
 }
 

@@ -214,6 +214,7 @@ char			*create_new_key(const char *arg);
 char			*create_new_value(const char *arg);
 void			update_env(const char *key, const char *path, t_env *envp);
 char			*complete_env_line(t_env *envp);
+int				count_nodes(t_env *head);
 
 /* function - built-in*/
 int				execute_builtin(char **args, t_env *env_list);//
@@ -221,6 +222,7 @@ int				execute_builtin_exit(t_shell *shell, int save_in, int save_out);
 int				ft_echo(char **args);
 int				ft_pwd(char **args);
 int				ft_env(char **args, t_env *envp);
+void			print_all_list(t_env *env_list);
 int				ft_export(char **args, t_env *envp);
 int				ft_cd(char **args, t_env *envp);
 int				ft_unset(char **args, t_env **envp);

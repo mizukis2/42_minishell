@@ -30,40 +30,22 @@ static bool	is_valid_identifier(const char *arg)
 
 static void	print_identifier_error(const char *arg)
 {
-	write (STDERR_FILENO, "export: `", 10);
-	write (STDERR_FILENO, arg, ft_strlen(arg));
-	write (STDERR_FILENO, "': not a valid identifier\n", 27);
+	print_error_builtin("export: `");
+	print_error_builtin(arg);
+	print_error_builtin("': not a valid identifier\n");
 }
 
-static void	print_all_list(t_env *envp)
-{
-	t_env	*curr;
-
-	curr = envp;
-	while (curr)
-	{
-		write (STDOUT_FILENO, "declare -x ", 11);
-		ft_putstr(curr->key);
-		if (curr->exported && curr->value)
-		{
-			write (STDOUT_FILENO, "=\"", 2);
-			ft_putstr(curr->value);
-			write (STDOUT_FILENO, "\"", 1);
-		}
-		write (STDOUT_FILENO, "\n", 1);
-		curr = curr->next;
-	}
-}
-
-int	ft_export(char **args, t_env *envp)
+int	ft_export(char **args, t_env *env_list)
 {
 	int		i;
 	char	*new_key;
 	char	*new_value;
+	int		exit_code;
 
 	if (args[0] == NULL)
-		return (print_all_list(envp), 0);
+		return (print_all_list(env_list), 0);
 	i = 0;
+	exit_code = 0;
 	while (args[i])
 	{
 		if (is_valid_identifier(args[i]))
@@ -72,13 +54,17 @@ int	ft_export(char **args, t_env *envp)
 			if (!new_key)
 				return (1);
 			new_value = create_new_value(args[i]);
-			update_env(new_key, new_value, envp);
+			update_env(new_key, new_value, env_list);
 			free(new_key);
 			free(new_value);
+			exit_code = 0;
 		}
 		else
+		{
 			print_identifier_error(args[i]);
+			exit_code = 1;
+		}
 		i++;
 	}
-	return (0);
+	return (exit_code);
 }

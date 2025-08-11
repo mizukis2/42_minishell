@@ -39,6 +39,8 @@ static bool	is_numeric(char *arg)
 	int	i;
 
 	i = 0;
+	if (arg[i] == '+' || arg[i] == '-')
+		i++;
 	while (arg[i])
 	{
 		if (!ft_isdigit(arg[i]))
