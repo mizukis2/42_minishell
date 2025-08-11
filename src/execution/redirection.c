@@ -51,6 +51,8 @@ static bool	outfile_process(t_cmd *cmd)
 	return (true);
 }
 
+while
+
 bool	set_redirection_pipe(t_cmd *curr_cmd, t_exec *exec)
 {
 	if (exec->prev_pipe_read >= 0)

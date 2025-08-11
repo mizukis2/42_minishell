@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-
+/* 
 static void	print_tokens(t_token *tokens)//for token debug
 {
 	while (tokens)
@@ -46,7 +46,7 @@ static void	print_cmd(t_cmd *cmd)//for cmd debug
 		cmd = cmd->next;
 	}
 }
-
+ */
 static int	init_shell(t_shell *shell, char **envp)
 {
 	shell->line = NULL;
@@ -88,7 +88,10 @@ void	start_shell(char **envp)
 	{
 		shell.line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
 		if (!shell.line) // check for EOF Ctrl+D (temporary)
+		{
+			write (1, "exit\n", 5);
 			break ;
+		}
 		if (!is_valid_input(&shell))
 			continue ;
 		add_history(shell.line);
@@ -96,12 +99,12 @@ void	start_shell(char **envp)
 			continue ;
 		if (!parse_tokens(&shell))
 			continue ;
-		if (shell.commands)
+/* 		if (shell.commands)
 			print_cmd(shell.commands);//for debug
 		if (shell.tokens)
-			print_tokens(shell.tokens);//for debug
+			print_tokens(shell.tokens);//for debug */
 		run_execution (&shell);
-		printf ("exit code : %d\n", shell.last_exit_code); //for debug
+		//printf ("exit code : %d\n", shell.last_exit_code); //for debug
 		cleanup(&shell);
 	}
 	free_env(shell.env_list);

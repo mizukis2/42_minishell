@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	count_nodes(t_env *head)
+int	count_nodes(t_env *head)
 {
 	int	count;
 
