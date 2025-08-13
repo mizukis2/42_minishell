@@ -12,36 +12,50 @@
 
 #include "minishell.h"
 
-void	free_cmd_list(t_cmd *cmd)
+void	free_redirs(t_redir *r)
 {
-	t_cmd	*temp;
-	int		i;
+	t_redir	*next;
 
-	while (cmd)
+	while (r)
 	{
-		temp = cmd->next;
-		if (cmd->argv)
-		{
-			i = 0;
-			while (cmd->argv[i])
-			{
-				free(cmd->argv[i]);
-				cmd->argv[i] = NULL;
-				i++;
-			}
-			free(cmd->argv);
-			cmd->argv = NULL;
-		}
-		if (cmd->infile)
-			free(cmd->infile);
-		if (cmd->outfile)
-			free(cmd->outfile);
-		free(cmd);
-		cmd = temp;
+		next = r->next;
+		if (r->is_heredoc && r->target)
+			unlink(r->target);
+		free(r->target);
+		free(r);
+		r = next;
 	}
 }
 
-void	free_cmd_and_args(t_cmd *cmd, t_list *args)
+void free_single_cmd(t_cmd *cmd)
+{
+	int i;
+
+	if (!cmd)
+		return;
+	i = 0;
+	while (cmd->argv[i])
+	{
+		free (cmd->argv[i]);
+		i++;
+	}
+	free (cmd->argv);
+	free_redirs(cmd->redirs);
+	free(cmd);
+}
+
+void	free_cmd_list(t_cmd *cmd)
+{
+	t_cmd *next;
+	while (cmd)
+	{
+		next = cmd->next;
+		free_single_cmd(cmd);
+		cmd = next;
+	}
+}
+
+/* void	free_cmd_and_args(t_cmd *cmd, t_list *args)
 {
 	int	j;
 
@@ -62,7 +76,7 @@ void	free_cmd_and_args(t_cmd *cmd, t_list *args)
 		free(cmd);
 	}
 	ft_lstclear(&args, free);
-}
+} */
 
 char	**argslst_to_array(t_list *args)
 {
@@ -99,6 +113,21 @@ static bool	append_command(t_cmd **head, t_cmd **tail, t_cmd *new_cmd)
 	return (true);
 }
 
+void cleanup_parse(t_shell *shell, t_cmd *curr, t_cmd *head, char *msg)
+{
+	if (shell)
+	{
+		shell->commands = NULL;
+		shell->last_exit_code = 2;
+	}
+	if (curr)
+		free_single_cmd(curr);
+	if (head)
+		free_cmd_list(head);
+	if (msg)
+		print_error(msg);
+}
+
 bool	parse_tokens(t_shell *shell)
 {
 	t_cmd	*head;
@@ -110,19 +139,25 @@ bool	parse_tokens(t_shell *shell)
 	tail = NULL;
 	curr = NULL;
 	tokens = shell->tokens;
+	if (tokens && tokens->type == TOKEN_PIPE)
+		return (cleanup_parse(shell, NULL, head, "syntax error near unexpected token `|'"), false);
 	while (tokens)
 	{
 		curr = parse_command(shell, &tokens);
+		if (!curr)
+			return (cleanup_parse(shell, NULL, head, NULL), false);
+		if (curr->invalid)
+			return (cleanup_parse(shell, curr, head, "Parsing Error - Unable to parse command"), false);
 		if (!append_command(&head, &tail, curr))
-		{
-			print_error("Parsing Error - Unable to parse command");
-			free_cmd_list(head);
-			shell->commands = NULL;
-			shell->last_exit_code = 2;
-			return (false);
-		}
+			return (cleanup_parse(shell, curr, head, "Parsing Error - Unable to parse command"), false);
 		if (tokens && tokens->type == TOKEN_PIPE)
+		{
 			tokens = tokens->next;
+			if (!tokens)
+				return (cleanup_parse(shell, curr, head, "syntax error near unexpected token `|'"), false);
+			if (tokens->type == TOKEN_PIPE)
+				return (cleanup_parse(shell, curr, head, "syntax error near unexpected token `|'"), false);
+		}
 	}
 	shell->commands = head;
 	return (true);

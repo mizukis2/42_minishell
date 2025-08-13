@@ -62,6 +62,14 @@ typedef enum e_lexer_state
 	STATE_IN_METACHAR
 }	t_lexer_state;
 
+typedef enum e_rtype
+{
+	R_IN,
+	R_OUT,
+	R_APPEND,
+	R_HEREDOC
+}	t_rtype;
+
 /*--------------------Structs------------------------------*/
 /* Tokens */
 typedef struct s_token
@@ -86,14 +94,24 @@ typedef struct s_lex
 }	t_lex;
 
 /* Parser */
+typedef struct s_redir
+{
+	t_rtype			type;
+	char			*target;
+	bool			is_heredoc;
+	struct s_redir	*next;
+}	t_redir;
+
 typedef struct s_cmd
 {
 	char			**argv;
-	char			*infile;
-	char			*outfile;
-	bool			append;
-	bool			heredoc;
+	//char			*infile;
+	//char			*outfile;
+	//bool			append;
+	//bool			heredoc;
+	t_redir			*redirs;
 	struct s_cmd	*next;
+	bool			invalid;
 }	t_cmd;
 
 typedef struct s_heredoc
@@ -179,7 +197,8 @@ void			free_cmd_and_args(t_cmd *cmd, t_list *args);
 
 /* Parse types */
 t_cmd			*parse_command(t_shell *shell, t_token **tokens);
-void			parse_word(t_token **tokens, t_list **args,
+void			parse_redirection(t_token **tokens, t_cmd *cmd, t_shell *shell);
+/* void			parse_word(t_token **tokens, t_list **args,
 					t_cmd *cmd, t_shell *shell);
 void			parse_redirect_in(t_token **tokens, t_list **args,
 					t_cmd *cmd, t_shell *shell);
@@ -187,7 +206,7 @@ void			parse_redirect_o(t_token **tokens, t_list **args,
 					t_cmd *cmd, t_shell *shell);
 void			parse_heredoc(t_token **tokens, t_list **args,
 					t_cmd *cmd, t_shell *shell);
-
+ */
 /* Heredoc */					
 void			collect_heredoc(int fd, char *delim,
 					bool is_quoted, t_shell *shell);
@@ -245,7 +264,7 @@ bool			run_in_parent(char **argv);
 int				execute(t_shell *shell);
 void			clean_shell(t_shell *shell);
 void			restore_std_close_fd(int save_in, int save_out);
-bool			set_redirection_pipe(t_cmd *curr_cmd, t_exec *exec);
+bool			run_redirection_pipe(t_cmd *curr_cmd, t_exec *exec);
 void			waitpid_loop(t_exec *exec);
 void			init_exec(t_exec *exec);
 int				run_builtin_parent(t_cmd *commands, t_shell *shell);

@@ -63,8 +63,8 @@ void	execute_command(char **argv, t_shell *shell)
 	char	*path;
 	char	**array_envp;
 
-	if (!argv || !argv[0])
-		clean_exit(shell, "Command not found", NULL, 127);
+	if (!argv || !argv[0] || argv[0][0] == '\0')
+		clean_exit(shell, "Command not found\n", NULL, 127);
 	if (is_builtin(argv))
 	{
 		cleanup_child(shell);

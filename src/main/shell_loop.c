@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-/* 
-static void	print_tokens(t_token *tokens)//for token debug
+
+/* static void	print_tokens(t_token *tokens)//for token debug
 {
 	while (tokens)
 	{
@@ -22,31 +22,44 @@ static void	print_tokens(t_token *tokens)//for token debug
 	}
 }
 
-static void	print_cmd(t_cmd *cmd)//for cmd debug
+static const char *rtype_name(t_rtype t)
 {
-	int	i;
-	int	cmd_count;
+    if (t == R_IN)  return "R_IN";
+    if (t == R_OUT) return "R_OUT";
+    if (t == R_APPEND) return "R_APP";
+    return "R_HERE";
+}
 
-	cmd_count = 0;
-	while (cmd)
-	{
-		printf("\nCommand #%d:\n", ++cmd_count);
-		i = 0;
-		if (cmd->argv)
-		{
-			while (cmd->argv[i])
-			{
-				printf("argv[%d]: %s\n", i, cmd->argv[i]);
-				i++;
-			}
-		}
-		printf("infile: %s\n", cmd->infile ? cmd->infile : "(null)");
-		printf("outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
-		printf("append: %s\n", cmd->append ? "True" : "False");
-		cmd = cmd->next;
-	}
+static void print_cmd(t_cmd *cmd)
+{
+    int idx_cmd = 0;
+    while (cmd) {
+        printf("\nCommand #%d:\n", ++idx_cmd);
+
+        // argv
+        if (cmd->argv) {
+            for (int i = 0; cmd->argv[i]; i++)
+                printf("  argv[%d]: %s\n", i, cmd->argv[i]);
+        } else {
+            printf("  (no argv)\n");
+        }
+
+        // redirs
+        printf("  Redirections:\n");
+        if (cmd->redirs) {
+            int i = 0;
+            for (t_redir *r = cmd->redirs; r; r = r->next, i++)
+                printf("    redir[%d]: type=%s, target=%s, here=%s\n",
+                       i, rtype_name(r->type), r->target, r->is_heredoc ? "yes" : "no");
+        } else {
+            printf("    (none)\n");
+        }
+
+        cmd = cmd->next;
+    }
 }
  */
+
 static int	init_shell(t_shell *shell, char **envp)
 {
 	shell->line = NULL;
