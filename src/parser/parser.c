@@ -12,49 +12,6 @@
 
 #include "minishell.h"
 
-void	free_redirs(t_redir *r)
-{
-	t_redir	*next;
-
-	while (r)
-	{
-		next = r->next;
-		if (r->is_heredoc && r->target)
-			unlink(r->target);
-		free(r->target);
-		free(r);
-		r = next;
-	}
-}
-
-void free_single_cmd(t_cmd *cmd)
-{
-	int i;
-
-	if (!cmd)
-		return;
-	i = 0;
-	while (cmd->argv[i])
-	{
-		free (cmd->argv[i]);
-		i++;
-	}
-	free (cmd->argv);
-	free_redirs(cmd->redirs);
-	free(cmd);
-}
-
-void	free_cmd_list(t_cmd *cmd)
-{
-	t_cmd *next;
-	while (cmd)
-	{
-		next = cmd->next;
-		free_single_cmd(cmd);
-		cmd = next;
-	}
-}
-
 /* void	free_cmd_and_args(t_cmd *cmd, t_list *args)
 {
 	int	j;
@@ -111,21 +68,6 @@ static bool	append_command(t_cmd **head, t_cmd **tail, t_cmd *new_cmd)
 		(*tail)->next = new_cmd;
 	*tail = new_cmd;
 	return (true);
-}
-
-void cleanup_parse(t_shell *shell, t_cmd *curr, t_cmd *head, char *msg)
-{
-	if (shell)
-	{
-		shell->commands = NULL;
-		shell->last_exit_code = 2;
-	}
-	if (curr)
-		free_single_cmd(curr);
-	if (head)
-		free_cmd_list(head);
-	if (msg)
-		print_error(msg);
 }
 
 bool	parse_tokens(t_shell *shell)

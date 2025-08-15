@@ -12,6 +12,15 @@
 
 #include "minishell.h"
 
+void close_fd_if_open(int *fd)
+{
+	if (*fd >= 0)
+	{
+		close (*fd);
+		*fd = -1;
+	}
+}
+
 void	restore_std_close_fd(int save_in, int save_out)
 {
 	if (save_in >= 0)

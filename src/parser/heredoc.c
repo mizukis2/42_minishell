@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	create_temp_heredoc(char **out_path)
+static int	create_temp_heredoc(char **out_path)
 {
 	size_t	i;
 	char	*path;
@@ -47,7 +47,7 @@ int	create_temp_heredoc(char **out_path)
 // 	free(cmd->infile);
 // }
 
-void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
+static void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
 {
 	char	*line;
 	char	*value;
@@ -71,7 +71,7 @@ void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
 	}
 }
 
-char	*create_heredoc_file(const char *delim, t_shell *shell)
+static char	*create_heredoc_file(const char *delim, t_shell *shell)
 {
 	t_heredoc	heredoc;
 
@@ -96,4 +96,53 @@ char	*create_heredoc_file(const char *delim, t_shell *shell)
 	free(heredoc.clean_delim);
 	close(heredoc.fd);
 	return (heredoc.temp_path);
+}
+
+static char *expect_delim_no_expand(t_token **tokens, t_shell *shell, t_cmd *cmd)
+{
+	char *str;
+
+	if (!tokens || !*tokens || (*tokens)->type != TOKEN_WORD)
+	{
+		shell->last_exit_code = 2;
+		cmd->invalid = true;
+		return (NULL);
+	}
+	str = ft_strdup((*tokens)->value);
+	if (!str)
+	{
+		shell->last_exit_code = 1;
+		cmd->invalid = true;
+		return (NULL);
+	}
+	*tokens = (*tokens)->next;
+	return (str);
+}
+
+void	handle_heredoc_redir(t_token **tokens, t_cmd *cmd, t_shell *shell)
+{
+	char *delim;
+	char *path;
+
+	delim = expect_delim_no_expand(tokens, shell, cmd);
+	if(!delim)
+	{
+		cmd->invalid = true;
+		return;
+	}
+	path = create_heredoc_file(delim, shell);
+	free(delim);
+	if (!path)
+	{
+		cmd->invalid = true;
+		return ;
+	}
+	if (!add_redir(&cmd->redirs, R_HEREDOC, path, true))
+	{
+		free(path);
+		shell->last_exit_code = 1;
+		cmd->invalid = true;
+		return ;
+	}
+	free (path);
 }

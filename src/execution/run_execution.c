@@ -22,13 +22,18 @@
 static void	run_exec_child(t_cmd *curr_cmd, t_shell *shell)
 {
 	//signal_child();
-	if (!run_redirection_pipe(curr_cmd, &shell->exec))
+	if (!set_redirection_pipe(curr_cmd, &shell->exec))
 	{
-		perror("set_redirection_pipe failed");
 		cleanup_child(shell);
 		exit(1);
 	}
+	if (!curr_cmd->argv || !curr_cmd->argv[0])
+	{
+		cleanup_child(shell);
+		exit (0);
+	}
 	execute_command(curr_cmd->argv, shell);
+	exit (127);
 }
 
 static void	run_exec_parent(t_cmd *curr_cmd, t_shell *shell, pid_t pid)

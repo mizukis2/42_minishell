@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                         ::::::::           */
-/*   run_redirection.c                                       :+:    :+:           */
+/*   set_redirection.c                                       :+:    :+:           */
 /*                                                      +:+                   */
 /*   By: mmatsui <marvin@42.fr>                        +#+                    */
 /*                                                    +#+                     */
@@ -52,24 +52,26 @@ static bool	outfile_process(t_redir *r)
 	return (true);
 }
 
-bool	run_redirection_pipe(t_cmd *curr_cmd, t_exec *exec) //name change
+static bool hook_prev_pipe_stdin(t_exec *exec)
 {
-	bool out_redir_seen;
-	t_redir *r;
-	
-	out_redir_seen = false;
-	if (exec->prev_pipe_read >= 0)
+	if (exec->prev_pipe_read < 0)
+		return (true);
+	if (dup2(exec->prev_pipe_read, STDIN_FILENO) == -1)
 	{
-		if (dup2(exec->prev_pipe_read, STDIN_FILENO) == -1)
-		{
-			perror ("dup2 prev_pipe_read");
-			close (exec->prev_pipe_read);
-			return (false);
-		}
+		perror ("dup2 prev_pipe_read");
 		close (exec->prev_pipe_read);
-		exec->prev_pipe_read = -1;
+		return (false);
 	}
-	r = curr_cmd->redirs;
+	close_fd_if_open (&exec->prev_pipe_read);
+	return (true);
+}
+
+static bool apply_redirections (t_redir *redirs, bool *out_redir_seen)
+{
+	t_redir *r;
+
+	r = redirs;
+	*out_redir_seen = false;
 	while (r)
 	{
 		if (r->type == R_IN || r->type == R_HEREDOC)
@@ -81,46 +83,47 @@ bool	run_redirection_pipe(t_cmd *curr_cmd, t_exec *exec) //name change
 		{
 			if (!(outfile_process(r)))
 		 		return (false);
-			out_redir_seen = true;
+			*out_redir_seen = true;
 		}
 		r = r->next;
 	}
+	return (true);
+}
+
+static bool hook_next_pipe_stdout(t_exec *exec, bool out_redir_seen)
+{
+	close_fd_if_open(&exec->curr_pipe[0]);
+	if (out_redir_seen)
+		return (true);
+	if (exec->curr_pipe[1] < 0)
+		return (false);
+	if (dup2 (exec->curr_pipe[1], STDOUT_FILENO) == -1)
+	{
+		perror ("dup2 curr_pipe[1]");
+		close_fd_if_open (&exec->curr_pipe[1]);
+		return (false);
+	}
+	close_fd_if_open(&exec->curr_pipe[1]);
+	return (true);
+}
+
+bool	set_redirection_pipe(t_cmd *curr_cmd, t_exec *exec)
+{
+	bool out_redir_seen;
+	
+	if (!hook_prev_pipe_stdin(exec))
+		return (false);
+	if (!apply_redirections(curr_cmd->redirs, &out_redir_seen))
+		return (false);
 	if (curr_cmd->next)
 	{
-		if (exec->curr_pipe[0] >= 0)
-		{
-			close (exec->curr_pipe[0]);
-			exec->curr_pipe[0] = -1;
-		}
-		if (!out_redir_seen)
-		{
-			if (exec->curr_pipe[1] < 0)
-				return (false);
-			if (dup2 (exec->curr_pipe[1], STDOUT_FILENO) == -1)
-			{
-				perror ("dup2 curr_pipe[1]");
-				close (exec->curr_pipe[1]);
-				exec->curr_pipe[1] = -1;
-				return (false);
-			}
-		}
-		if (exec->curr_pipe[1] >= 0)
-		{
-			close (exec->curr_pipe[1]);
-			exec->curr_pipe[1] = -1;
-		}
-		else {
-			if (exec->curr_pipe[0] >= 0)
-			{
-				close (exec->curr_pipe[1]);
-				exec->curr_pipe[0] = -1;
-			}
-			if (exec->curr_pipe[1] >= 0)
-			{
-				close (exec->curr_pipe[1]);
-				exec->curr_pipe[1] = -1;
-			}
-		}
+		if (!hook_next_pipe_stdout(exec, out_redir_seen))
+			return (false);
+	}
+	else
+	{
+		close_fd_if_open(&exec->curr_pipe[0]);
+		close_fd_if_open(&exec->curr_pipe[1]);
 	}
 	return (true);
 }
