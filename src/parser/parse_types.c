@@ -21,14 +21,50 @@ void	parse_word(t_token **tokens, t_list **args, t_cmd *cmd, t_shell *shell)
 	value = expand_variables(tok->value, shell);
 	if (!value)
 	{
-		free_cmd_and_args(cmd, *args);
+		cmd->invalid = true;
 		return ;
 	}
 	ft_lstadd_back(args, ft_lstnew(value));
 	*tokens = (*tokens)->next;
 }
 
-void	parse_redirect_in(t_token **tokens, t_list **args,
+bool is_redir (t_token_type tt)
+{
+	return (tt == TOKEN_REDIRECT_IN || tt == TOKEN_REDIRECT_OUT
+			|| tt == TOKEN_APPEND || tt == TOKEN_HEREDOC);
+}
+
+t_cmd	*parse_command(t_shell *shell, t_token **tokens)
+{
+	t_cmd	*cmd;
+	t_list	*args;
+	t_token	*tok;
+
+	cmd = ft_calloc(1, sizeof(t_cmd));
+	if (!cmd)
+		return (NULL);
+	cmd->invalid = false;
+	args = NULL;
+	while (*tokens && (*tokens)->type != TOKEN_PIPE)
+	{
+		tok = *tokens;
+		if (tok->type == TOKEN_WORD)
+			parse_word(tokens, &args, cmd, shell);
+		else if (is_redir(tok->type))
+			parse_redirection(tokens, cmd, shell);
+		else
+		{
+			shell->last_exit_code = 2;
+			cmd->invalid = true;
+			break;
+		}
+	}
+	cmd->argv = argslst_to_array(args);
+	ft_lstclear(&args, free);
+	return (cmd);
+}
+
+/* void	parse_redirect_in(t_token **tokens, t_list **args,
 	t_cmd *cmd, t_shell *shell)
 {
 	*tokens = (*tokens)->next;
@@ -118,4 +154,4 @@ t_cmd	*parse_command(t_shell *shell, t_token **tokens)
 	cmd->argv = argslst_to_array(args);
 	ft_lstclear(&args, free);
 	return (cmd);
-}
+} */

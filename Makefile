@@ -18,6 +18,9 @@ SRCS = 							\
 								src/lexer/lexer_states.c \
 								src/lexer/token_utils.c \
 								src/parser/parser.c \
+								src/parser/parse_redirection.c \
+								src/parser/parse_redirection_utils.c \
+								src/parser/parser_free_clean.c \
 								src/parser/parse_types.c \
 								src/parser/heredoc.c \
 								src/parser/expansion.c \
@@ -29,7 +32,7 @@ SRCS = 							\
 								src/execution/run_execution.c \
 								src/execution/execute_cmd.c \
 								src/execution/clean_exit.c \
-								src/execution/redirection.c \
+								src/execution/set_redirection.c \
 								src/execution/execute_utils.c \
 								src/built_in/built_in.c \
 								src/built_in/builtin_cd.c \

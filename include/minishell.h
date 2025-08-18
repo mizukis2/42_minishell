@@ -62,6 +62,14 @@ typedef enum e_lexer_state
 	STATE_IN_METACHAR
 }	t_lexer_state;
 
+typedef enum e_rtype
+{
+	R_IN,
+	R_OUT,
+	R_APPEND,
+	R_HEREDOC
+}	t_rtype;
+
 /*--------------------Structs------------------------------*/
 /* Tokens */
 typedef struct s_token
@@ -86,14 +94,24 @@ typedef struct s_lex
 }	t_lex;
 
 /* Parser */
+typedef struct s_redir
+{
+	t_rtype			type;
+	char			*target;
+	bool			is_heredoc;
+	struct s_redir	*next;
+}	t_redir;
+
 typedef struct s_cmd
 {
 	char			**argv;
-	char			*infile;
-	char			*outfile;
-	bool			append;
-	bool			heredoc;
+	//char			*infile;
+	//char			*outfile;
+	//bool			append;
+	//bool			heredoc;
+	t_redir			*redirs;
 	struct s_cmd	*next;
+	bool			invalid;
 }	t_cmd;
 
 typedef struct s_heredoc
@@ -179,7 +197,13 @@ void			free_cmd_and_args(t_cmd *cmd, t_list *args);
 
 /* Parse types */
 t_cmd			*parse_command(t_shell *shell, t_token **tokens);
-void			parse_word(t_token **tokens, t_list **args,
+void			parse_redirection(t_token **tokens, t_cmd *cmd, t_shell *shell);
+void			handle_heredoc_redir(t_token **tokens, t_cmd *cmd, t_shell *shell);
+t_redir			*add_redir(t_redir **head, t_rtype type, char *filename, bool is_heredoc);
+char			*expect_and_expand(t_token **tokens, t_shell *shell, t_cmd *cmd);
+void			cleanup_parse(t_shell *shell, t_cmd *curr, t_cmd *head, char *msg);
+void			free_cmd_list(t_cmd *cmd);
+/* void			parse_word(t_token **tokens, t_list **args,
 					t_cmd *cmd, t_shell *shell);
 void			parse_redirect_in(t_token **tokens, t_list **args,
 					t_cmd *cmd, t_shell *shell);
@@ -187,12 +211,12 @@ void			parse_redirect_o(t_token **tokens, t_list **args,
 					t_cmd *cmd, t_shell *shell);
 void			parse_heredoc(t_token **tokens, t_list **args,
 					t_cmd *cmd, t_shell *shell);
-
+ */
 /* Heredoc */					
-void			collect_heredoc(int fd, char *delim,
+/* void			collect_heredoc(int fd, char *delim,
 					bool is_quoted, t_shell *shell);
 int				create_temp_heredoc(char **out_path);
-char			*create_heredoc_file(const char *delim, t_shell *shell);
+char			*create_heredoc_file(const char *delim, t_shell *shell); */
 
 /* Expansion */
 char			*expand_variables(const char *value, t_shell *shell);
@@ -239,6 +263,7 @@ void			free_split(char **split_list);
 void			cleanup_child(t_shell *shell);
 void			clean_exit(t_shell *shell, const char *msg,
 					char *cmd, int code);
+void			close_fd_if_open(int *fd);
 void			execute_command(char **argv, t_shell *shell);
 bool			is_builtin(char **argv);
 bool			run_in_parent(char **argv);

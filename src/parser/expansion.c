@@ -33,21 +33,20 @@ static void	handle_env_var(const char *value, int *i,
 	if (len == 0)
 	{
 		append_char_to_result(result, '$');
+		return; //new
 	}
-	else
-	{
-		key = ft_substr(value, *i, len);
-		val = get_env_value(shell->env_list, key);
-		if (!val)
-			append_to_result(result, "");
-		else
-		{
-			append_to_result(result, val);
-			free(val);
-		}
-		free(key);
-		*i += len;
-	}
+	//else
+	//{
+	key = ft_substr(value, *i, len);
+	if (!key)
+		return ;
+	val = get_env_value(shell->env_list, key);
+	if (val) //prev : if(!val)
+		append_to_result(result, val);
+		//free(val);
+	free(key);
+	*i += len;
+	//}
 }
 
 static void	process_char(t_expander *exp, const char *value, t_shell *shell)

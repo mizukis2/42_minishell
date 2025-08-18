@@ -58,4 +58,5 @@ void	append_char_to_result(char **result, char c)
 		curr = curr->next;
 	}
 	return (NULL);
-} */
+}
+ */

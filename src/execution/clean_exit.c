@@ -12,6 +12,15 @@
 
 #include "minishell.h"
 
+void close_fd_if_open(int *fd)
+{
+	if (*fd >= 0)
+	{
+		close (*fd);
+		*fd = -1;
+	}
+}
+
 void	restore_std_close_fd(int save_in, int save_out)
 {
 	if (save_in >= 0)
@@ -58,7 +67,7 @@ void	clean_exit(t_shell *shell, const char *msg, char *cmd, int code)
 	if (cmd)
 		ft_putendl_fd(cmd, 2);
 	cleanup_child(shell);
-/* 	if (shell->exec.curr_pipe[0] >= 0)
+	if (shell->exec.curr_pipe[0] >= 0)
 		close (shell->exec.curr_pipe[0]);
 	if (shell->exec.curr_pipe[1] >= 0)
 		close (shell->exec.curr_pipe[1]);
@@ -69,6 +78,6 @@ void	clean_exit(t_shell *shell, const char *msg, char *cmd, int code)
 	if (shell->tokens)
 		free_tokens(shell->tokens);
 	if (shell->env_list)
-		free_node_list(shell->env_list); */
+		free_node_list(shell->env_list);
 	exit (code);
 }

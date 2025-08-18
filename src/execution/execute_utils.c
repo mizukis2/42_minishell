@@ -85,7 +85,6 @@ int	run_builtin_parent(t_cmd *curr_cmd, t_shell *shell)
 	save_out = dup(STDOUT_FILENO);
 	if (!set_redirection_pipe(curr_cmd, &shell->exec))
 	{
-		perror("set_redirection_pipe failed(parent:builtin)");
 		close (save_in);
 		close (save_out);
 		return (1);
