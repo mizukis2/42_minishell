@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void close_fd_if_open(int *fd)
+void	close_fd_if_open(int *fd)
 {
 	if (*fd >= 0)
 	{

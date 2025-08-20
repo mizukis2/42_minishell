@@ -57,8 +57,8 @@ static void print_cmd(t_cmd *cmd)
 
         cmd = cmd->next;
     }
-}
- */
+} */
+
 
 static int	init_shell(t_shell *shell, char **envp)
 {

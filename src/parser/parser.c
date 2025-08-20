@@ -12,29 +12,6 @@
 
 #include "minishell.h"
 
-/* void	free_cmd_and_args(t_cmd *cmd, t_list *args)
-{
-	int	j;
-
-	if (cmd)
-	{
-		if (cmd->argv)
-		{
-			j = 0;
-			while (cmd->argv[j])
-			{
-				free(cmd->argv[j]);
-				j++;
-			}
-			free(cmd->argv);
-		}
-		free(cmd->infile);
-		free(cmd->outfile);
-		free(cmd);
-	}
-	ft_lstclear(&args, free);
-} */
-
 char	**argslst_to_array(t_list *args)
 {
 	char	**argv;
@@ -82,23 +59,28 @@ bool	parse_tokens(t_shell *shell)
 	curr = NULL;
 	tokens = shell->tokens;
 	if (tokens && tokens->type == TOKEN_PIPE)
-		return (cleanup_parse(shell, NULL, head, "syntax error near unexpected token `|'"), false);
+		return (cleanup_parse(shell, NULL, head,
+			"syntax error near unexpected token `|'"), false);
 	while (tokens)
 	{
 		curr = parse_command(shell, &tokens);
 		if (!curr)
 			return (cleanup_parse(shell, NULL, head, NULL), false);
 		if (curr->invalid)
-			return (cleanup_parse(shell, curr, head, "Parsing Error - Unable to parse command"), false);
+			return (cleanup_parse(shell, curr, head,
+				"Parsing Error - Unable to parse command(invalid)"), false); //change
 		if (!append_command(&head, &tail, curr))
-			return (cleanup_parse(shell, curr, head, "Parsing Error - Unable to parse command"), false);
+			return (cleanup_parse(shell, curr, head,
+				"Parsing Error - Unable to parse command(append command)"), false);
 		if (tokens && tokens->type == TOKEN_PIPE)
 		{
 			tokens = tokens->next;
 			if (!tokens)
-				return (cleanup_parse(shell, curr, head, "syntax error near unexpected token `|'"), false);
+				return (cleanup_parse(shell, curr, head,
+					"syntax error near unexpected token `|'"), false);
 			if (tokens->type == TOKEN_PIPE)
-				return (cleanup_parse(shell, curr, head, "syntax error near unexpected token `|'"), false);
+				return (cleanup_parse(shell, curr, head,
+					"syntax error near unexpected token `|'"), false);
 		}
 	}
 	shell->commands = head;
