@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static void sort_list(t_env **arr, size_t n)
+static void	sort_list(t_env **arr, size_t n)
 {
 	size_t	pass;
 	size_t	j;
@@ -38,7 +38,7 @@ static void sort_list(t_env **arr, size_t n)
 	}
 }
 
-static void print_list(t_env **arr, size_t n)
+static void	print_list(t_env **arr, size_t n)
 {
 	size_t	i;
 
@@ -64,13 +64,13 @@ void	print_all_list(t_env *env_list)
 	t_env	**arr;
 	t_env	*curr;
 	size_t	i;
-	
+
 	n = count_nodes(env_list);
 	if (n == 0)
 		return ;
 	arr = malloc (n * sizeof(*arr));
 	if (!arr)
-		return;
+		return ;
 	i = 0;
 	curr = env_list;
 	while (i < n)

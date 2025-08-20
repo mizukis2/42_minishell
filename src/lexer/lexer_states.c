@@ -65,6 +65,7 @@ void	process_single_quotes(t_lex *lex, char *line)
 			if (!make_token(lex, &line[lex->i] - lex->start + 1, TOKEN_WORD))
 				return ;
 		lex->state = STATE_IN_WORD;
+		lex->word_was_quoted = true;
 		lex->start = &line[lex->i + 1];
 		lex->i++;
 	}
@@ -80,6 +81,7 @@ void	process_double_quotes(t_lex *lex, char *line)
 			if (!make_token(lex, &line[lex->i] - lex->start + 1, TOKEN_WORD))
 				return ;
 		lex->state = STATE_IN_WORD;
+		lex->word_was_quoted = true;
 		lex->start = &line[lex->i + 1];
 		lex->i++;
 	}

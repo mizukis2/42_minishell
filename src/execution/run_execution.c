@@ -74,7 +74,7 @@ static int	find_exit_code(t_shell *shell)
 	return (1);
 }
 
-static int guard_single_command(t_cmd *curr, t_shell *shell)
+static int	guard_single_command(t_cmd *curr, t_shell *shell)
 {
 	if (!curr->argv || !curr->argv[0])
 		return (0);

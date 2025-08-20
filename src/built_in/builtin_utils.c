@@ -37,11 +37,6 @@ char	*get_env_value(t_env *envp, char *key)
 	return (NULL);
 }
 
-void	print_error_builtin(const char *msg)
-{
-	write (STDERR_FILENO, msg, ft_strlen(msg));
-}
-
 /* this used for mainly export function. */
 char	*create_new_key(const char *arg)
 {

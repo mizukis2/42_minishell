@@ -29,6 +29,7 @@
 # include <termcap.h>
 # include <stdbool.h>
 # include <fcntl.h>
+# include <errno.h>
 # include "libft.h"
 
 /*----------------------Colors-----------------------------*/
@@ -76,6 +77,7 @@ typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
+	bool			was_quoted;  //added (18th, Aug)
 	struct s_token	*next;
 }	t_token;
 
@@ -91,6 +93,7 @@ typedef struct s_lex
 	t_token			*new_token;
 	t_lexer_state	state;
 	t_token_type	type;
+	bool			word_was_quoted; //added (18th, Aug)
 }	t_lex;
 
 /* Parser */
@@ -105,10 +108,6 @@ typedef struct s_redir
 typedef struct s_cmd
 {
 	char			**argv;
-	//char			*infile;
-	//char			*outfile;
-	//bool			append;
-	//bool			heredoc;
 	t_redir			*redirs;
 	struct s_cmd	*next;
 	bool			invalid;
@@ -198,25 +197,15 @@ void			free_cmd_and_args(t_cmd *cmd, t_list *args);
 /* Parse types */
 t_cmd			*parse_command(t_shell *shell, t_token **tokens);
 void			parse_redirection(t_token **tokens, t_cmd *cmd, t_shell *shell);
-void			handle_heredoc_redir(t_token **tokens, t_cmd *cmd, t_shell *shell);
-t_redir			*add_redir(t_redir **head, t_rtype type, char *filename, bool is_heredoc);
-char			*expect_and_expand(t_token **tokens, t_shell *shell, t_cmd *cmd);
-void			cleanup_parse(t_shell *shell, t_cmd *curr, t_cmd *head, char *msg);
+void			handle_heredoc_redir(t_token **tokens, t_cmd *cmd,
+					t_shell *shell);
+t_redir			*add_redir(t_redir **head, t_rtype type, char *filename,
+					bool is_heredoc);
+char			*expect_and_expand(t_token **tokens, t_shell *shell,
+					t_cmd *cmd);
+void			cleanup_parse(t_shell *shell, t_cmd *curr, t_cmd *head,
+					char *msg);
 void			free_cmd_list(t_cmd *cmd);
-/* void			parse_word(t_token **tokens, t_list **args,
-					t_cmd *cmd, t_shell *shell);
-void			parse_redirect_in(t_token **tokens, t_list **args,
-					t_cmd *cmd, t_shell *shell);
-void			parse_redirect_o(t_token **tokens, t_list **args,
-					t_cmd *cmd, t_shell *shell);
-void			parse_heredoc(t_token **tokens, t_list **args,
-					t_cmd *cmd, t_shell *shell);
- */
-/* Heredoc */					
-/* void			collect_heredoc(int fd, char *delim,
-					bool is_quoted, t_shell *shell);
-int				create_temp_heredoc(char **out_path);
-char			*create_heredoc_file(const char *delim, t_shell *shell); */
 
 /* Expansion */
 char			*expand_variables(const char *value, t_shell *shell);
@@ -226,6 +215,8 @@ void			append_char_to_result(char **result, char c);
 
 /* Error */
 void			print_error(const char *msg);
+void			print_error_errno(const char *path, int err);
+void			print_error_builtin(const char *msg);
 
 /* function - environment variable */
 t_env			*copy_initial_env(char **envp);
@@ -255,7 +246,6 @@ int				ft_exit(t_shell *shell, int save_in, int save_out);
 /* built-in utils */
 int				count_args(char **args);
 char			*get_env_value(t_env *envp, char *key);
-void			print_error_builtin(const char *msg); //this and other "print_error should be one?"
 
 /* executon */
 void			run_execution(t_shell *shell);

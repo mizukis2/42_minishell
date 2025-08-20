@@ -61,7 +61,7 @@ void	parse_redirection(t_token **tokens, t_cmd *cmd, t_shell *shell)
 	tt = (*tokens)->type;
 	*tokens = (*tokens)->next;
 	if (tt == TOKEN_HEREDOC)
-		handle_heredoc_redir(tokens, cmd, shell);
+		return (handle_heredoc_redir(tokens, cmd, shell));
 	word = expect_and_expand(tokens, shell, cmd);
 	if (!word)
 	{
@@ -71,13 +71,15 @@ void	parse_redirection(t_token **tokens, t_cmd *cmd, t_shell *shell)
 	if (is_ambiguous(word))
 	{
 		print_error_builtin("ambigious redirect\n");
-		free(word);
+		shell->last_exit_code = 1;
 		cmd->invalid = true;
+		free(word);
 		return ;
 	}
 	if (!add_redir(&cmd->redirs, map_redir_type(tt), word, false))
 	{
 		free(word);
+		shell->last_exit_code = 1;
 		cmd->invalid = true;
 		return ;
 	}
