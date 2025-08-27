@@ -23,6 +23,7 @@ SRCS = 							\
 								src/parser/parser_free_clean.c \
 								src/parser/parse_types.c \
 								src/parser/heredoc.c \
+								src/parser/heredoc_utils.c \
 								src/parser/expansion.c \
 								src/parser/expansion_utils.c \
 								src/env/copy_initial_env.c \
@@ -32,6 +33,7 @@ SRCS = 							\
 								src/execution/run_execution.c \
 								src/execution/run_exec_utils.c \
 								src/execution/execute_cmd.c \
+								src/execution/exec_path.c \
 								src/execution/clean_exit.c \
 								src/execution/set_redirection.c \
 								src/execution/set_redir_utils.c \

@@ -21,18 +21,18 @@ static void	free_redirs(t_redir *r)
 		next = r->next;
 		if (r->is_heredoc && r->target)
 			unlink(r->target);
-		free(r->target);
-		free(r);
+		free (r->target);
+		free (r);
 		r = next;
 	}
 }
 
-void free_single_cmd(t_cmd *cmd)
+void	free_single_cmd(t_cmd *cmd)
 {
-	int i;
+	int	i;
 
 	if (!cmd)
-		return;
+		return ;
 	i = 0;
 	while (cmd->argv[i])
 	{
@@ -41,12 +41,13 @@ void free_single_cmd(t_cmd *cmd)
 	}
 	free (cmd->argv);
 	free_redirs(cmd->redirs);
-	free(cmd);
+	free (cmd);
 }
 
 void	free_cmd_list(t_cmd *cmd)
 {
-	t_cmd *next;
+	t_cmd	*next;
+
 	while (cmd)
 	{
 		next = cmd->next;
@@ -55,7 +56,7 @@ void	free_cmd_list(t_cmd *cmd)
 	}
 }
 
-void cleanup_parse(t_shell *shell, t_cmd *curr, t_cmd *head, char *msg)
+void	cleanup_parse(t_shell *shell, t_cmd *curr, t_cmd *head, char *msg)
 {
 	if (shell)
 	{

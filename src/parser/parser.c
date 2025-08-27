@@ -47,41 +47,54 @@ static bool	append_command(t_cmd **head, t_cmd **tail, t_cmd *new_cmd)
 	return (true);
 }
 
+static void	init_cmd_nodes(t_cmd **head, t_cmd **tail, t_cmd **curr)
+{
+	*head = NULL;
+	*tail = NULL;
+	*curr = NULL;
+}
+
+static bool	process_command(t_parser *p)
+{
+	*(p->curr) = parse_command(p->shell, p->tokens);
+	if (!*(p->curr))
+		return (cleanup_parse(p->shell, NULL, *(p->head), NULL), false);
+	if ((*(p->curr))->invalid)
+		return (cleanup_parse(p->shell, *(p->curr), *(p->head), NULL), false);
+	if (!append_command(p->head, p->tail, *(p->curr)))
+		return (cleanup_parse(p->shell, *(p->curr), *(p->head), ERR_SYN_APP),
+			false);
+	if (*(p->tokens) && (*(p->tokens))->type == TOKEN_PIPE)
+	{
+		*(p->tokens) = (*(p->tokens))->next;
+		if (!*(p->tokens) || (*(p->tokens))->type == TOKEN_PIPE)
+			return (cleanup_parse(p->shell, *(p->curr), *(p->head),
+					ERR_SYN_PIPE), false);
+	}
+	return (true);
+}
+
 bool	parse_tokens(t_shell *shell)
 {
-	t_cmd	*head;
-	t_cmd	*tail;
-	t_cmd	*curr;
-	t_token	*tokens;
+	t_cmd		*head;
+	t_cmd		*tail;
+	t_cmd		*curr;
+	t_token		*tokens;
+	t_parser	parser;
 
-	head = NULL;
-	tail = NULL;
-	curr = NULL;
+	init_cmd_nodes(&head, &tail, &curr);
 	tokens = shell->tokens;
 	if (tokens && tokens->type == TOKEN_PIPE)
-		return (cleanup_parse(shell, NULL, head,
-			"syntax error near unexpected token `|'"), false);
+		return (cleanup_parse(shell, NULL, head, ERR_SYN_PIPE), false);
+	parser.shell = shell;
+	parser.head = &head;
+	parser.tail = &tail;
+	parser.curr = &curr;
+	parser.tokens = &tokens;
 	while (tokens)
 	{
-		curr = parse_command(shell, &tokens);
-		if (!curr)
-			return (cleanup_parse(shell, NULL, head, NULL), false);
-		if (curr->invalid)
-			return (cleanup_parse(shell, curr, head,
-				"Parsing Error - Unable to parse command(invalid)"), false); //change
-		if (!append_command(&head, &tail, curr))
-			return (cleanup_parse(shell, curr, head,
-				"Parsing Error - Unable to parse command(append command)"), false);
-		if (tokens && tokens->type == TOKEN_PIPE)
-		{
-			tokens = tokens->next;
-			if (!tokens)
-				return (cleanup_parse(shell, curr, head,
-					"syntax error near unexpected token `|'"), false);
-			if (tokens->type == TOKEN_PIPE)
-				return (cleanup_parse(shell, curr, head,
-					"syntax error near unexpected token `|'"), false);
-		}
+		if (!process_command(&parser))
+			return (false);
 	}
 	shell->commands = head;
 	return (true);

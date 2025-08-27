@@ -29,10 +29,10 @@ void	print_error_builtin(const char *msg)
 
 void	print_error_errno(const char *path, int err)
 {
-	const char *msg;
-	size_t	msg_len;
-	size_t	plen;
-	
+	const char	*msg;
+	size_t		msg_len;
+	size_t		plen;
+
 	msg = strerror(err);
 	msg_len = ft_strlen(msg);
 	write(2, "MZ$hell: ", 9);
@@ -41,7 +41,6 @@ void	print_error_errno(const char *path, int err)
 		plen = ft_strlen(path);
 		write(2, path, plen);
 		write(2, ": ", 2);
-
 	}
 	write(2, msg, msg_len);
 	write(2, "\n", 1);
