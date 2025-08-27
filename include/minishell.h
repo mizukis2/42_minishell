@@ -29,6 +29,7 @@
 # include <termcap.h>
 # include <stdbool.h>
 # include <fcntl.h>
+# include <errno.h>
 # include "libft.h"
 
 /*----------------------Colors-----------------------------*/
@@ -76,6 +77,7 @@ typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
+	bool			was_quoted;  //added (18th, Aug)
 	struct s_token	*next;
 }	t_token;
 
@@ -91,6 +93,7 @@ typedef struct s_lex
 	t_token			*new_token;
 	t_lexer_state	state;
 	t_token_type	type;
+	bool			word_was_quoted; //added (18th, Aug)
 }	t_lex;
 
 /* Parser */
@@ -212,6 +215,8 @@ void			append_char_to_result(char **result, char c);
 
 /* Error */
 void			print_error(const char *msg);
+void			print_error_errno(const char *path, int err);
+void			print_error_builtin(const char *msg);
 
 /* function - environment variable */
 t_env			*copy_initial_env(char **envp);
@@ -241,7 +246,6 @@ int				ft_exit(t_shell *shell, int save_in, int save_out);
 /* built-in utils */
 int				count_args(char **args);
 char			*get_env_value(t_env *envp, char *key);
-void			print_error_builtin(const char *msg);
 
 /* executon */
 void			run_execution(t_shell *shell);

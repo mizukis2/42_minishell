@@ -43,6 +43,7 @@ void	lexer_init(t_lex *lex, char *line)
 	lex->tokens = NULL;
 	lex->new_token = NULL;
 	lex->state = STATE_START;
+	lex->word_was_quoted = false;
 }
 
 t_token	*lexer(char *line)

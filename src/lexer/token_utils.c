@@ -26,6 +26,7 @@ t_token	*create_token(char *start, int len, t_token_type type)
 		return (NULL);
 	}
 	token->type = type;
+	token->was_quoted = false;
 	token->next = NULL;
 	return (token);
 }
@@ -72,6 +73,8 @@ bool	make_token(t_lex *lex, int len, t_token_type type)
 		free_tokens(lex->tokens);
 		return (false);
 	}
+	lex->new_token->was_quoted = lex->word_was_quoted;
 	add_token(&lex->tokens, lex->new_token);
+	lex->word_was_quoted = false;
 	return (true);
 }
