@@ -44,19 +44,3 @@ void	append_char_to_result(char **result, char c)
 	s[1] = '\0';
 	append_to_result(result, s);
 }
-
-//Mizuki commented out this get_env_value, since this function is already in builtin_utils
-/* char	*get_env_value(t_env *envp, char *key)//remove after adding env files
-{
-	t_env	*curr;
-
-	curr = envp;
-	while (curr)
-	{
-		if (ft_strcmp(curr->key, key) == 0)
-			return (ft_strdup(curr->value));
-		curr = curr->next;
-	}
-	return (NULL);
-}
- */

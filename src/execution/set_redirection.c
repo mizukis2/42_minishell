@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                         ::::::::           */
-/*   set_redirection.c                                       :+:    :+:           */
+/*   set_redirection.c                                   :+:    :+:           */
 /*                                                      +:+                   */
 /*   By: mmatsui <marvin@42.fr>                        +#+                    */
 /*                                                    +#+                     */
@@ -12,47 +12,7 @@
 
 #include "minishell.h"
 
-static bool	infile_process(const t_redir *r)
-{
-	int	fd_in;
-
-	fd_in = open (r->target, O_RDONLY);
-	if (fd_in == -1)
-	{
-		perror(r->target);
-		return (false);
-	}
-	if (dup2(fd_in, STDIN_FILENO) == -1)
-	{
-		close (fd_in);
-		return (false);
-	}
-	close (fd_in);
-	if (r->type == R_HEREDOC)
-		unlink(r->target);
-	return (true);
-}
-
-static bool	outfile_process(t_redir *r)
-{
-	int	fd_out;
-
-	if (r->type == R_APPEND)
-		fd_out = open (r->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	else
-		fd_out = open (r->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd_out == -1)
-		return (perror (r->target), false);
-	if (dup2 (fd_out, STDOUT_FILENO) == -1)
-	{
-		close (fd_out);
-		return (false);
-	}
-	close (fd_out);
-	return (true);
-}
-
-static bool hook_prev_pipe_stdin(t_exec *exec)
+static bool	hook_prev_pipe_stdin(t_exec *exec)
 {
 	if (exec->prev_pipe_read < 0)
 		return (true);
@@ -66,9 +26,9 @@ static bool hook_prev_pipe_stdin(t_exec *exec)
 	return (true);
 }
 
-static bool apply_redirections (t_redir *redirs, bool *out_redir_seen)
+static bool	apply_redirections(t_redir *redirs, bool *out_redir_seen)
 {
-	t_redir *r;
+	t_redir	*r;
 
 	r = redirs;
 	*out_redir_seen = false;
@@ -82,7 +42,7 @@ static bool apply_redirections (t_redir *redirs, bool *out_redir_seen)
 		else
 		{
 			if (!(outfile_process(r)))
-		 		return (false);
+				return (false);
 			*out_redir_seen = true;
 		}
 		r = r->next;
@@ -90,7 +50,7 @@ static bool apply_redirections (t_redir *redirs, bool *out_redir_seen)
 	return (true);
 }
 
-static bool hook_next_pipe_stdout(t_exec *exec, bool out_redir_seen)
+static bool	hook_next_pipe_stdout(t_exec *exec, bool out_redir_seen)
 {
 	close_fd_if_open(&exec->curr_pipe[0]);
 	if (out_redir_seen)
@@ -109,8 +69,8 @@ static bool hook_next_pipe_stdout(t_exec *exec, bool out_redir_seen)
 
 bool	set_redirection_pipe(t_cmd *curr_cmd, t_exec *exec)
 {
-	bool out_redir_seen;
-	
+	bool	out_redir_seen;
+
 	if (!hook_prev_pipe_stdin(exec))
 		return (false);
 	if (!apply_redirections(curr_cmd->redirs, &out_redir_seen))
