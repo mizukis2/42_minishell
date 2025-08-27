@@ -19,7 +19,7 @@ static void	sort_list(t_env **arr, size_t n)
 	t_env	*temp;
 
 	if (n < 2)
-		return;
+		return ;
 	pass = 0;
 	while (pass < n - 1)
 	{

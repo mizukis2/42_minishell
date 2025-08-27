@@ -65,22 +65,19 @@ static void	run_exec_parent(t_cmd *curr_cmd, t_shell *shell, pid_t pid)
 	}
 }
 
-static int	find_exit_code(t_shell *shell)
+static int	run_child_or_parent(t_cmd *curr, t_shell *shell, pid_t pid)
 {
-	if (WIFEXITED(shell->exec.status))
-		return (WEXITSTATUS(shell->exec.status));
-	else if (WIFSIGNALED(shell->exec.status))
-		return (128 + WTERMSIG(shell->exec.status));
-	return (1);
-}
-
-static int	guard_single_command(t_cmd *curr, t_shell *shell)
-{
-	if (!curr->argv || !curr->argv[0])
-		return (0);
-	if (is_builtin(curr->argv))
-		return (run_builtin_parent(curr, shell));
-	return (-1);
+	if (pid == 0)
+		run_exec_child(curr, shell);
+	else if (pid > 0)
+		run_exec_parent(curr, shell, pid);
+	else
+	{
+		cleanup_child(shell);
+		perror("fork"); //print_error_errno("fork", errno);
+		return (1);
+	}
+	return (0);
 }
 
 /* this is main function of executing the commands (and with args)
@@ -103,12 +100,10 @@ int	execute(t_shell *shell)
 	while (curr)
 	{
 		if (curr->next && pipe(shell->exec.curr_pipe) == -1)
-			return (perror("pipe failed"), 1);
+			return (perror("pipe"), 1); //replace print_error_errno("pipe", errno)
 		pid = fork();
-		if (pid == 0)
-			run_exec_child(curr, shell);
-		else
-			run_exec_parent(curr, shell, pid);
+		if (run_child_or_parent (curr, shell, pid) != 0)
+			return (1);
 		curr = curr->next;
 	}
 	waitpid_loop(&shell->exec);

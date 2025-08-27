@@ -35,11 +35,24 @@ static void	print_identifier_error(const char *arg)
 	print_error_builtin("': not a valid identifier\n");
 }
 
+static int	build_new_env(char *item, t_env *env_list)
+{
+	char	*new_key;
+	char	*new_value;
+
+	new_key = create_new_key(item);
+	if (!new_key)
+		return (1);
+	new_value = create_new_value(item);
+	update_env(new_key, new_value, env_list);
+	free(new_key);
+	free(new_value);
+	return (0);
+}
+
 int	ft_export(char **args, t_env *env_list)
 {
 	int		i;
-	char	*new_key;
-	char	*new_value;
 	int		exit_code;
 
 	if (args[0] == NULL)
@@ -50,14 +63,8 @@ int	ft_export(char **args, t_env *env_list)
 	{
 		if (is_valid_identifier(args[i]))
 		{
-			new_key = create_new_key(args[i]);
-			if (!new_key)
-				return (1);
-			new_value = create_new_value(args[i]);
-			update_env(new_key, new_value, env_list);
-			free(new_key);
-			free(new_value);
-			exit_code = 0;
+			if (build_new_env(args[i], env_list) != 0)
+				exit_code = 1;
 		}
 		else
 		{

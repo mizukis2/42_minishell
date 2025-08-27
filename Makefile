@@ -30,9 +30,11 @@ SRCS = 							\
 								src/env/env_utils.c \
 								src/env/update_env.c \
 								src/execution/run_execution.c \
+								src/execution/run_exec_utils.c \
 								src/execution/execute_cmd.c \
 								src/execution/clean_exit.c \
 								src/execution/set_redirection.c \
+								src/execution/set_redir_utils.c \
 								src/execution/execute_utils.c \
 								src/built_in/built_in.c \
 								src/built_in/builtin_cd.c \

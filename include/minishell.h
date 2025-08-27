@@ -232,7 +232,7 @@ char			*complete_env_line(t_env *envp);
 int				count_nodes(t_env *head);
 
 /* function - built-in*/
-int				execute_builtin(char **args, t_env *env_list);//
+int				execute_builtin(char **args, t_env *env_list);
 int				execute_builtin_exit(t_shell *shell, int save_in, int save_out);
 int				ft_echo(char **args);
 int				ft_pwd(char **args);
@@ -264,5 +264,11 @@ bool			set_redirection_pipe(t_cmd *curr_cmd, t_exec *exec);
 void			waitpid_loop(t_exec *exec);
 void			init_exec(t_exec *exec);
 int				run_builtin_parent(t_cmd *commands, t_shell *shell);
+
+/* execution - utils */
+int				find_exit_code(t_shell *shell);
+int				guard_single_command(t_cmd *curr, t_shell *shell);
+bool			infile_process(const t_redir *r);
+bool			outfile_process(t_redir *r);
 
 #endif
