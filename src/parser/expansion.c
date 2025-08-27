@@ -33,7 +33,7 @@ static void	handle_env_var(const char *value, int *i,
 	if (len == 0)
 	{
 		append_char_to_result(result, '$');
-		return;
+		return ;
 	}
 	key = ft_substr(value, *i, len);
 	if (!key)
@@ -79,7 +79,7 @@ char	*expand_variables(const char *value, t_shell *shell)
 
 	exp.result = ft_strdup("");
 	if (!exp.result)
-		return NULL;
+		return (NULL);
 	exp.i = 0;
 	exp.in_single_quote = false;
 	exp.in_double_quote = false;

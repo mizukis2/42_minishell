@@ -74,7 +74,7 @@ static int	run_child_or_parent(t_cmd *curr, t_shell *shell, pid_t pid)
 	else
 	{
 		cleanup_child(shell);
-		perror("fork"); //print_error_errno("fork", errno);
+		print_error_errno("fork", errno);
 		return (1);
 	}
 	return (0);
@@ -100,7 +100,7 @@ int	execute(t_shell *shell)
 	while (curr)
 	{
 		if (curr->next && pipe(shell->exec.curr_pipe) == -1)
-			return (perror("pipe"), 1); //replace print_error_errno("pipe", errno)
+			return (print_error_errno("pipe", errno), 1);
 		pid = fork();
 		if (run_child_or_parent (curr, shell, pid) != 0)
 			return (1);

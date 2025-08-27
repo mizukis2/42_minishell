@@ -55,15 +55,9 @@ static void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
 			break ;
 		}
 		if (is_quoted)
-		{
 			value = ft_strdup(line);
-			printf ("value:%s\n", value);
-		}
 		else
-		{
 			value = expand_variables(line, shell);
-			printf ("value:%s\n", value);
-		}
 		write(fd, value, ft_strlen(value));
 		write(fd, "\n", 1);
 		free(value);
@@ -71,7 +65,7 @@ static void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
 	}
 }
 
-static char	*create_heredoc_file(const char *delim, bool is_quoted, t_shell *shell)
+static char	*create_heredoc_file(const char *delim, t_shell *shell)
 {
 	t_heredoc	heredoc;
 
@@ -86,9 +80,6 @@ static char	*create_heredoc_file(const char *delim, bool is_quoted, t_shell *she
 		heredoc.clean_delim = ft_strdup(delim);
 		heredoc.is_quoted = false;
 	}
-	printf ("delim:%s\n", heredoc.clean_delim);
-	if (is_quoted) //
-		printf ("quoted\n"); //
 	if (!heredoc.clean_delim)
 		return (NULL);
 	heredoc.fd = create_temp_heredoc(&heredoc.temp_path);
@@ -104,9 +95,11 @@ static char	*create_heredoc_file(const char *delim, bool is_quoted, t_shell *she
 //unlink (heredoc.temp_path)
 //return NULL
 
-static char *expect_delim_no_expand(t_token **tokens, t_shell *shell, t_cmd *cmd)
+static char	*expect_delim_no_expand(t_token **tokens, t_shell *shell,
+										t_cmd *cmd)
 {
-	char *str;
+	char	*str;
+
 	if (!tokens || !*tokens || (*tokens)->type != TOKEN_WORD)
 	{
 		shell->last_exit_code = 2;
@@ -126,18 +119,18 @@ static char *expect_delim_no_expand(t_token **tokens, t_shell *shell, t_cmd *cmd
 
 void	handle_heredoc_redir(t_token **tokens, t_cmd *cmd, t_shell *shell)
 {
-	t_token *tok;
-	char *delim;
-	char *path;
+	t_token	*tok;
+	char	*delim;
+	char	*path;
 
 	tok = *tokens;
 	delim = expect_delim_no_expand(tokens, shell, cmd);
-	if(!delim)
+	if (!delim)
 	{
 		cmd->invalid = true;
-		return;
+		return ;
 	}
-	path = create_heredoc_file(delim, tok->was_quoted, shell);
+	path = create_heredoc_file(delim, shell);
 	free(delim);
 	if (!path)
 	{
