@@ -12,52 +12,7 @@
 
 #include "minishell.h"
 
-static char	*complete_path(char *dir, char *cmd)
-{
-	char	*temp;
-	char	*full;
-
-	temp = ft_strjoin(dir, "/");
-	full = ft_strjoin(temp, cmd);
-	free (temp);
-	return (full);
-}
-
-static char	**prep_all_path(t_env *envp)
-{
-	t_env	*curr;
-
-	curr = envp;
-	while (curr && ft_strcmp(curr->key, "PATH") != 0)
-		curr = curr->next;
-	if (!curr)
-		return (NULL);
-	return (ft_split(curr->value, ':'));
-}
-
-static char	*find_path(char *cmd, t_env *envp)
-{
-	int		i;
-	char	**all_path;
-	char	*full;
-
-	all_path = prep_all_path(envp);
-	if (!all_path)
-		return (NULL);
-	i = 0;
-	while (all_path[i])
-	{
-		full = complete_path(all_path[i], cmd);
-		if (access(full, X_OK) == 0)
-			return (free_split(all_path), full);
-		free (full);
-		i++;
-	}
-	free_split(all_path);
-	return (NULL);
-}
-
-static int map_exec_errno(int e)
+static int	map_exec_errno(int e)
 {
 	if (e == ENOENT)
 		return (127);
@@ -66,40 +21,39 @@ static int map_exec_errno(int e)
 	return (126);
 }
 
+static void	exec_fail(const char *path, t_shell *shell, int err)
+{
+	print_error_errno(path, err);
+	clean_exit(shell, NULL, NULL, map_exec_errno(err));
+}
+
 static void	exec_explicit_path(char**argv, t_shell *shell)
 {
 	struct stat	st;
-	const char *path;
-	char **array_envp;
-	int		e;
+	const char	*path;
+	char		**array_envp;
+	int			e;
 
 	path = argv[0];
-	if (stat(path, &st) == 0)
-	{
-		if (S_ISDIR(st.st_mode))
-		{
-			print_error_errno(path, EISDIR);
-			clean_exit(shell, NULL, NULL, 126);
-		}
-		if (access(path, X_OK) != 0)
-		{
-			e = errno;
-			print_error_errno(path, e);
-			clean_exit(shell, NULL, NULL, map_exec_errno(e));	
-		}
-	}
-	else
-	{
-		e = errno;
-		print_error_errno(path, e);
-		clean_exit(shell, NULL, NULL, map_exec_errno(e));
-	}
+	if (stat(path, &st) != 0)
+		exec_fail(path, shell, errno);
+	if (S_ISDIR(st.st_mode))
+		exec_fail(path, shell, EISDIR);
+	if (access(path, X_OK) != 0)
+		exec_fail(path, shell, errno);
 	array_envp = list_to_array(shell->env_list);
 	execve (path, argv, array_envp);
 	e = errno;
-	print_error_errno(path, e);
 	free (array_envp);
-	clean_exit(shell, NULL, NULL, map_exec_errno(e));
+	exec_fail(path, shell, e);
+}
+
+static void	exec_fail_free(char *path, char **array_envp,
+	t_shell *shell, int err)
+{
+	free (path);
+	free_array(array_envp);
+	exec_fail(path, shell, err);
 }
 
 /* child process, exit with exit_code if fails */
@@ -127,8 +81,5 @@ void	execute_command(char **argv, t_shell *shell)
 	array_envp = list_to_array(shell->env_list);
 	execve (path, argv, array_envp);
 	e = errno;
-	print_error_errno(path, e);
-	free (array_envp);
-	free (path);
-	clean_exit(shell, NULL, NULL, map_exec_errno(e));
+	exec_fail_free(path, array_envp, shell, e);
 }

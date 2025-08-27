@@ -48,16 +48,6 @@ bool	run_in_parent(char **argv)
 	return (false);
 }
 
-void	init_exec(t_exec *exec)
-{
-	exec->prev_pipe_read = -1;
-	exec->curr_pipe[0] = -1;
-	exec->curr_pipe[1] = -1;
-	exec->num_pids = 0;
-	exec->last_pid = -1;
-	exec->status = 0;
-}
-
 void	waitpid_loop(t_exec *exec)
 {
 	int	i;

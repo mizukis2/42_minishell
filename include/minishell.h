@@ -41,6 +41,10 @@
 //this used for s_exec struct
 # define MAX_CMDS 100
 
+//error message
+# define ERR_SYN_PIPE "syntax error near unexpected token `|'"
+# define ERR_SYN_APP "syntax error: failed to append command"
+
 /*---------------------ENUMS-------------------------------*/
 /*Token type*/
 typedef enum e_token_type
@@ -77,7 +81,7 @@ typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
-	bool			was_quoted;  //added (18th, Aug)
+	bool			was_quoted;
 	struct s_token	*next;
 }	t_token;
 
@@ -93,7 +97,7 @@ typedef struct s_lex
 	t_token			*new_token;
 	t_lexer_state	state;
 	t_token_type	type;
-	bool			word_was_quoted; //added (18th, Aug)
+	bool			word_was_quoted;
 }	t_lex;
 
 /* Parser */
@@ -159,6 +163,16 @@ typedef struct s_shell
 	t_exec			exec;
 	int				last_exit_code;
 }	t_shell;
+
+typedef struct s_parser
+{
+	t_shell	*shell;
+	t_cmd	**head;
+	t_cmd	**tail;
+	t_cmd	**curr;
+	t_token	**tokens;
+}	t_parser;
+
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
 void			start_shell(char **envp);
@@ -192,7 +206,6 @@ bool			make_token(t_lex *lex, int len, t_token_type type);
 bool			parse_tokens(t_shell *shell);
 char			**argslst_to_array(t_list *args);
 void			free_cmd_list(t_cmd *cmd);
-void			free_cmd_and_args(t_cmd *cmd, t_list *args);
 
 /* Parse types */
 t_cmd			*parse_command(t_shell *shell, t_token **tokens);
@@ -201,8 +214,10 @@ void			handle_heredoc_redir(t_token **tokens, t_cmd *cmd,
 					t_shell *shell);
 t_redir			*add_redir(t_redir **head, t_rtype type, char *filename,
 					bool is_heredoc);
+char			*create_heredoc_file(const char *delim, t_shell *shell);
 char			*expect_and_expand(t_token **tokens, t_shell *shell,
 					t_cmd *cmd);
+void			set_invalid(t_cmd *cmd, t_shell *shell, int code);
 void			cleanup_parse(t_shell *shell, t_cmd *curr, t_cmd *head,
 					char *msg);
 void			free_cmd_list(t_cmd *cmd);
@@ -264,6 +279,7 @@ bool			set_redirection_pipe(t_cmd *curr_cmd, t_exec *exec);
 void			waitpid_loop(t_exec *exec);
 void			init_exec(t_exec *exec);
 int				run_builtin_parent(t_cmd *commands, t_shell *shell);
+char			*find_path(char *cmd, t_env *envp);
 
 /* execution - utils */
 int				find_exit_code(t_shell *shell);

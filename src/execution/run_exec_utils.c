@@ -29,3 +29,13 @@ int	guard_single_command(t_cmd *curr, t_shell *shell)
 		return (run_builtin_parent(curr, shell));
 	return (-1);
 }
+
+void	init_exec(t_exec *exec)
+{
+	exec->prev_pipe_read = -1;
+	exec->curr_pipe[0] = -1;
+	exec->curr_pipe[1] = -1;
+	exec->num_pids = 0;
+	exec->last_pid = -1;
+	exec->status = 0;
+}

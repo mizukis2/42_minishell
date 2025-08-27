@@ -48,8 +48,7 @@ int	main(int ac, char **av, char **envp)
 	rl_clear_history();
 	return (EXIT_SUCCESS);
 }
-
-	// valgrind --suppressions=minishell.supp
+// valgrind --suppressions=minishell.supp
 /* 	valgrind \
     --suppressions=minishell.supp \
     --leak-check=full \

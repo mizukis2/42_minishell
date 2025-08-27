@@ -3,7 +3,7 @@
 /*                                                         ::::::::           */
 /*   parse_redirection_utils.c                           :+:    :+:           */
 /*                                                      +:+                   */
-/*   By: mmatsui <marvin@42.fr>                        +#+                    */
+/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
 /*                                                    +#+                     */
 /*   Created: 2025/08/15 14:28:35 by mmatsui        #+#    #+#                */
 /*   Updated: 2025/08/15 14:28:36 by mmatsui        ########   odam.nl        */
@@ -12,11 +12,12 @@
 
 #include "minishell.h"
 
-t_redir *add_redir(t_redir **head, t_rtype type, char *filename, bool is_heredoc)
+t_redir	*add_redir(t_redir **head, t_rtype type, char *filename,
+						bool is_heredoc)
 {
-	t_redir *new;
-	t_redir *tmp;
-	
+	t_redir	*new;
+	t_redir	*tmp;
+
 	new = malloc(sizeof(*new));
 	if (!new)
 		return (NULL);
@@ -38,24 +39,21 @@ t_redir *add_redir(t_redir **head, t_rtype type, char *filename, bool is_heredoc
 	return (new);
 }
 
-char *expect_and_expand(t_token **tokens, t_shell *shell, t_cmd *cmd)
+char	*expect_and_expand(t_token **tokens, t_shell *shell, t_cmd *cmd)
 {
-	char *str;
+	char	*str;
 
 	if (!tokens || !*tokens || (*tokens)->type != TOKEN_WORD)
 	{
-		shell->last_exit_code = 2;
-		cmd->invalid = true;
-		return NULL;
+		set_invalid(cmd, shell, 2);
+		return (NULL);
 	}
 	str = expand_variables((*tokens)->value, shell);
 	if (!str)
 	{
-		shell->last_exit_code = 1;
-		cmd->invalid = true;
+		set_invalid(cmd, shell, 1);
 		return (NULL);
 	}
 	(*tokens) = (*tokens)->next;
-	return(str);
+	return (str);
 }
-

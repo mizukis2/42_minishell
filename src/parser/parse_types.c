@@ -16,16 +16,12 @@ void	parse_word(t_token **tokens, t_list **args, t_cmd *cmd, t_shell *shell)
 {
 	t_token	*tok;
 	char	*value;
-	t_list	*node; //added for safety NULL check
+	t_list	*node;
 
 	tok = *tokens;
 	value = expand_variables(tok->value, shell);
-	if (!value) 
-	{
-		shell->last_exit_code = 1;
-		cmd->invalid = true;
-		return ;
-	}
+	if (!value)
+		return (set_invalid(cmd, shell, 1));
 	if (value[0] == '\0' && !tok->was_quoted)
 		free(value);
 	else
@@ -34,19 +30,17 @@ void	parse_word(t_token **tokens, t_list **args, t_cmd *cmd, t_shell *shell)
 		if (!node)
 		{
 			free (value);
-			shell->last_exit_code = 1;
-			cmd->invalid = true;
-			return ;
+			return (set_invalid(cmd, shell, 1));
 		}
 		ft_lstadd_back(args, node);
 	}
 	*tokens = (*tokens)->next;
 }
 
-bool is_redir (t_token_type tt)
+bool	is_redir(t_token_type tt)
 {
 	return (tt == TOKEN_REDIRECT_IN || tt == TOKEN_REDIRECT_OUT
-			|| tt == TOKEN_APPEND || tt == TOKEN_HEREDOC);
+		|| tt == TOKEN_APPEND || tt == TOKEN_HEREDOC);
 }
 
 t_cmd	*parse_command(t_shell *shell, t_token **tokens)
@@ -69,13 +63,11 @@ t_cmd	*parse_command(t_shell *shell, t_token **tokens)
 			parse_redirection(tokens, cmd, shell);
 		else
 		{
-			shell->last_exit_code = 2;
-			cmd->invalid = true;
-			break;
+			set_invalid(cmd, shell, 2);
+			break ;
 		}
 	}
 	cmd->argv = argslst_to_array(args);
 	ft_lstclear(&args, free);
 	return (cmd);
 }
-
