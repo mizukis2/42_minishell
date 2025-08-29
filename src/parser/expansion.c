@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static void	handle_exit_status(int *i, char **result, t_shell *shell)
+void	handle_exit_status(int *i, char **result, t_shell *shell)
 {
 	char	*status;
 
@@ -22,7 +22,7 @@ static void	handle_exit_status(int *i, char **result, t_shell *shell)
 	(*i)++;
 }
 
-static void	handle_env_var(const char *value, int *i,
+void	handle_env_var(const char *value, int *i,
 	char **result, t_shell *shell)
 {
 	int		len;

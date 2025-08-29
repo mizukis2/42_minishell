@@ -12,6 +12,34 @@
 
 #include "minishell.h"
 
+static char	*strip_delim_quotes(const char *str, bool *quoted)
+{
+	char	*unquoted_delim;
+	int		i;
+	int		j;
+	int		len;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	unquoted_delim = malloc (len + 1);
+	if (!unquoted_delim)
+		return (NULL);
+	*quoted = false;
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+			*quoted = true;
+		else
+			unquoted_delim[j++] = str[i];
+		i++;
+	}
+	unquoted_delim[j] = '\0';
+	return (unquoted_delim);
+}
+
 static int	create_temp_heredoc(char **out_path)
 {
 	size_t	i;
@@ -57,7 +85,7 @@ static void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
 		if (is_quoted)
 			value = ft_strdup(line);
 		else
-			value = expand_variables(line, shell);
+			value = expand_heredoc_variables(line, shell);
 		write(fd, value, ft_strlen(value));
 		write(fd, "\n", 1);
 		free(value);
@@ -68,18 +96,10 @@ static void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
 char	*create_heredoc_file(const char *delim, t_shell *shell)
 {
 	t_heredoc	heredoc;
+	bool		quoted;
 
-	if ((delim[0] == '\'' && delim[ft_strlen(delim) - 1] == '\'')
-		|| (delim[0] == '"' && delim[ft_strlen(delim) - 1] == '"'))
-	{
-		heredoc.clean_delim = ft_strndup(delim + 1, ft_strlen(delim) - 2);
-		heredoc.is_quoted = true;
-	}
-	else
-	{
-		heredoc.clean_delim = ft_strdup(delim);
-		heredoc.is_quoted = false;
-	}
+	heredoc.clean_delim = strip_delim_quotes(delim, &quoted);
+	heredoc.is_quoted = quoted;
 	if (!heredoc.clean_delim)
 		return (NULL);
 	heredoc.fd = create_temp_heredoc(&heredoc.temp_path);

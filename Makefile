@@ -24,6 +24,7 @@ SRCS = 							\
 								src/parser/parse_types.c \
 								src/parser/heredoc.c \
 								src/parser/heredoc_utils.c \
+								src/parser/heredoc_expansion.c \
 								src/parser/expansion.c \
 								src/parser/expansion_utils.c \
 								src/env/copy_initial_env.c \

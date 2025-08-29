@@ -12,22 +12,9 @@
 
 #include "minishell.h"
 
-static bool	str_contains_ifs(const char *s)
-{
-	while (*s)
-	{
-		if (*s == ' ' || *s == '\t' || *s == '\n')
-			return (true);
-		s++;
-	}
-	return (false);
-}
-
 static bool	is_ambiguous(const char *expanded_word)
 {
 	if (!expanded_word || expanded_word[0] == '\0')
-		return (true);
-	if (str_contains_ifs(expanded_word))
 		return (true);
 	return (false);
 }
@@ -52,20 +39,20 @@ static void	redir_error_set_free(t_cmd *cmd, t_shell *shell, int code,
 	set_invalid(cmd, shell, code);
 }
 
-void	parse_redirection(t_token **tokens, t_cmd *cmd, t_shell *shell)
+void	parse_redirection(t_token **tok_it, t_cmd *cmd, t_shell *shell)
 {
 	t_token_type	tt;
 	char			*word;
 
-	if (!tokens || !*tokens)
+	if (!tok_it || !*tok_it)
 		return (set_invalid(cmd, shell, 2));
 	if (cmd->invalid)
 		return ;
-	tt = (*tokens)->type;
-	*tokens = (*tokens)->next;
+	tt = (*tok_it)->type;
+	*tok_it = (*tok_it)->next;
 	if (tt == TOKEN_HEREDOC)
-		return (handle_heredoc_redir(tokens, cmd, shell));
-	word = expect_and_expand(tokens, shell, cmd);
+		return (handle_heredoc_redir(tok_it, cmd, shell));
+	word = expect_and_expand(tok_it, shell, cmd);
 	if (!word)
 		return (set_invalid(cmd, shell, 1));
 	if (is_ambiguous(word))
