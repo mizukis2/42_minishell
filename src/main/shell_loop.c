@@ -57,9 +57,8 @@ static void print_cmd(t_cmd *cmd)
 
         cmd = cmd->next;
     }
-} */
-
-
+}
+ */
 static int	init_shell(t_shell *shell, char **envp)
 {
 	shell->line = NULL;
@@ -110,12 +109,12 @@ void	start_shell(char **envp)
 		add_history(shell.line);
 		if (!tokenize_input(&shell))
 			continue ;
+/* 		if (shell.tokens)
+			print_tokens(shell.tokens);//for debug */
+/* 		if (shell.commands)
+			print_cmd(shell.commands);//for debug */
 		if (!parse_tokens(&shell))
 			continue ;
-/* 		if (shell.commands)
-			print_cmd(shell.commands);//for debug
-		if (shell.tokens)
-			print_tokens(shell.tokens);//for debug */
 		run_execution (&shell);
 		//printf ("exit code : %d\n", shell.last_exit_code); //for debug
 		cleanup(&shell);

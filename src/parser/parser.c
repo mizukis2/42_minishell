@@ -56,7 +56,7 @@ static void	init_cmd_nodes(t_cmd **head, t_cmd **tail, t_cmd **curr)
 
 static bool	process_command(t_parser *p)
 {
-	*(p->curr) = parse_command(p->shell, p->tokens);
+	*(p->curr) = parse_command(p->shell, p->tok_it);
 	if (!*(p->curr))
 		return (cleanup_parse(p->shell, NULL, *(p->head), NULL), false);
 	if ((*(p->curr))->invalid)
@@ -64,10 +64,10 @@ static bool	process_command(t_parser *p)
 	if (!append_command(p->head, p->tail, *(p->curr)))
 		return (cleanup_parse(p->shell, *(p->curr), *(p->head), ERR_SYN_APP),
 			false);
-	if (*(p->tokens) && (*(p->tokens))->type == TOKEN_PIPE)
+	if (*(p->tok_it) && (*(p->tok_it))->type == TOKEN_PIPE)
 	{
-		*(p->tokens) = (*(p->tokens))->next;
-		if (!*(p->tokens) || (*(p->tokens))->type == TOKEN_PIPE)
+		*(p->tok_it) = (*(p->tok_it))->next;
+		if (!*(p->tok_it) || (*(p->tok_it))->type == TOKEN_PIPE)
 			return (cleanup_parse(p->shell, *(p->curr), *(p->head),
 					ERR_SYN_PIPE), false);
 	}
@@ -79,21 +79,21 @@ bool	parse_tokens(t_shell *shell)
 	t_cmd		*head;
 	t_cmd		*tail;
 	t_cmd		*curr;
-	t_token		*tokens;
-	t_parser	parser;
+	t_token		*cur_tok;
+	t_parser	p;
 
 	init_cmd_nodes(&head, &tail, &curr);
-	tokens = shell->tokens;
-	if (tokens && tokens->type == TOKEN_PIPE)
+	cur_tok = shell->tokens;
+	if (cur_tok && cur_tok->type == TOKEN_PIPE)
 		return (cleanup_parse(shell, NULL, head, ERR_SYN_PIPE), false);
-	parser.shell = shell;
-	parser.head = &head;
-	parser.tail = &tail;
-	parser.curr = &curr;
-	parser.tokens = &tokens;
-	while (tokens)
+	p.shell = shell;
+	p.head = &head;
+	p.tail = &tail;
+	p.curr = &curr;
+	p.tok_it = &cur_tok;
+	while (cur_tok)
 	{
-		if (!process_command(&parser))
+		if (!process_command(&p))
 			return (false);
 	}
 	shell->commands = head;

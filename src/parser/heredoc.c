@@ -16,43 +16,34 @@
 //unlink (heredoc.temp_path)
 //return NULL
 
-void	set_invalid(t_cmd *cmd, t_shell *shell, int code)
-{
-	cmd->invalid = true;
-	if (code >= 0)
-		shell->last_exit_code = code;
-}
-
-static char	*expect_delim_no_expand(t_token **tokens, t_shell *shell,
+static char	*expect_delim_no_expand(t_token **tok_it, t_shell *shell,
 										t_cmd *cmd)
 {
 	char	*str;
 
-	if (!tokens || !*tokens || (*tokens)->type != TOKEN_WORD)
+	if (!tok_it || !*tok_it || (*tok_it)->type != TOKEN_WORD)
 	{
 		set_invalid(cmd, shell, 2);
 		return (NULL);
 	}
-	str = ft_strdup((*tokens)->value);
+	str = ft_strdup((*tok_it)->value);
 	if (!str)
 	{
 		set_invalid(cmd, shell, 1);
 		return (NULL);
 	}
-	*tokens = (*tokens)->next;
+	*tok_it = (*tok_it)->next;
 	return (str);
 }
 
-void	handle_heredoc_redir(t_token **tokens, t_cmd *cmd, t_shell *shell)
+void	handle_heredoc_redir(t_token **tok_it, t_cmd *cmd, t_shell *shell)
 {
-	t_token	*tok;
 	char	*delim;
 	char	*path;
 
-	tok = *tokens;
-	delim = expect_delim_no_expand(tokens, shell, cmd);
+	delim = expect_delim_no_expand(tok_it, shell, cmd);
 	if (!delim)
-		return (set_invalid(cmd, shell, 2));
+		return ;
 	path = create_heredoc_file(delim, shell);
 	free(delim);
 	if (!path)

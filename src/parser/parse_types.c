@@ -12,17 +12,17 @@
 
 #include "minishell.h"
 
-void	parse_word(t_token **tokens, t_list **args, t_cmd *cmd, t_shell *shell)
+void	parse_word(t_token **tok_it, t_list **args, t_cmd *cmd, t_shell *shell)
 {
-	t_token	*tok;
-	char	*value;
-	t_list	*node;
+	const t_token	*tok_cur;
+	char			*value;
+	t_list			*node;
 
-	tok = *tokens;
-	value = expand_variables(tok->value, shell);
+	tok_cur = *tok_it;
+	value = expand_variables(tok_cur->value, shell);
 	if (!value)
 		return (set_invalid(cmd, shell, 1));
-	if (value[0] == '\0' && !tok->was_quoted)
+	if (value[0] == '\0' && !tok_cur->was_quoted)
 		free(value);
 	else
 	{
@@ -34,7 +34,7 @@ void	parse_word(t_token **tokens, t_list **args, t_cmd *cmd, t_shell *shell)
 		}
 		ft_lstadd_back(args, node);
 	}
-	*tokens = (*tokens)->next;
+	*tok_it = (*tok_it)->next;
 }
 
 bool	is_redir(t_token_type tt)
@@ -43,24 +43,22 @@ bool	is_redir(t_token_type tt)
 		|| tt == TOKEN_APPEND || tt == TOKEN_HEREDOC);
 }
 
-t_cmd	*parse_command(t_shell *shell, t_token **tokens)
+t_cmd	*parse_command(t_shell *shell, t_token **tok_it)
 {
 	t_cmd	*cmd;
 	t_list	*args;
-	t_token	*tok;
 
 	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
 	cmd->invalid = false;
 	args = NULL;
-	while (*tokens && (*tokens)->type != TOKEN_PIPE)
+	while (*tok_it && (*tok_it)->type != TOKEN_PIPE)
 	{
-		tok = *tokens;
-		if (tok->type == TOKEN_WORD)
-			parse_word(tokens, &args, cmd, shell);
-		else if (is_redir(tok->type))
-			parse_redirection(tokens, cmd, shell);
+		if ((*tok_it)->type == TOKEN_WORD)
+			parse_word(tok_it, &args, cmd, shell);
+		else if (is_redir((*tok_it)->type))
+			parse_redirection(tok_it, cmd, shell);
 		else
 		{
 			set_invalid(cmd, shell, 2);

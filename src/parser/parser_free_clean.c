@@ -12,6 +12,13 @@
 
 #include "minishell.h"
 
+void	set_invalid(t_cmd *cmd, t_shell *shell, int code)
+{
+	cmd->invalid = true;
+	if (code >= 0)
+		shell->last_exit_code = code;
+}
+
 static void	free_redirs(t_redir *r)
 {
 	t_redir	*next;

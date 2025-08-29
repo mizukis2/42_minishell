@@ -143,6 +143,7 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+/*Execution */
 typedef struct s_exec
 {
 	int				prev_pipe_read;
@@ -164,13 +165,14 @@ typedef struct s_shell
 	int				last_exit_code;
 }	t_shell;
 
+/* Parser 2 */
 typedef struct s_parser
 {
 	t_shell	*shell;
 	t_cmd	**head;
 	t_cmd	**tail;
 	t_cmd	**curr;
-	t_token	**tokens;
+	t_token	**tok_it;
 }	t_parser;
 
 /*--------------------Funtions-----------------------------*/
@@ -224,9 +226,13 @@ void			free_cmd_list(t_cmd *cmd);
 
 /* Expansion */
 char			*expand_variables(const char *value, t_shell *shell);
+void			handle_env_var(const char *value, int *i,
+					char **result, t_shell *shell);
+void			handle_exit_status(int *i, char **result, t_shell *shell);
 int				var_len(const char *s);
 void			append_to_result(char **result, char *str);
 void			append_char_to_result(char **result, char c);
+char			*expand_heredoc_variables(const char *value, t_shell *shell);
 
 /* Error */
 void			print_error(const char *msg);
