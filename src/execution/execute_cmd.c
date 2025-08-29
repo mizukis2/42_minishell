@@ -53,7 +53,7 @@ static void	exec_fail_free(char *path, char **array_envp,
 {
 	free (path);
 	free_array(array_envp);
-	exec_fail(path, shell, err);
+	exec_fail(NULL, shell, err);
 }
 
 /* child process, exit with exit_code if fails */
