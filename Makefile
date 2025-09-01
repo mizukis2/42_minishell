@@ -49,6 +49,7 @@ SRCS = 							\
 								src/built_in/builtin_pwd.c \
 								src/built_in/builtin_unset.c \
 								src/built_in/builtin_utils.c \
+								src/signals/signals.c \
 
 
 OBJS = 							$(patsubst %.c, $(OBJ_DIR)/%.o, $(subst $(SRC_DIR)/,,$(SRCS)))

@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/08/06 09:13:03 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/09/01 01:45:11 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@
 # include <fcntl.h>
 # include <errno.h>
 # include "libft.h"
+
+/*--------------------Signal Variable------------------------*/
+extern volatile sig_atomic_t	g_signal;
 
 /*----------------------Colors-----------------------------*/
 # define RED     "\033[31m"
@@ -180,6 +183,9 @@ typedef struct s_parser
 void			start_shell(char **envp);
 bool			is_valid_input(t_shell *shell);
 void			cleanup(t_shell *shell);
+
+/* Signals */
+void			set_signals_prompt(void);
 
 /* Lexer */
 bool			tokenize_input(t_shell *shell);
