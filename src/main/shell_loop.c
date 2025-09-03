@@ -90,12 +90,13 @@ static void	free_env(t_env *head)
 	return (free_node_list(head));
 }
 
-void	start_shell(char **envp)
+int	start_shell(char **envp)
 {
 	t_shell	shell;
+	int		code;
 
 	if (!init_shell(&shell, envp))
-		return ;
+		return (1);
 	while (1)
 	{
 		shell.line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
@@ -109,15 +110,12 @@ void	start_shell(char **envp)
 		add_history(shell.line);
 		if (!tokenize_input(&shell))
 			continue ;
-/* 		if (shell.tokens)
-			print_tokens(shell.tokens);//for debug */
-/* 		if (shell.commands)
-			print_cmd(shell.commands);//for debug */
 		if (!parse_tokens(&shell))
 			continue ;
 		run_execution (&shell);
-		//printf ("exit code : %d\n", shell.last_exit_code); //for debug
 		cleanup(&shell);
 	}
+	code = shell.last_exit_code;
 	free_env(shell.env_list);
+	return (code);
 }

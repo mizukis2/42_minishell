@@ -177,7 +177,7 @@ typedef struct s_parser
 
 /*--------------------Funtions-----------------------------*/
 /* Main & shell loop */
-void			start_shell(char **envp);
+int				start_shell(char **envp);
 bool			is_valid_input(t_shell *shell);
 void			cleanup(t_shell *shell);
 

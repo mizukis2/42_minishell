@@ -40,13 +40,15 @@ static int	args_check(int ac, char **envp)
 
 int	main(int ac, char **av, char **envp)
 {
+	int	code;
+
 	(void)av;
 	if (!args_check(ac, envp))
 		return (EXIT_FAILURE);
 	//print_banner();
-	start_shell(envp);
+	code = start_shell(envp);
 	rl_clear_history();
-	return (EXIT_SUCCESS);
+	return (code);
 }
 // valgrind --suppressions=minishell.supp
 /* 	valgrind \

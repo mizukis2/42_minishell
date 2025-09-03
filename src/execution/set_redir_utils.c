@@ -25,6 +25,7 @@ bool	infile_process(const t_redir *r)
 	if (dup2(fd_in, STDIN_FILENO) == -1)
 	{
 		close (fd_in);
+		perror ("dup2");
 		return (false);
 	}
 	close (fd_in);
