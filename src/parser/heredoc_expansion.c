@@ -12,7 +12,8 @@
 
 #include "minishell.h"
 
-static void	process_char_heredoc(t_expander *exp, const char *value, t_shell *shell)
+static void	process_char_heredoc(t_expander *exp, const char *value,
+	t_shell *shell)
 {
 	if (value[exp->i] == '$')
 	{
