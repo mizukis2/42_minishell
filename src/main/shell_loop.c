@@ -6,13 +6,13 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 04:09:31 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/09/01 04:56:26 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/09/09 00:16:07 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-volatile sig_atomic_t g_signal = 0;
+volatile sig_atomic_t	g_signal = 0;
 
 static int	init_shell(t_shell *shell, char **envp)
 {
@@ -40,9 +40,21 @@ void	clean_shell(t_shell *shell)
 		free_tokens(shell->tokens);
 }
 
-static void	free_env(t_env *head)
+static bool	handle_interruptions(t_shell *shell)
 {
-	return (free_node_list(head));
+	if (!shell->line)
+	{
+		write(1, "exit\n", 5);
+		return (true);
+	}
+	if (g_signal == SIGINT && shell->line[0] == '\0')
+	{
+		shell->last_exit_code = 130;
+		g_signal = 0;
+		free(shell->line);
+		shell->line = NULL;
+	}
+	return (false);
 }
 
 void	start_shell(char **envp)
@@ -55,19 +67,8 @@ void	start_shell(char **envp)
 	{
 		set_signals_prompt();
 		shell.line = readline("\033[38;2;0;206;209mMZ$hell\033[0m$ ");
-		if (!shell.line) // check for EOF Ctrl+D (temporary)
-		{
-			write (1, "exit\n", 5);
+		if (handle_interruptions(&shell))
 			break ;
-		}
-		if (g_signal == SIGINT && shell.line[0] == '\0')//CTRL + C
-		{
-			shell.last_exit_code = 130;
-			g_signal = 0;
-			free(shell.line);
-			shell.line = NULL;
-			continue ;
-		}
 		if (!is_valid_input(&shell))
 			continue ;
 		add_history(shell.line);
@@ -78,5 +79,5 @@ void	start_shell(char **envp)
 		run_execution (&shell);
 		cleanup(&shell);
 	}
-	free_env(shell.env_list);
+	free_node_list(shell.env_list);
 }

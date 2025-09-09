@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/01 04:57:27 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/09/01 04:57:38 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/09/07 04:44:27 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,36 @@ static void	sigint_prompt(int signo)
 void	set_signals_prompt(void)
 {
 	struct sigaction	sa;
-	// Ctrl-C
+
 	sa.sa_handler = sigint_prompt;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa, NULL);
-	/*Ctrl-\ */
+	sa.sa_handler = SIG_IGN;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
+void	set_signals_heredoc_parent(void)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = SIG_IGN;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
+void	set_signals_heredoc_child(void)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = SIG_DFL;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
 	sa.sa_handler = SIG_IGN;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
