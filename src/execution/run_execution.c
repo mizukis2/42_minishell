@@ -1,27 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                         ::::::::           */
-/*   run_execution.c                                     :+:    :+:           */
-/*                                                      +:+                   */
-/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
-/*                                                    +#+                     */
-/*   Created: 2025/06/12 13:22:17 by mmatsui        #+#    #+#                */
-/*   Updated: 2025/06/12 13:22:18 by mmatsui        ########   odam.nl        */
+/*                                                        :::      ::::::::   */
+/*   run_execution.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/12 13:22:17 by mmatsui           #+#    #+#             */
+/*   Updated: 2025/09/05 01:32:27 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* static void signal_child(void)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-} */
-
 /* this runs as child process */
 static void	run_exec_child(t_cmd *curr_cmd, t_shell *shell)
 {
-	//signal_child();
 	if (!set_redirection_pipe(curr_cmd, &shell->exec))
 	{
 		cleanup_child(shell);

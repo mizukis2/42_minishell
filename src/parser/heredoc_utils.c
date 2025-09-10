@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                         ::::::::           */
-/*   heredoc_utils.c                                     :+:    :+:           */
-/*                                                      +:+                   */
-/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
-/*                                                    +#+                     */
-/*   Created: 2025/08/27 15:00:29 by mmatsui        #+#    #+#                */
-/*   Updated: 2025/08/27 15:00:31 by mmatsui        ########   odam.nl        */
+/*                                                        :::      ::::::::   */
+/*   heredoc_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/27 15:00:29 by mmatsui           #+#    #+#             */
+/*   Updated: 2025/09/09 06:15:55 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char	*strip_delim_quotes(const char *str, bool *quoted)
+char	*strip_delim_quotes(const char *str, bool *quoted)
 {
 	char	*unquoted_delim;
 	int		i;
@@ -22,7 +22,7 @@ static char	*strip_delim_quotes(const char *str, bool *quoted)
 	if (!str)
 		return (NULL);
 	len = ft_strlen(str);
-	unquoted_delim = malloc (len + 1);
+	unquoted_delim = malloc(len + 1);
 	if (!unquoted_delim)
 		return (NULL);
 	*quoted = false;
@@ -40,7 +40,7 @@ static char	*strip_delim_quotes(const char *str, bool *quoted)
 	return (unquoted_delim);
 }
 
-static int	create_temp_heredoc(char **out_path)
+int	create_temp_heredoc(char **out_path)
 {
 	size_t	i;
 	char	*path;
@@ -55,7 +55,7 @@ static int	create_temp_heredoc(char **out_path)
 			return (-1);
 		path = ft_strjoin("/tmp/.heredoc_", i_ascii);
 		if (!path)
-			return (free (i_ascii), -1);
+			return (free(i_ascii), -1);
 		free(i_ascii);
 		fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0600);
 		if (fd >= 0)
@@ -69,7 +69,13 @@ static int	create_temp_heredoc(char **out_path)
 	return (-1);
 }
 
-static void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
+static void	printvalue(int fd, char *value)
+{
+	write(fd, value, ft_strlen(value));
+	write(fd, "\n", 1);
+}
+
+void	collect_hd(int fd, char *delim, bool quoted, t_shell *shell)
 {
 	char	*line;
 	char	*value;
@@ -82,36 +88,18 @@ static void	collect_heredoc(int fd, char *delim, bool is_quoted, t_shell *shell)
 			free(line);
 			break ;
 		}
-		if (is_quoted)
+		if (quoted)
 			value = ft_strdup(line);
 		else
 			value = expand_heredoc_variables(line, shell);
-		write(fd, value, ft_strlen(value));
-		write(fd, "\n", 1);
+		if (!value)
+		{
+			free(line);
+			close(fd);
+			_exit(1);
+		}
+		printvalue(fd, value);
 		free(value);
 		free(line);
 	}
 }
-
-char	*create_heredoc_file(const char *delim, t_shell *shell)
-{
-	t_heredoc	heredoc;
-	bool		quoted;
-
-	heredoc.clean_delim = strip_delim_quotes(delim, &quoted);
-	heredoc.is_quoted = quoted;
-	if (!heredoc.clean_delim)
-		return (NULL);
-	heredoc.fd = create_temp_heredoc(&heredoc.temp_path);
-	if (heredoc.fd < 0)
-		return (free(heredoc.clean_delim), NULL);
-	collect_heredoc(heredoc.fd, heredoc.clean_delim,
-		heredoc.is_quoted, shell);
-	free(heredoc.clean_delim);
-	close(heredoc.fd);
-	return (heredoc.temp_path);
-}
-//signal memo
-//shell->last_exit_code = 130
-//unlink (heredoc.temp_path)
-//return NULL

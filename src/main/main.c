@@ -6,13 +6,13 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:48:11 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/07/28 00:36:02 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/09/09 20:27:32 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* static void	print_banner(void)
+static void	print_banner(void)
 {
 	printf("\033[2J\033[H");
 	printf("\033[38;2;0;255;127m");
@@ -24,7 +24,7 @@
 	printf("╚═╝     ╚═╝╚══════╝╚═▀▀▀══╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝\n");
 	printf("\033[1m\033[38;2;160;32;240m--- Made by mmatsui & zekhatib ---\n");
 	printf("\033[0m\n");
-} */
+}
 
 static int	args_check(int ac, char **envp)
 {
@@ -45,18 +45,8 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	if (!args_check(ac, envp))
 		return (EXIT_FAILURE);
-	//print_banner();
+	print_banner();
 	code = start_shell(envp);
 	rl_clear_history();
 	return (code);
 }
-// valgrind --suppressions=minishell.supp
-/* 	valgrind \
-    --suppressions=minishell.supp \
-    --leak-check=full \
-    --show-leak-kinds=all \
-    ./minishell */
-	// TODO: Copy environment variables into a modifiable structure
-	// TODO: Add parsing, execution
-	// TODO: Add execution
-	// TODO: Add signal handling at the end of the project
