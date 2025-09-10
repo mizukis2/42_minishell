@@ -185,10 +185,11 @@ typedef struct s_parser
 	t_token	**tok_it;
 }	t_parser;
 
+
 /*-------------------------------- FUNCTIONS ---------------------------------*/
 
 /* Main & Shell Loop */
-void			start_shell(char **envp);
+int				start_shell(char **envp);
 bool			is_valid_input(t_shell *shell);
 void			cleanup(t_shell *shell);
 void			clean_shell(t_shell *shell);

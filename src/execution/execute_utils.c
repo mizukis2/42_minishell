@@ -75,13 +75,17 @@ int	run_builtin_parent(t_cmd *curr_cmd, t_shell *shell)
 	save_out = dup(STDOUT_FILENO);
 	if (!set_redirection_pipe(curr_cmd, &shell->exec))
 	{
+		dup2(save_in, STDIN_FILENO);
+		dup2(save_out, STDOUT_FILENO);
 		close (save_in);
 		close (save_out);
+		shell->last_exit_code = 1;
 		return (1);
 	}
 	if (ft_strcmp(curr_cmd->argv[0], "exit") == 0)
 		return (execute_builtin_exit(shell, save_in, save_out));
 	result = execute_builtin(curr_cmd->argv, shell->env_list);
+	shell->last_exit_code = result;
 	restore_std_close_fd(save_in, save_out);
 	return (result);
 }

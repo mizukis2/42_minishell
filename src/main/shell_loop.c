@@ -57,12 +57,13 @@ static bool	handle_interruptions(t_shell *shell)
 	return (false);
 }
 
-void	start_shell(char **envp)
+int	start_shell(char **envp)
 {
 	t_shell	shell;
+	int		code;
 
 	if (!init_shell(&shell, envp))
-		return ;
+		return (1);
 	while (1)
 	{
 		set_signals_prompt();
@@ -79,5 +80,7 @@ void	start_shell(char **envp)
 		run_execution (&shell);
 		cleanup(&shell);
 	}
+	code = shell.last_exit_code;
 	free_node_list(shell.env_list);
+	return (code);
 }

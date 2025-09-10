@@ -18,7 +18,7 @@ int	ft_env(char **args, t_env *envp)
 	t_env	*curr;
 
 	curr = envp;
-	if (count_args(args) > 1)
+	if (count_args(args) > 0)
 		return (print_error_builtin("env: too many arguments\n"), 1);
 	while (curr)
 	{
