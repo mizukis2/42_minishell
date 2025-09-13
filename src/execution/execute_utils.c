@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                         ::::::::           */
-/*   execute_utils.c                                     :+:    :+:           */
-/*                                                      +:+                   */
-/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
-/*                                                    +#+                     */
-/*   Created: 2025/08/06 14:48:17 by mmatsui        #+#    #+#                */
-/*   Updated: 2025/08/06 14:48:19 by mmatsui        ########   odam.nl        */
+/*                                                        :::      ::::::::   */
+/*   execute_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/06 14:48:17 by mmatsui           #+#    #+#             */
+/*   Updated: 2025/09/13 01:42:02 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ void	waitpid_loop(t_exec *exec)
 			exec->status = status;
 		i++;
 	}
+	set_signals_prompt();
 }
 
 /* this is a function to run builtin in parent. this returns the exit code*/

@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 13:22:17 by mmatsui           #+#    #+#             */
-/*   Updated: 2025/09/05 01:32:27 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/09/13 01:53:46 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 /* this runs as child process */
 static void	run_exec_child(t_cmd *curr_cmd, t_shell *shell)
 {
+	set_signals_child();
 	if (!set_redirection_pipe(curr_cmd, &shell->exec))
 	{
 		cleanup_child(shell);
@@ -90,6 +91,7 @@ int	execute(t_shell *shell)
 			return (exit_code);
 	}
 	init_exec(&shell->exec);
+	set_signals_parent();
 	while (curr)
 	{
 		if (curr->next && pipe(shell->exec.curr_pipe) == -1)

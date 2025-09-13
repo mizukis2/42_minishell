@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                         ::::::::           */
-/*   run_exec_utils.c                                    :+:    :+:           */
-/*                                                      +:+                   */
-/*   By: mmatsui <mmatsui@student.codam.nl>            +#+                    */
-/*                                                    +#+                     */
-/*   Created: 2025/08/27 13:02:03 by mmatsui        #+#    #+#                */
-/*   Updated: 2025/08/27 13:02:04 by mmatsui        ########   odam.nl        */
+/*                                                        :::      ::::::::   */
+/*   run_exec_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/27 13:02:03 by mmatsui           #+#    #+#             */
+/*   Updated: 2025/09/13 01:50:27 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,20 @@
 
 int	find_exit_code(t_shell *shell)
 {
+	int	sig;
+
 	if (WIFEXITED(shell->exec.status))
 		return (WEXITSTATUS(shell->exec.status));
 	else if (WIFSIGNALED(shell->exec.status))
-		return (128 + WTERMSIG(shell->exec.status));
+	{
+		sig = WTERMSIG(shell->exec.status);
+		if (sig == SIGQUIT)
+		{
+			write(STDERR_FILENO, "\nQuit (core dumped)\n", 20);
+			return (128 + sig);
+		}
+		return (128 + sig);
+	}
 	return (1);
 }
 

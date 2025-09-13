@@ -6,7 +6,7 @@
 /*   By: zekhatib <zekhatib@student.codam.nl>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 07:43:05 by zekhatib          #+#    #+#             */
-/*   Updated: 2025/09/09 01:51:11 by zekhatib         ###   ########.fr       */
+/*   Updated: 2025/09/13 01:53:22 by zekhatib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,6 @@ typedef struct s_parser
 	t_token	**tok_it;
 }	t_parser;
 
-
 /*-------------------------------- FUNCTIONS ---------------------------------*/
 
 /* Main & Shell Loop */
@@ -198,6 +197,8 @@ void			clean_shell(t_shell *shell);
 void			set_signals_prompt(void);
 void			set_signals_heredoc_parent(void);
 void			set_signals_heredoc_child(void);
+void			set_signals_child(void);
+void			set_signals_parent(void);
 
 /* Lexer */
 bool			tokenize_input(t_shell *shell);
