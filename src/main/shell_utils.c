@@ -12,9 +12,17 @@
 
 #include "minishell.h"
 
-static bool	is_empty(char *line)
+static int	is_empty(char *str)
 {
-	return (line[0] == '\0');
+	if (str == NULL)
+		return (1);
+	while (*str)
+	{
+		if (!ft_isspace(*str))
+			return (0);
+		str++;
+	}
+	return (1);
 }
 
 static bool	check_quotes(char *line)
@@ -42,6 +50,11 @@ static bool	check_quotes(char *line)
 
 bool	is_valid_input(t_shell *shell)
 {
+	if (shell->line == NULL)
+	{
+		shell->last_exit_code = 0;
+		return (false);
+	}
 	if (is_empty(shell->line))
 	{
 		free(shell->line);

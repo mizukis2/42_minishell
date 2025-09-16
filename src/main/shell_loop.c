@@ -47,7 +47,7 @@ static bool	handle_interruptions(t_shell *shell)
 		write(1, "exit\n", 5);
 		return (true);
 	}
-	if (g_signal == SIGINT && shell->line[0] == '\0')
+	if (g_signal == SIGINT && shell->line && shell->line[0] == '\0')
 	{
 		shell->last_exit_code = 130;
 		g_signal = 0;
