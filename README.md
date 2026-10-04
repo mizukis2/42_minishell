@@ -354,4 +354,4 @@ AI-generated suggestions were reviewed, tested, and adapted by the team rather t
 | Member   | Login   | Responsibilities   |
 | -------- | ------- | ------------------ |
 | Mizuki Matsui| mmatsui | https://github.com/mizukis2 |
-| Zeki Khatibi | zekhatib |  |
+| Zeki Khatibi | zekhatib | https://github.com/zekikhatibi |
