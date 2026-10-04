@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by mmatsu, zekhatib.*
+*This project has been created as part of the 42 curriculum by mmatsui, zekhatib.*
 
 # Minishell
 
@@ -348,10 +348,3 @@ They were used for tasks such as:
 * Identifying possible edge cases
 
 AI-generated suggestions were reviewed, tested, and adapted by the team rather than being used blindly. The final implementation was developed and understood by the project members.
-
-## Team
-
-| Member   | Login   | Responsibilities   |
-| -------- | ------- | ------------------ |
-| Mizuki Matsui| mmatsui | https://github.com/mizukis2 |
-| Zeki Khatibi | zekhatib | https://github.com/zekikhatibi |
