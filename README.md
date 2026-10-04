@@ -243,37 +243,6 @@ Command 2
 Command 3
 ```
 
-The implementation makes extensive use of Unix system calls and functions such as:
-
-* `fork`
-* `wait`
-* `waitpid`
-* `execve`
-* `pipe`
-* `dup`
-* `dup2`
-* `open`
-* `close`
-* `signal`
-* `sigaction`
-* `getcwd`
-* `chdir`
-
-## Project Structure
-
-```text
-minishell/
-├── Makefile
-├── README.md
-├── include/
-│   └── ...
-├── src/
-│   ├── ...
-│   └── ...
-├── libft/
-│   └── ...
-└── ...
-```
 
 ## Testing
 
