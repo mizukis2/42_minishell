@@ -116,7 +116,7 @@ Their behavior is designed to match Bash as closely as required by the subject.
 ### Clone the repository
 
 ```bash
-git clone [<repository-url>](https://github.com/mizukis2/42_minishell.git)
+git clone https://github.com/mizukis2/42_minishell.git
 cd 42_minishell
 ```
 
